@@ -1,0 +1,6 @@
+{
+  "name": "Tensura Studio — Marin Bot",
+  "description": "Anime-centered WhatsApp bot studio featuring Marin's full dot-prefix command system, card gacha, economy, mini-games, Jikan anime lookups, Gemini AI commands, and live Meta WhatsApp Cloud API webhooks.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
