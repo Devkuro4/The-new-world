@@ -1,3 +1,5 @@
+import { ATTACK_ON_TITAN_SHOOB_CARDS } from './shoobAttackOnTitanCards';
+
 export type CommandRole = 'everyone' | 'moderator' | 'admin' | 'owner';
 
 export type CommandCategory =
@@ -39,6 +41,8 @@ export interface AnimeCard {
   stardustValue: number;
   price: number;
   imageUrl?: string;
+  sourceTier?: number;
+  sourceUrl?: string;
   ownerId?: string;
 }
 
@@ -215,6 +219,7 @@ export const DEFAULT_GROUP_SETTINGS: GroupSettings = {
 };
 
 export const DEFAULT_CARDS: AnimeCard[] = [
+  ...ATTACK_ON_TITAN_SHOOB_CARDS,
   { id: 'C-100', name: 'Pieck Finger', series: 'Attack on Titan', tier: 'S+', atk: 93, def: 98, stardustValue: 960, price: 8900 },
   { id: 'C-101', name: 'Rimuru Tempest', series: 'That Time I Got Reincarnated as a Slime', tier: 'S+', atk: 98, def: 96, stardustValue: 950, price: 8500 },
   { id: 'C-102', name: 'Marin Kitagawa', series: 'My Dress-Up Darling', tier: 'S+', atk: 88, def: 92, stardustValue: 920, price: 8200 },
@@ -255,9 +260,9 @@ export const DEFAULT_COMMANDS: BotCommandDef[] = [
   // Cards
   { name: 'card', category: 'Cards', description: 'Spawn a collectible anime character card in chat', usage: '.card', role: 'everyone', enabled: true },
   { name: 'claim', category: 'Cards', description: 'Claim an active dropped anime card', usage: '.claim [code]', role: 'everyone', enabled: true },
-  { name: 'ci', category: 'Cards', description: 'Inspect detailed stats of a card by ID or name', usage: '.ci <cardId|name>', role: 'everyone', enabled: true },
+  { name: 'ci', category: 'Cards', description: 'View a card by character name and Shoob tier, including its owners', usage: '.ci <card name> <tier>', role: 'everyone', enabled: true },
   { name: 'si', category: 'Cards', description: 'Search series index & available cards', usage: '.si <series>', role: 'everyone', enabled: true },
-  { name: 'ss', category: 'Cards', description: 'Search cards within a specific anime series', usage: '.ss <series>', role: 'everyone', enabled: true },
+  { name: 'ss', category: 'Cards', description: 'Find the closest matching anime series and list all its cards from lowest to highest tier', usage: '.ss <full or partial series name>', role: 'everyone', enabled: true },
   { name: 'slb', category: 'Cards', description: 'View Stardust collector leaderboard', usage: '.slb', role: 'everyone', enabled: true },
   { name: 'clb', category: 'Cards', description: 'View Card collection leaderboard', usage: '.clb', role: 'everyone', enabled: true },
   { name: 'deck', category: 'Cards', description: 'View or manage your active 6-card battle deck', usage: '.deck', role: 'everyone', enabled: true },

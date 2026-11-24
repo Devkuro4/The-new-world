@@ -214,7 +214,13 @@ function loadState(): BotState {
           const custom = saved.filter((command) => command.isCustom);
           return [...custom, ...builtIns];
         })(),
-        cards: Array.isArray(parsed.cards) && parsed.cards.length > 0 ? parsed.cards : base.cards,
+        cards: (() => {
+          const saved = Array.isArray(parsed.cards) ? parsed.cards : [];
+          const savedById = new Map(saved.map((card) => [card.id, card]));
+          const currentDefaults = base.cards.map((card) => savedById.get(card.id) || card);
+          const customCards = saved.filter((card) => !base.cards.some((defaultCard) => defaultCard.id === card.id));
+          return [...currentDefaults, ...customCards];
+        })(),
         players: parsed.players && Object.keys(parsed.players).length > 0 ? parsed.players : base.players,
         stats: { ...base.stats, ...(parsed.stats || {}) },
       };
@@ -560,11 +566,15 @@ function runYtDlpOnce(
     const maxBytes = kind === 'video' ? 30 * 1024 * 1024 : MAX_PLAY_BYTES;
     const args = [
       '-f',
-      kind === 'audio' ? 'bestaudio[ext=m4a][abr<=130]/bestaudio[ext=m4a]/bestaudio/best' : 'b[ext=mp4][height<=720]/b[ext=mp4]/b',
+      kind === 'audio'
+        // Audio-only formats first. Never fall back to plain `best` (that is a 720p video, easily 40+ MB for one song);
+        // the last resorts are the smallest combined formats.
+        ? 'bestaudio[ext=m4a][abr<=130]/bestaudio[abr<=130]/bestaudio[filesize<35M]/bestaudio[filesize_approx<35M]/worstaudio/worst[ext=mp4]/worst'
+        : 'b[ext=mp4][height<=720]/b[ext=mp4]/b',
       '--no-playlist', '--no-warnings', '--no-mtime',
       '--concurrent-fragments', '4', '--http-chunk-size', '10M',
       '--max-filesize', `${Math.round(maxBytes / (1024 * 1024))}M`,
-      '--match-filter', `duration<=?${MAX_PLAY_SECONDS}`,
+      '--match-filter', `!is_live & duration<=${MAX_PLAY_SECONDS}`,
       '-o', `${outBase}.%(ext)s`,
     ];
     // Recent yt-dlp needs a JavaScript runtime to read YouTube; Node is already running this bot.
@@ -1295,7 +1305,142 @@ async function executeBuiltInCommand(
     };
   }
 
-  if (cmd === 'ci' || cmd === 'cs' || cmd === 'si' || cmd === 'ss') {
+  if (cmd === 'ss') {
+    const query = argStr.trim();
+    if (!query) {
+      return {
+        text: `Usage: *${p}ss <full or partial series name>*\nExample: *${p}ss attack*`,
+        handler: 'Series Search',
+      };
+    }
+
+    const normalize = (value: string) => value.toLowerCase().replace(/[^a-z0-9]/g, '');
+    const acronym = (value: string) =>
+      value
+        .toLowerCase()
+        .split(/[^a-z0-9]+/)
+        .filter(Boolean)
+        .map((word) => word[0])
+        .join('');
+    const distance = (left: string, right: string) => {
+      const row = Array.from({ length: right.length + 1 }, (_, index) => index);
+      for (let i = 1; i <= left.length; i += 1) {
+        let previous = row[0];
+        row[0] = i;
+        for (let j = 1; j <= right.length; j += 1) {
+          const old = row[j];
+          row[j] = Math.min(
+            row[j] + 1,
+            row[j - 1] + 1,
+            previous + (left[i - 1] === right[j - 1] ? 0 : 1)
+          );
+          previous = old;
+        }
+      }
+      return row[right.length];
+    };
+
+    const normalizedQuery = normalize(query);
+    const seriesNames = [...new Set(botState.cards.map((card) => card.series))];
+    const bestSeries = seriesNames
+      .map((series) => {
+        const normalizedSeries = normalize(series);
+        const isDirectMatch =
+          normalizedSeries.includes(normalizedQuery) ||
+          normalizedQuery.includes(normalizedSeries) ||
+          acronym(series) === normalizedQuery;
+        return {
+          series,
+          score: isDirectMatch ? 0 : distance(normalizedQuery, normalizedSeries),
+        };
+      })
+      .sort((left, right) => left.score - right.score || left.series.localeCompare(right.series))[0]?.series;
+
+    if (!bestSeries) {
+      return { text: `No card series matched "_${query}_".`, handler: 'Series Search' };
+    }
+
+    const allSeriesCards = botState.cards.filter((card) => card.series === bestSeries);
+    const scrapedCards = allSeriesCards.filter((card) => card.sourceTier !== undefined);
+    const seriesCards = (scrapedCards.length > 0 ? scrapedCards : allSeriesCards).sort(
+      (left, right) =>
+        (left.sourceTier ?? 99) - (right.sourceTier ?? 99) ||
+        left.name.localeCompare(right.name) ||
+        left.id.localeCompare(right.id)
+    );
+
+    return {
+      text: [
+        `*Card Series - ${bestSeries}*`,
+        `Closest match for: _${query}_`,
+        `Cards: *${seriesCards.length}*`,
+        '',
+        ...seriesCards.map(
+          (card) =>
+            `T${card.sourceTier ?? '?'} · [${card.tier}] *${card.name}* · \`${card.id}\``
+        ),
+      ].join('\n'),
+      handler: 'Series Search',
+    };
+  }
+
+  if (cmd === 'ci') {
+    const query = argStr.trim();
+    const parsed = query.match(/^(.+?)\s+(?:t(?:ier)?\s*)?([1-6])$/i);
+
+    if (!parsed) {
+      return {
+        text: [
+          '*Card Info*',
+          `Usage: *${p}ci <card name> <tier>*`,
+          `Example: *${p}ci Levi Ackerman 3*`,
+        ].join('\n'),
+        handler: 'Card Info',
+      };
+    }
+
+    const requestedName = parsed[1].trim().toLowerCase();
+    const requestedTier = Number(parsed[2]);
+    const cardMatches = botState.cards.filter(
+      (card) => card.name.toLowerCase() === requestedName && card.sourceTier === requestedTier
+    );
+
+    if (cardMatches.length === 0) {
+      return {
+        text: `No *${parsed[1].trim()}* card was found in Shoob Tier *${requestedTier}*.`,
+        handler: 'Card Info',
+      };
+    }
+
+    const card = cardMatches[0];
+    const owners = Object.values(botState.players).filter((owner) => owner.cards.includes(card.id));
+    if (!card.imageUrl) card.imageUrl = await fetchCharacterImage(card.name);
+
+    return {
+      text: [
+        `*Card Info - ${card.name}*`,
+        `ID: \`${card.id}\``,
+        `Shoob Tier: *T${card.sourceTier}*`,
+        `Bot Rank: *${card.tier}*`,
+        `Series: _${card.series}_`,
+        `Power: ATK *${card.atk}* / DEF *${card.def}*`,
+        `Stardust: *${card.stardustValue}*`,
+        `Price: *¥${card.price.toLocaleString()}*`,
+        `Owners: *${owners.length}*`,
+        owners.length > 0
+          ? owners.map((owner, index) => `${index + 1}. ${owner.name}`).join('\n')
+          : '_Nobody owns this card yet._',
+        cardMatches.length > 1
+          ? `_This name has ${cardMatches.length} T${requestedTier} variants; showing ${card.id}._`
+          : '',
+      ].filter(Boolean).join('\n'),
+      imageUrl: card.imageUrl,
+      imageCaption: `${card.name} · T${card.sourceTier} · ${owners.length} owner${owners.length === 1 ? '' : 's'}`,
+      handler: 'Card Info',
+    };
+  }
+
+  if (cmd === 'cs' || cmd === 'si') {
     const q = argStr.toLowerCase();
     const matches = q
       ? botState.cards.filter(
@@ -1306,7 +1451,7 @@ async function executeBuiltInCommand(
       return { text: `No catalog cards matched "_${argStr}_".`, handler: 'Card Search' };
     }
     const top = matches[0];
-    if (cmd === 'ci' && matches.length === 1) {
+    if (false && matches.length === 1) {
       if (!top.imageUrl) top.imageUrl = await fetchCharacterImage(top.name);
       return {
         text: [
@@ -2719,4 +2864,3 @@ async function startBot() {
 startBot();
 `;
 }
-

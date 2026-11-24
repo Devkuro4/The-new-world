@@ -213,6 +213,7 @@ export const EconomyCardsPanel: React.FC<EconomyCardsPanelProps> = ({
             <table className="w-full text-left text-sm">
               <thead className="border-b border-slate-200 bg-slate-50 text-xs font-medium text-slate-500">
                 <tr>
+                  <th className="px-4 py-2.5">Card</th>
                   <th className="px-4 py-2.5">ID</th>
                   <th className="px-4 py-2.5">Character</th>
                   <th className="px-4 py-2.5">Series</th>
@@ -224,10 +225,26 @@ export const EconomyCardsPanel: React.FC<EconomyCardsPanelProps> = ({
               <tbody className="divide-y divide-slate-100 tabular-nums">
                 {cards.map((card) => (
                   <tr key={card.id} className="hover:bg-slate-50/70">
+                    <td className="px-4 py-2.5">
+                      {card.imageUrl ? (
+                        <a href={card.sourceUrl || card.imageUrl} target="_blank" rel="noreferrer">
+                          <img
+                            src={card.imageUrl}
+                            alt={card.name}
+                            className="h-20 w-14 rounded-md border border-slate-200 bg-slate-100 object-cover shadow-sm"
+                            loading="lazy"
+                          />
+                        </a>
+                      ) : (
+                        <div className="h-20 w-14 rounded-md border border-dashed border-slate-200 bg-slate-50" />
+                      )}
+                    </td>
                     <td className="px-4 py-2.5 font-mono text-xs text-slate-500">{card.id}</td>
                     <td className="px-4 py-2.5 font-medium text-slate-900">{card.name}</td>
                     <td className="px-4 py-2.5 text-xs text-slate-600">{card.series}</td>
-                    <td className="px-4 py-2.5 font-mono text-xs font-semibold text-emerald-700">{card.tier}</td>
+                    <td className="px-4 py-2.5 font-mono text-xs font-semibold text-emerald-700">
+                      {card.sourceTier ? `T${card.sourceTier} · ${card.tier}` : card.tier}
+                    </td>
                     <td className="px-4 py-2.5 text-right font-mono text-xs text-slate-700">
                       {card.atk} / {card.def}
                     </td>
