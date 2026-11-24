@@ -439,50 +439,23 @@ function formatMenuHeader(): string {
   ].join('\n');
 }
 
-function buildMenuText(categoryFilter?: string): string {
+function buildMenuText(): string {
   const prefix = botState.config.prefix;
   const visible = botState.commands.filter((command) => command.enabled);
+  const menuLines = [formatMenuHeader(), ''];
 
-  if (categoryFilter) {
-    const matchedCategory = COMMAND_CATEGORIES.find(
-      (category) => category.toLowerCase() === categoryFilter.toLowerCase() ||
-        category.toLowerCase().startsWith(categoryFilter.toLowerCase())
+  for (const category of COMMAND_CATEGORIES) {
+    const commands = visible.filter((command) => command.category === category);
+    if (commands.length === 0) continue;
+    menuLines.push(
+      `*${category}*`,
+      commands.map((command) => `${prefix}${command.name}`).join('  |  '),
+      ''
     );
-    if (!matchedCategory) {
-      return `Unknown menu section *${categoryFilter}*. Send *${prefix}menu* to see the sections.`;
-    }
-
-    const commands = visible.filter((command) => command.category === matchedCategory);
-    if (commands.length === 0) return `No commands are available in *${matchedCategory}* yet.`;
-
-    return [
-      formatMenuHeader(),
-      '',
-      `*${matchedCategory}*`,
-      ...commands.map((command) => {
-        const aliases = command.aliases?.length ? `  •  ${command.aliases.map((alias) => prefix + alias).join(', ')}` : '';
-        return `*${prefix}${command.name}*${aliases}\n${command.description}`;
-      }),
-      '',
-      `Use *${prefix}menu <section>* to switch sections.`,
-    ].join('\n\n');
   }
 
-  const sections = COMMAND_CATEGORIES
-    .map((category) => ({
-      category,
-      count: visible.filter((command) => command.category === category).length,
-    }))
-    .filter((section) => section.count > 0);
-
-  return [
-    formatMenuHeader(),
-    '',
-    '*Choose a section*',
-    ...sections.map((section) => `• *${prefix}menu ${section.category.toLowerCase()}*  ${section.count} commands`),
-    '',
-    `Quick start  •  *${prefix}anime Frieren*  •  *${prefix}card*  •  *${prefix}daily*`,
-  ].join('\n');
+  menuLines.push(`Use any command directly. Example: *${prefix}anime Frieren*`);
+  return menuLines.join('\n').trim();
 }
 
 function findCommand(rawName: string): BotCommandDef | undefined {
@@ -683,14 +656,14 @@ async function executeBuiltInCommand(
   // ── GENERAL ──
   if (cmd === 'menu' || cmd === 'help') {
     return {
-      text: buildMenuText(argStr || undefined),
+      text: buildMenuText(),
       imageUrl: await fetchSfwAnimeImage('waifu'),
       imageCaption: 'Pieck command menu',
       handler: 'Menu',
       buttons: [
-        { id: 'menu_cards', label: 'Cards', command: `${p}menu cards` },
-        { id: 'menu_econ', label: 'Economy', command: `${p}menu economy` },
-        { id: 'menu_admin', label: 'Moderation', command: `${p}menu admin` },
+        { id: 'balance', label: 'Balance', command: `${p}bal` },
+        { id: 'fish', label: 'Fish', command: `${p}fish` },
+        { id: 'anime', label: 'Anime', command: `${p}anime Frieren` },
       ],
     };
   }
