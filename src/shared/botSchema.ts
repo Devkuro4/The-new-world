@@ -145,6 +145,10 @@ export interface BotReplyPayload {
   audioPath?: string;
   /** When an image was sent with the caption, skip the separate text message. */
   hideText?: boolean;
+  /** Media still downloading: the card is sent first, the file follows when ready (Baileys runner only). */
+  pendingMedia?: Promise<{ path?: string; reason?: string }>;
+  pendingKind?: 'audio' | 'video';
+  pendingLink?: string;
   /** Server-side temp video file (sent by the Baileys runner, then deleted). */
   videoPath?: string;
   buttons?: WhatsAppSimButton[];

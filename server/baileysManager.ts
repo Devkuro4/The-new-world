@@ -232,11 +232,35 @@ async function refreshGroupsList(sock: WASocket): Promise<BaileysGroupSummary[]>
   }
 }
 
+async function sendMediaFile(
+  sock: WASocket,
+  remoteJid: string,
+  quoted: WAMessage,
+  kind: 'audio' | 'video',
+  filePath: string
+): Promise<void> {
+  try {
+    const buffer = fs.readFileSync(filePath);
+    const sent = await sock.sendMessage(
+      remoteJid,
+      kind === 'audio'
+        ? { audio: buffer, mimetype: 'audio/mp4', ptt: false }
+        : { video: buffer, mimetype: 'video/mp4' },
+      { quoted }
+    );
+    trackSentId(sent?.key?.id);
+  } catch {
+    // The card / link was already sent.
+  } finally {
+    fs.rmSync(filePath, { force: true });
+  }
+}
+
 async function sendBotReply(
   sock: WASocket,
   remoteJid: string,
   quoted: WAMessage,
-  reply: { text: string; imageUrl?: string; imageCaption?: string; audioUrl?: string; audioPath?: string; videoPath?: string; hideText?: boolean; buttons?: Array<{ label: string; command: string }> },
+  reply: { text: string; imageUrl?: string; imageCaption?: string; audioUrl?: string; audioPath?: string; videoPath?: string; hideText?: boolean; pendingMedia?: Promise<{ path?: string; reason?: string }>; pendingKind?: 'audio' | 'video'; pendingLink?: string; buttons?: Array<{ label: string; command: string }> },
   mentions?: string[]
 ): Promise<void> {
   let finalText = reply.text;
@@ -299,6 +323,21 @@ async function sendBotReply(
       textMessage = await sock.sendMessage(remoteJid, plainContent, { quoted });
     }
     trackSentId(textMessage?.key?.id);
+  }
+
+  if (reply.pendingMedia) {
+    const result = await reply.pendingMedia;
+    const kind = reply.pendingKind || 'audio';
+    if (result.path) {
+      await sendMediaFile(sock, remoteJid, quoted, kind, result.path);
+    } else {
+      const failure = await sock.sendMessage(
+        remoteJid,
+        { text: `⚠️ ${kind === 'audio' ? 'Audio' : 'Video'} unavailable: ${result.reason || 'unknown error'}${reply.pendingLink ? `\n🔗 ${reply.pendingLink}` : ''}` },
+        { quoted }
+      );
+      trackSentId(failure?.key?.id);
+    }
   }
 
   if (reply.videoPath) {

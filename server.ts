@@ -14,6 +14,7 @@ import {
   generateBaileysBotCode,
   handleIncomingMessage,
   persistState,
+  warmUpYtDlp,
 } from './server/botEngine.ts';
 import { hasGroqKey } from './server/groqClient.ts';
 import { ASSET_DIR } from './server/assets.ts';
@@ -480,6 +481,7 @@ async function startServer() {
   app.listen(port, '0.0.0.0', () => {
     console.log(`The new world Studio (Pieck Bot) running on http://0.0.0.0:${port}`);
     autoResumeBaileysIfSaved().catch(() => {});
+    warmUpYtDlp(); // install/check yt-dlp at boot so the first .play isn't slow
   });
 }
 

@@ -434,6 +434,10 @@ function ensureYtDlp(): Promise<string> {
   return ytDlpReady;
 }
 
+export function warmUpYtDlp(): void {
+  ensureYtDlp().catch((err) => console.warn(`[yt-dlp] warm-up failed: ${err instanceof Error ? err.message : err}`));
+}
+
 interface DownloadResult {
   path?: string;
   reason?: string;
@@ -453,8 +457,9 @@ async function downloadWithYtDlpDetailed(url: string, kind: 'audio' | 'video'): 
     const maxBytes = kind === 'video' ? 30 * 1024 * 1024 : MAX_PLAY_BYTES;
     const args = [
       '-f',
-      kind === 'audio' ? 'bestaudio[ext=m4a]/bestaudio' : 'b[ext=mp4][height<=720]/b[ext=mp4]/b',
-      '--no-playlist',
+      kind === 'audio' ? 'bestaudio[ext=m4a][abr<=130]/bestaudio[ext=m4a]/bestaudio' : 'b[ext=mp4][height<=720]/b[ext=mp4]/b',
+      '--no-playlist', '--no-warnings', '--no-mtime',
+      '--concurrent-fragments', '4', '--http-chunk-size', '10M',
       '--max-filesize', `${Math.round(maxBytes / (1024 * 1024))}M`,
       '--match-filter', `duration<=?${MAX_PLAY_SECONDS}`,
       '-o', `${outBase}.%(ext)s`,
@@ -2161,28 +2166,25 @@ async function executeBuiltInCommand(
         };
       }
 
-      let audioPath: string | null = null;
+      // Start the download straight away, but send the thumbnail + name first (see sendBotReply).
+      let pending: Promise<DownloadResult> | undefined;
       let note = '';
       if (source !== 'baileys') {
         note = `\n\n_Audio is only sent in the WhatsApp runner. Open the link to listen._`;
       } else if (video.seconds > MAX_PLAY_SECONDS) {
         note = `\n\n⏱️ Too long to send as audio (limit ${Math.round(MAX_PLAY_SECONDS / 60)} min). Open the link to listen.`;
       } else {
-        const dl = await downloadWithYtDlpDetailed(video.url, 'audio');
-        audioPath = dl.path ?? null;
-        if (!audioPath) note = `\n\n⚠️ Audio unavailable: ${dl.reason || 'unknown error'}\n_Open the link to listen._`;
+        pending = downloadWithYtDlpDetailed(video.url, 'audio');
       }
 
-      // Success: just the thumbnail with the song name, then the audio (no extra details).
-      // If the audio couldn't be fetched, show the name, link and the reason instead.
       return {
-        text: audioPath
-          ? `🎵 ${video.title}`
-          : `🎵 *${video.title}*\n🔗 ${video.url}${note}`,
+        text: pending ? `🎵 ${video.title}` : `🎵 *${video.title}*\n🔗 ${video.url}${note}`,
         imageUrl: video.thumbnail,
         imageCaption: `🎵 ${video.title}`,
-        audioPath: audioPath || undefined,
-        hideText: Boolean(audioPath),
+        pendingMedia: pending,
+        pendingKind: 'audio',
+        pendingLink: video.url,
+        hideText: Boolean(pending),
         handler: 'YouTube Search',
       };
     } catch {
@@ -2239,28 +2241,41 @@ async function executeBuiltInCommand(
     }
 
     const kind = wantAudio ? 'audio' : 'video';
-    const dl = await downloadWithYtDlpDetailed(url, kind);
-    const file = dl.path;
-    if (!file) {
+    const pending = downloadWithYtDlpDetailed(url, kind); // starts now, runs while we prepare the card
+    const icon = kind === 'audio' ? '🎵' : '🎬';
+
+    if (cmd === 'yt') {
+      // Thumbnail + name go out immediately; the media follows when the download finishes.
+      if (!title) {
+        const meta = await getYouTubeMeta(url);
+        if (meta) {
+          title = meta.title;
+          thumb = thumb || meta.thumbnail;
+        }
+      }
+      return {
+        text: title ? `${icon} ${title}` : `🔗 ${url}`,
+        imageUrl: thumb,
+        imageCaption: title ? `${icon} ${title}` : undefined,
+        pendingMedia: pending,
+        pendingKind: kind,
+        pendingLink: url,
+        hideText: true,
+        handler: `${cfg.label} Downloader`,
+      };
+    }
+
+    const dl = await pending;
+    if (!dl.path) {
       return {
         text: `❌ Couldn't download that ${cfg.label} ${kind}.\nReason: ${dl.reason || 'unknown error'}\n🔗 ${url}`,
         handler: `${cfg.label} Downloader`,
         status: 'error',
       };
     }
-    // Minimal output: (YouTube only) thumbnail + name, then the media. No extra text.
-    if (cmd === 'yt' && !title) {
-      const meta = await getYouTubeMeta(url);
-      if (meta) {
-        title = meta.title;
-        thumb = thumb || meta.thumbnail;
-      }
-    }
     return {
-      text: title ? `${kind === 'audio' ? '🎵' : '🎬'} ${title}` : `🔗 ${url}`,
-      imageUrl: cmd === 'yt' ? thumb : undefined,
-      imageCaption: title ? `${kind === 'audio' ? '🎵' : '🎬'} ${title}` : undefined,
-      ...(kind === 'audio' ? { audioPath: file } : { videoPath: file }),
+      text: `🔗 ${url}`,
+      ...(kind === 'audio' ? { audioPath: dl.path } : { videoPath: dl.path }),
       hideText: true,
       handler: `${cfg.label} Downloader`,
     };
