@@ -2,7 +2,7 @@ services:
   - type: web
     name: the-new-world-pieck-bot
     runtime: node
-    plan: starter
+    plan: free
     buildCommand: npm install --include=dev && npm run build
     startCommand: npm start
     healthCheckPath: /api/health
