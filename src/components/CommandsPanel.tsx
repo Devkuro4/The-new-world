@@ -160,6 +160,7 @@ export const CommandsPanel: React.FC<CommandsPanelProps> = ({
                 className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 focus:border-emerald-600 focus:outline-none"
               >
                 <option value="everyone">Everyone</option>
+                <option value="moderator">Moderator</option>
                 <option value="admin">Admin</option>
                 <option value="owner">Owner</option>
               </select>
@@ -297,6 +298,7 @@ export const CommandsPanel: React.FC<CommandsPanelProps> = ({
                     className="rounded-md border border-slate-200 bg-white px-2 py-1 text-xs text-slate-700 focus:border-emerald-600 focus:outline-none"
                   >
                     <option value="everyone">Everyone</option>
+                    <option value="moderator">Moderator</option>
                     <option value="admin">Admin</option>
                     <option value="owner">Owner</option>
                   </select>
@@ -353,3 +355,4 @@ export const CommandsPanel: React.FC<CommandsPanelProps> = ({
     </div>
   );
 };
+

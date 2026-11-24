@@ -28,7 +28,7 @@ interface WhatsAppSimulatorProps {
   onClearChat: () => void;
 }
 
-const AVATAR_SRC = '/src/assets/images/anime_bot_avatar_1795503045811.jpg';
+const AVATAR_SRC = 'https://raw.githubusercontent.com/Devkuro4/The-new-world/02becd7fdb0ce0ce5077d044cb01eb95eefdb862/src/assets/images/anime_bot_avatar_1795503045811.jpg';
 
 export const WhatsAppSimulator: React.FC<WhatsAppSimulatorProps> = ({
   config,
@@ -76,7 +76,7 @@ export const WhatsAppSimulator: React.FC<WhatsAppSimulatorProps> = ({
       {/* Simulator Controls Strip */}
       <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-200 bg-slate-50 px-4 py-2.5">
         <div className="flex items-center gap-1 rounded-lg bg-slate-200/70 p-0.5">
-          {(['everyone', 'admin', 'owner'] as CommandRole[]).map((role) => (
+          {(['everyone', 'moderator', 'admin', 'owner'] as CommandRole[]).map((role) => (
             <button
               key={role}
               type="button"
@@ -85,31 +85,14 @@ export const WhatsAppSimulator: React.FC<WhatsAppSimulatorProps> = ({
                 senderRole === role ? 'bg-white text-slate-900 shadow-xs' : 'text-slate-600 hover:text-slate-900'
               }`}
             >
-              {role === 'everyone' ? 'Member' : role === 'admin' ? 'Admin' : `Owner (${config.creatorName})`}
+              {role === 'everyone' ? 'Member' : role === 'moderator' ? 'Moderator' : role === 'admin' ? 'Admin' : `Owner (${config.creatorName})`}
             </button>
           ))}
         </div>
 
         <div className="flex items-center gap-2">
-          <div className="flex items-center gap-1 rounded-lg bg-slate-200/70 p-0.5">
-            <button
-              type="button"
-              onClick={() => onChangeChatMode('group')}
-              className={`rounded-md px-2.5 py-1 text-xs font-medium whitespace-nowrap shrink-0 transition-colors ${
-                chatMode === 'group' ? 'bg-white text-slate-900 shadow-xs' : 'text-slate-600 hover:text-slate-900'
-              }`}
-            >
-              Group
-            </button>
-            <button
-              type="button"
-              onClick={() => onChangeChatMode('dm')}
-              className={`rounded-md px-2.5 py-1 text-xs font-medium whitespace-nowrap shrink-0 transition-colors ${
-                chatMode === 'dm' ? 'bg-white text-slate-900 shadow-xs' : 'text-slate-600 hover:text-slate-900'
-              }`}
-            >
-              DM
-            </button>
+          <div className="rounded-md bg-slate-200/70 px-2.5 py-1 text-xs font-medium text-slate-700">
+            Group only
           </div>
 
           <button
@@ -271,3 +254,4 @@ export const WhatsAppSimulator: React.FC<WhatsAppSimulatorProps> = ({
     </aside>
   );
 };
+

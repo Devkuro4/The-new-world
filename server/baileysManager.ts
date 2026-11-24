@@ -52,6 +52,7 @@ let cachedGroups: BaileysGroupSummary[] = [];
 
 const sentMessageIds = new Set<string>();
 const groupMetadataCache = new Map<string, { meta: GroupMetadata; fetchedAt: number }>();
+const recentMessages = new Map<string, number[]>();
 
 function trackSentId(id?: string | null): void {
   if (!id) return;
@@ -91,13 +92,72 @@ function extractMessageText(msg: WAMessage): string {
   ).trim();
 }
 
+function extractContextInfo(msg: WAMessage) {
+  const message = msg.message;
+  if (!message) return undefined;
+  const inner =
+    message.ephemeralMessage?.message ||
+    message.viewOnceMessage?.message ||
+    message.viewOnceMessageV2?.message ||
+    message;
+  return (
+    inner.extendedTextMessage?.contextInfo ||
+    inner.imageMessage?.contextInfo ||
+    inner.videoMessage?.contextInfo ||
+    inner.documentMessage?.contextInfo ||
+    inner.buttonsResponseMessage?.contextInfo ||
+    inner.templateButtonReplyMessage?.contextInfo ||
+    inner.listResponseMessage?.contextInfo
+  );
+}
+
+function getBotIdentifiers(sock: WASocket): string[] {
+  const identifiers = new Set<string>();
+  if (sock.user?.id) identifiers.add(normalizeJidToNumber(sock.user.id));
+  const lid = (sock.user as { lid?: string } | undefined)?.lid;
+  if (lid) identifiers.add(normalizeJidToNumber(lid));
+  return Array.from(identifiers).filter(Boolean);
+}
+
+function isBotTaggedOrReplied(sock: WASocket, msg: WAMessage, text: string): boolean {
+  const context = extractContextInfo(msg);
+  const botIdentifiers = getBotIdentifiers(sock);
+  const belongsToBot = (jid?: string | null): boolean =>
+    Boolean(jid && botIdentifiers.includes(normalizeJidToNumber(jid)));
+
+  if (
+    context?.stanzaId &&
+    (sentMessageIds.has(context.stanzaId) || belongsToBot(context.participant))
+  ) {
+    return true;
+  }
+  if ((context?.mentionedJid || []).some((jid) => belongsToBot(jid))) return true;
+
+  const botName = (botState.config.botName || 'Pieck').trim();
+  if (botName) {
+    const escapedName = botName.replace(/[.*+?^$()|[\]\\]/g, '\\$&');
+    if (new RegExp(`(^|\\s)@${escapedName}(\\b|$)`, 'i').test(text)) return true;
+  }
+  return botIdentifiers.some((identifier) =>
+    new RegExp(`(^|\\s)@${identifier}(\\b|$)`).test(text)
+  );
+}
+
+function stripBotMention(sock: WASocket, text: string): string {
+  let cleaned = text;
+  for (const identifier of getBotIdentifiers(sock)) {
+    cleaned = cleaned.replace(new RegExp(`@${identifier}\\b`, 'g'), '');
+  }
+  const botName = (botState.config.botName || 'Pieck').trim();
+  if (botName) {
+    const escapedName = botName.replace(/[.*+?^$()|[\]\\]/g, '\\$&');
+    cleaned = cleaned.replace(new RegExp(`@${escapedName}\\b`, 'gi'), '');
+  }
+  return cleaned.replace(/\s{2,}/g, ' ').trim() || 'Hello Pieck';
+}
+
 function extractTargetJids(msg: WAMessage): string[] {
-  const m = msg.message;
-  if (!m) return [];
-  const ctx =
-    m.extendedTextMessage?.contextInfo ||
-    m.imageMessage?.contextInfo ||
-    m.videoMessage?.contextInfo;
+  const ctx = extractContextInfo(msg);
   const mentioned = ctx?.mentionedJid || [];
   if (mentioned.length > 0) return mentioned;
   if (ctx?.participant) return [ctx.participant];
@@ -144,7 +204,7 @@ async function sendBotReply(
   sock: WASocket,
   remoteJid: string,
   quoted: WAMessage,
-  reply: { text: string; imageUrl?: string; buttons?: Array<{ label: string; command: string }> },
+  reply: { text: string; imageUrl?: string; imageCaption?: string; buttons?: Array<{ label: string; command: string }> },
   mentions?: string[]
 ): Promise<void> {
   let finalText = reply.text;
@@ -155,23 +215,22 @@ async function sendBotReply(
 
   if (reply.imageUrl) {
     try {
-      const sent = await sock.sendMessage(
+      const imageMessage = await sock.sendMessage(
         remoteJid,
         {
           image: { url: reply.imageUrl },
-          caption: finalText.slice(0, 1024),
+          caption: (reply.imageCaption || botState.config.botName).slice(0, 1024),
           mentions,
         },
         { quoted }
       );
-      trackSentId(sent?.key?.id);
-      return;
+      trackSentId(imageMessage?.key?.id);
     } catch {
-      // Fall back to text if external image CDN fails
+      // Continue with the complete text when an external thumbnail is unavailable.
     }
   }
 
-  const sent = await sock.sendMessage(
+  const textMessage = await sock.sendMessage(
     remoteJid,
     {
       text: finalText.slice(0, 4096),
@@ -179,7 +238,19 @@ async function sendBotReply(
     },
     { quoted }
   );
-  trackSentId(sent?.key?.id);
+  trackSentId(textMessage?.key?.id);
+}
+
+interface GroupCommandEffect {
+  mentions?: string[];
+  error?: string;
+}
+
+function roleRank(role: CommandRole): number {
+  if (role === 'owner') return 4;
+  if (role === 'admin') return 3;
+  if (role === 'moderator') return 2;
+  return 1;
 }
 
 async function handleBaileysGroupCommandSideEffects(
@@ -189,18 +260,30 @@ async function handleBaileysGroupCommandSideEffects(
   text: string,
   senderRole: CommandRole,
   meta: GroupMetadata | null
-): Promise<string[] | undefined> {
+): Promise<GroupCommandEffect> {
   const prefix = botState.config.prefix || '.';
-  if (!text.startsWith(prefix)) return undefined;
+  if (!text.startsWith(prefix)) return {};
   const [rawCmd = ''] = text.slice(prefix.length).trim().split(/\s+/);
   const cmd = rawCmd.toLowerCase();
+  const command = botState.commands.find(
+    (item) => item.name === cmd || item.aliases?.includes(cmd)
+  );
+  if (!command || roleRank(senderRole) < roleRank(command.role)) return {};
 
-  if (cmd === 'tagall' || cmd === 'hidetag') {
-    if (senderRole === 'everyone') return undefined;
-    return meta?.participants.map((p) => p.id) || [];
+  const participants = meta?.participants || [];
+  const mentions = participants.map((participant) => participant.id);
+  if (cmd === 'tagall' || cmd === 'hidetag') return { mentions };
+
+  const mutating = new Set(['mute', 'close', 'unmute', 'open', 'kick', 'promote', 'demote', 'delete']);
+  if (!mutating.has(cmd)) return {};
+
+  const botNumber = sock.user?.id ? normalizeJidToNumber(sock.user.id) : '';
+  const botParticipant = participants.find(
+    (participant) => normalizeJidToNumber(participant.id) === botNumber
+  );
+  if (botParticipant?.admin !== 'admin' && botParticipant?.admin !== 'superadmin') {
+    return { error: 'Pieck must be a WhatsApp group admin to run that command.' };
   }
-
-  if (senderRole === 'everyone') return undefined;
 
   try {
     if (cmd === 'mute' || cmd === 'close') {
@@ -209,27 +292,30 @@ async function handleBaileysGroupCommandSideEffects(
       await sock.groupSettingUpdate(remoteJid, 'not_announcement');
     } else if (cmd === 'kick' || cmd === 'promote' || cmd === 'demote') {
       const targets = extractTargetJids(msg);
-      if (targets.length > 0) {
-        const action = cmd === 'kick' ? 'remove' : cmd;
-        await sock.groupParticipantsUpdate(remoteJid, targets, action);
-      }
+      if (targets.length === 0) return { error: `Reply to or mention the member for *${prefix}${cmd}*.` };
+      const action = cmd === 'kick' ? 'remove' : cmd;
+      await sock.groupParticipantsUpdate(remoteJid, targets, action);
     } else if (cmd === 'delete') {
-      const ctx = msg.message?.extendedTextMessage?.contextInfo;
-      if (ctx?.stanzaId) {
-        await sock.sendMessage(remoteJid, {
-          delete: {
-            remoteJid,
-            fromMe: false,
-            id: ctx.stanzaId,
-            participant: ctx.participant,
-          },
-        });
-      }
+      const context = msg.message?.extendedTextMessage?.contextInfo;
+      if (!context?.stanzaId) return { error: `Reply to the message you want Pieck to delete.` };
+      await sock.sendMessage(remoteJid, {
+        delete: {
+          remoteJid,
+          fromMe: false,
+          id: context.stanzaId,
+          participant: context.participant,
+        },
+      });
     }
-  } catch {
-    // Non-fatal if bot is not yet group admin
+    groupMetadataCache.delete(remoteJid);
+    return {};
+  } catch (error) {
+    return {
+      error: error instanceof Error
+        ? `WhatsApp rejected *${prefix}${cmd}*: ${error.message}`
+        : `WhatsApp rejected *${prefix}${cmd}*.`,
+    };
   }
-  return undefined;
 }
 
 function clearReconnectTimer(): void {
@@ -361,12 +447,16 @@ async function startSocket(): Promise<WASocket> {
         const remoteJid = msg.key.remoteJid || '';
         if (!remoteJid || remoteJid === 'status@broadcast' || remoteJid.endsWith('@newsletter')) continue;
 
-        const text = extractMessageText(msg);
-        if (!text) continue;
-
+        const rawText = extractMessageText(msg);
+        if (!rawText) continue;
         const isGroup = remoteJid.endsWith('@g.us');
-        // Allow owner testing commands starting with prefix from their own paired phone, but ignore non-prefix self messages
-        if (msg.key.fromMe && !text.startsWith(prefix)) continue;
+        if (!isGroup) continue;
+
+        const isCommand = rawText.startsWith(prefix);
+        if (msg.key.fromMe && !isCommand) continue;
+        const taggedOrReplied = isBotTaggedOrReplied(sock, msg, rawText);
+        if (!isCommand && !taggedOrReplied) continue;
+        const text = isCommand ? rawText : stripBotMention(sock, rawText);
 
         const senderJid = isGroup ? msg.key.participant || remoteJid : remoteJid;
         const senderNumber = normalizeJidToNumber(senderJid);
@@ -388,23 +478,45 @@ async function startSocket(): Promise<WASocket> {
           );
           if (participant?.admin === 'admin' || participant?.admin === 'superadmin') {
             senderRole = 'admin';
+          } else if (botState.groupSettings.moderatorNumbers.includes(senderNumber)) {
+            senderRole = 'moderator';
           }
         }
 
-        const mentions = isGroup
+        if (isGroup && senderRole === 'everyone' && botState.groupSettings.antism) {
+          const now = Date.now();
+          const key = `${remoteJid}:${senderNumber}`;
+          const times = (recentMessages.get(key) || []).filter((time) => now - time < 10_000);
+          times.push(now);
+          recentMessages.set(key, times);
+          if (times.length > 6) {
+            await sendBotReply(sock, remoteJid, msg, {
+              text: `Slow down, @${senderNumber}. Anti-spam is active.`,
+            }, [senderJid]);
+            continue;
+          }
+        }
+
+        const effect: GroupCommandEffect = isGroup
           ? await handleBaileysGroupCommandSideEffects(sock, remoteJid, msg, text, senderRole, meta)
-          : undefined;
+          : {};
+        if (effect.error) {
+          await sendBotReply(sock, remoteJid, msg, {
+            text: `*Command failed*\n${effect.error}`,
+          });
+          continue;
+        }
 
         const reply = await handleIncomingMessage({
           senderId: isOwnerNumber ? 'owner-kuro' : `wa-${senderNumber}`,
           senderName,
           senderRole,
-          chatMode: isGroup ? 'group' : 'dm',
+          chatMode: 'group',
           source: 'baileys',
           text,
         });
 
-        await sendBotReply(sock, remoteJid, msg, reply, mentions);
+        await sendBotReply(sock, remoteJid, msg, reply, effect.mentions);
       } catch (err) {
         lastError = err instanceof Error ? err.message : 'Message handler error';
       }
@@ -560,3 +672,4 @@ export async function autoResumeBaileysIfSaved(): Promise<void> {
     }
   }
 }
+

@@ -76,7 +76,7 @@ export const GroupAiPanel: React.FC<GroupAiPanelProps> = ({
           Group Moderation & AI Persona
         </h1>
         <p className="mt-0.5 text-sm text-slate-500">
-          Customize Pieck&apos;s identity, The new world group protection flags, and Gemini 4 Hydrogen behavior.
+          Customize Pieck&apos;s identity, The new world group protection flags, and Groq Llama 3.3 behavior.
         </p>
       </div>
 
@@ -113,7 +113,7 @@ export const GroupAiPanel: React.FC<GroupAiPanelProps> = ({
       {/* Bot Identity + AI Persona Form */}
       <form onSubmit={handleSaveIdentity} className="rounded-xl border border-slate-200 bg-white p-5 space-y-4">
         <h2 className="font-display text-sm font-semibold text-slate-900">
-          Bot Identity & Gemini AI Prompt
+          Bot Identity & Groq AI Prompt
         </h2>
 
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-5">
@@ -197,7 +197,7 @@ export const GroupAiPanel: React.FC<GroupAiPanelProps> = ({
         </label>
 
         <label className="block text-xs font-medium text-slate-700">
-          Gemini AI Persona Instruction ({prefix}gpt, {prefix}copilot, natural chat)
+          Groq AI Persona Instruction ({prefix}gpt, {prefix}copilot, natural chat)
           <textarea
             rows={3}
             value={aiPersonaPrompt}
@@ -242,3 +242,4 @@ export const GroupAiPanel: React.FC<GroupAiPanelProps> = ({
     </div>
   );
 };
+

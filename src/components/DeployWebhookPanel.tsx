@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Check, Copy, Download, Link2, RefreshCw, Send, Smartphone, Terminal, Unlink } from 'lucide-react';
 
 interface SecretsStatus {
-  geminiConfigured: boolean;
+  groqConfigured: boolean;
   verifyTokenConfigured: boolean;
   accessTokenConfigured: boolean;
   phoneNumberIdConfigured: boolean;
@@ -222,7 +222,7 @@ export const DeployWebhookPanel: React.FC<DeployWebhookPanelProps> = ({
       : 'text-slate-600';
 
   const secretRows = [
-    { name: 'GEMINI_API_KEY', desc: 'Powers .gpt, .copilot, .roast, .wyr & natural AI replies', ok: secrets.geminiConfigured },
+    { name: 'GROQ_API_KEY', desc: 'Powers Pieck chat, anime answers, translation and AI commands', ok: secrets.groqConfigured },
     { name: 'WHATSAPP_VERIFY_TOKEN', desc: 'Meta Webhook GET verification token', ok: secrets.verifyTokenConfigured },
     { name: 'WHATSAPP_ACCESS_TOKEN', desc: 'Meta Cloud API Graph bearer token for outbound replies', ok: secrets.accessTokenConfigured },
     { name: 'WHATSAPP_PHONE_NUMBER_ID', desc: 'WhatsApp Business sender phone number ID', ok: secrets.phoneNumberIdConfigured },
@@ -569,3 +569,4 @@ export const DeployWebhookPanel: React.FC<DeployWebhookPanelProps> = ({
     </div>
   );
 };
+

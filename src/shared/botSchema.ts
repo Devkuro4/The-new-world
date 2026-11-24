@@ -1,4 +1,4 @@
-export type CommandRole = 'everyone' | 'admin' | 'owner';
+export type CommandRole = 'everyone' | 'moderator' | 'admin' | 'owner';
 
 export type CommandCategory =
   | 'General'
@@ -78,6 +78,7 @@ export interface PlayerProfile {
   loan: number;
   afkReason?: string;
   lastDaily?: number;
+  lastFish?: number;
   messagesSent: number;
   transactions: Array<{ id: string; summary: string; amount: number; timestamp: string }>;
 }
@@ -93,6 +94,7 @@ export interface GroupSettings {
   leaveEnabled: boolean;
   leaveMessage: string;
   blacklist: string[];
+  moderatorNumbers: string[];
   nsfwLocked: true;
 }
 
@@ -195,6 +197,7 @@ export const DEFAULT_GROUP_SETTINGS: GroupSettings = {
   leaveEnabled: true,
   leaveMessage: 'Sayonara @{user}. Your card locker remains safely stored in The new world.',
   blacklist: ['spam-promo-bot', 'scam-airdrop'],
+  moderatorNumbers: [],
   nsfwLocked: true,
 };
 
@@ -227,7 +230,9 @@ export const DEFAULT_COMMANDS: BotCommandDef[] = [
   { name: 'rules', category: 'General', description: 'Show current group & bot rules', usage: '.rules', role: 'everyone', enabled: true },
   { name: 'test', category: 'General', description: 'Check Pieck response speed & runtime health', usage: '.test', role: 'everyone', enabled: true },
   { name: 'stats', category: 'General', description: 'Show live bot telemetry, player count, and card drops', usage: '.stats', role: 'everyone', enabled: true },
-  { name: 'mods', category: 'General', description: 'List active bot moderators', usage: '.mods', role: 'everyone', enabled: true },
+  { name: 'mods', category: 'General', description: 'List Pieck moderators and group admins', usage: '.mods', role: 'everyone', enabled: true },
+  { name: 'addmod', category: 'Admin', description: 'Grant Pieck moderator access to a phone number', usage: '.addmod <country-code number>', role: 'admin', enabled: true },
+  { name: 'delmod', aliases: ['unmod'], category: 'Admin', description: 'Remove Pieck moderator access from a phone number', usage: '.delmod <country-code number>', role: 'admin', enabled: true },
   { name: 'owner', category: 'General', description: 'Display bot creator profile (kuro)', usage: '.owner', role: 'everyone', enabled: true },
   { name: 'bots', category: 'General', description: 'Check linked The new world bot nodes', usage: '.bots', role: 'everyone', enabled: true },
   { name: 'url', category: 'General', description: 'Show active webhook endpoint or media URL helper', usage: '.url', role: 'everyone', enabled: true },
@@ -270,6 +275,7 @@ export const DEFAULT_COMMANDS: BotCommandDef[] = [
   { name: 'bal', aliases: ['balance'], category: 'Economy', description: 'Check your Yen wallet & bank balance', usage: '.bal', role: 'everyone', enabled: true },
   { name: 'orbs', category: 'Economy', description: 'Check your Spirit Orbs balance', usage: '.orbs', role: 'everyone', enabled: true },
   { name: 'ebal', category: 'Economy', description: 'View combined Economy summary (Yen, Bank, Orbs, Stardust)', usage: '.ebal', role: 'everyone', enabled: true },
+  { name: 'fish', category: 'Economy', description: 'Fish for anime-world catches, yen and rare items', usage: '.fish', role: 'everyone', enabled: true },
   { name: 'daily', category: 'Economy', description: 'Claim your daily Yen, Orbs, and Stardust stipend', usage: '.daily', role: 'everyone', enabled: true },
   { name: 'wd', aliases: ['withdraw'], category: 'Economy', description: 'Withdraw Yen from your bank to wallet', usage: '.wd <amount|all>', role: 'everyone', enabled: true },
   { name: 'dep', aliases: ['deposit'], category: 'Economy', description: 'Deposit wallet Yen safely into the bank', usage: '.dep <amount|all>', role: 'everyone', enabled: true },
@@ -288,7 +294,7 @@ export const DEFAULT_COMMANDS: BotCommandDef[] = [
   { name: 'shop', category: 'Economy', description: 'Open The new world item shop', usage: '.shop', role: 'everyone', enabled: true },
   { name: 'lb', aliases: ['leaderboard'], category: 'Economy', description: 'View XP & Level leaderboard', usage: '.lb', role: 'everyone', enabled: true },
   { name: 'stlb', category: 'Economy', description: 'View Stardust & Orbs leaderboard', usage: '.stlb', role: 'everyone', enabled: true },
-  { name: 'roast', category: 'Economy', description: 'Generate a witty anime-themed roast via Gemini AI', usage: '.roast [@name]', role: 'everyone', enabled: true },
+  { name: 'roast', category: 'Economy', description: 'Generate a witty anime-themed roast via Groq AI', usage: '.roast [@name]', role: 'everyone', enabled: true },
   { name: 'gamble', category: 'Economy', description: 'Quick 50/50 high-stakes wager', usage: '.gamble <amount>', role: 'everyone', enabled: true },
   { name: 'loan', category: 'Economy', description: 'Borrow Yen from The new world guild bank', usage: '.loan <amount>', role: 'everyone', enabled: true },
   { name: 'mycds', category: 'Economy', description: 'Check your active economy & gacha cooldowns', usage: '.mycds', role: 'everyone', enabled: true },
@@ -351,7 +357,7 @@ export const DEFAULT_COMMANDS: BotCommandDef[] = [
   { name: 'pov', category: 'Fun', description: 'Generate a funny anime POV scenario', usage: '.pov', role: 'everyone', enabled: true },
   { name: 'social', category: 'Fun', description: 'Check your social affinity stats', usage: '.social', role: 'everyone', enabled: true },
   { name: 'relation', category: 'Fun', description: 'Check RPG relationship status', usage: '.relation [@user]', role: 'everyone', enabled: true },
-  { name: 'wyr', aliases: ['wouldyourather'], category: 'Fun', description: 'Anime Would You Rather prompt powered by Gemini', usage: '.wyr', role: 'everyone', enabled: true },
+  { name: 'wyr', aliases: ['wouldyourather'], category: 'Fun', description: 'Anime Would You Rather prompt powered by Groq', usage: '.wyr', role: 'everyone', enabled: true },
   { name: 'darkjoke', category: 'Fun', description: 'Dry, PG-13 anime dark humor one-liner', usage: '.darkjoke', role: 'everyone', enabled: true },
   { name: 'truth', category: 'Fun', description: 'Get an anime-themed Truth question', usage: '.truth', role: 'everyone', enabled: true },
   { name: 'dare', category: 'Fun', description: 'Get a fun WhatsApp group Dare challenge', usage: '.dare', role: 'everyone', enabled: true },
@@ -369,40 +375,40 @@ export const DEFAULT_COMMANDS: BotCommandDef[] = [
   { name: 'manga', category: 'Downloaders', description: 'Live Manga lookup via Jikan API (chapters, volumes, score, cover)', usage: '.manga <title>', role: 'everyone', enabled: true },
   { name: 'manhwa', category: 'Downloaders', description: 'Live Korean Manhwa lookup via Jikan API', usage: '.manhwa <title>', role: 'everyone', enabled: true },
   { name: 'novel', category: 'Downloaders', description: 'Live Light Novel lookup via Jikan API', usage: '.novel <title>', role: 'everyone', enabled: true },
-  { name: 'ig', category: 'Downloaders', description: 'Inspect Instagram reel/post URL for Baileys media bridge', usage: '.ig <url>', role: 'everyone', enabled: true },
-  { name: 'ttk', category: 'Downloaders', description: 'Inspect TikTok video URL for Baileys media bridge', usage: '.ttk <url>', role: 'everyone', enabled: true },
-  { name: 'yt', category: 'Downloaders', description: 'Inspect YouTube link & prepare audio/video metadata', usage: '.yt <url|query>', role: 'everyone', enabled: true },
-  { name: 'x', category: 'Downloaders', description: 'Inspect X/Twitter media link', usage: '.x <url>', role: 'everyone', enabled: true },
-  { name: 'fb', category: 'Downloaders', description: 'Inspect Facebook video link', usage: '.fb <url>', role: 'everyone', enabled: true },
-  { name: 'play', category: 'Downloaders', description: 'Find anime OP/ED track metadata & lyrics link', usage: '.play <song title>', role: 'everyone', enabled: true },
-  { name: 'reddit', category: 'Downloaders', description: 'Fetch top SFW post metadata from an anime subreddit', usage: '.reddit <subreddit>', role: 'everyone', enabled: true },
+  { name: 'ig', category: 'Downloaders', description: 'Inspect Instagram reel/post URL for Baileys media bridge', usage: '.ig <url>', role: 'everyone', enabled: false },
+  { name: 'ttk', category: 'Downloaders', description: 'Inspect TikTok video URL for Baileys media bridge', usage: '.ttk <url>', role: 'everyone', enabled: false },
+  { name: 'yt', category: 'Downloaders', description: 'Inspect YouTube link & prepare audio/video metadata', usage: '.yt <url|query>', role: 'everyone', enabled: false },
+  { name: 'x', category: 'Downloaders', description: 'Inspect X/Twitter media link', usage: '.x <url>', role: 'everyone', enabled: false },
+  { name: 'fb', category: 'Downloaders', description: 'Inspect Facebook video link', usage: '.fb <url>', role: 'everyone', enabled: false },
+  { name: 'play', category: 'Downloaders', description: 'Find anime OP/ED track metadata & lyrics link', usage: '.play <song title>', role: 'everyone', enabled: false },
+  { name: 'reddit', category: 'Downloaders', description: 'Fetch top SFW post metadata from an anime subreddit', usage: '.reddit <subreddit>', role: 'everyone', enabled: false },
 
   // Search
   { name: 'pint', aliases: ['pinterest'], category: 'Search', description: 'Search anime aesthetic board ideas & art references', usage: '.pint <query>', role: 'everyone', enabled: true },
   { name: 'sauce', aliases: ['reverseimg'], category: 'Search', description: 'Trace anime scene source & episode tips', usage: '.sauce <title|scene>', role: 'everyone', enabled: true },
   { name: 'wallpaper', category: 'Search', description: 'Find HD anime wallpaper artworks via Jikan/Waifu API', usage: '.wallpaper <anime>', role: 'everyone', enabled: true },
   { name: 'lyrics', category: 'Search', description: 'Get anime opening/ending theme lyrics & romaji info', usage: '.lyrics <song>', role: 'everyone', enabled: true },
-  { name: 'igstalk', category: 'Search', description: 'Check public creator profile format', usage: '.igstalk <handle>', role: 'everyone', enabled: true },
+  { name: 'igstalk', category: 'Search', description: 'Check public creator profile format', usage: '.igstalk <handle>', role: 'everyone', enabled: false },
   { name: 'shazam', category: 'Search', description: 'Identify an anime soundtrack snippet from description', usage: '.shazam <hummed/lyric>', role: 'everyone', enabled: true },
 
-  // AI (Gemini powered)
-  { name: 'gpt', category: 'AI', description: 'Ask Pieck AI (powered by Gemini 4 Hydrogen)', usage: '.gpt <question>', role: 'everyone', enabled: true },
+  // AI (Groq powered)
+  { name: 'gpt', category: 'AI', description: 'Ask Pieck AI (powered by Groq Llama 3.3)', usage: '.gpt <question>', role: 'everyone', enabled: true },
   { name: 'copilot', category: 'AI', description: 'Ask Pieck coding & bot-scripting assistant', usage: '.copilot <prompt>', role: 'everyone', enabled: true },
   { name: 'perplexity', category: 'AI', description: 'Deep anime lore & studio research breakdown', usage: '.perplexity <topic>', role: 'everyone', enabled: true },
   { name: 'imagine', category: 'AI', description: 'Craft a detailed anime illustration prompt & scene spec', usage: '.imagine <scene>', role: 'everyone', enabled: true },
-  { name: 'upscale', category: 'AI', description: 'Explain & queue HD anime frame enhancement', usage: '.upscale', role: 'everyone', enabled: true },
+  { name: 'upscale', category: 'AI', description: 'Explain & queue HD anime frame enhancement', usage: '.upscale', role: 'everyone', enabled: false },
   { name: 'tt', aliases: ['translate'], category: 'AI', description: 'Translate Japanese/English/any text with romaji notes', usage: '.tt <targetLang> <text>', role: 'everyone', enabled: true },
-  { name: 'tb', aliases: ['transcribe'], category: 'AI', description: 'Transcribe voice-note dialogue in WhatsApp runner', usage: '.tb <text|reply>', role: 'everyone', enabled: true },
-  { name: 'ocr', category: 'AI', description: 'Extract & translate manga panel text', usage: '.ocr <panel text>', role: 'everyone', enabled: true },
+  { name: 'tb', aliases: ['transcribe'], category: 'AI', description: 'Transcribe voice-note dialogue in WhatsApp runner', usage: '.tb <text|reply>', role: 'everyone', enabled: false },
+  { name: 'ocr', category: 'AI', description: 'Extract & translate manga panel text', usage: '.ocr <panel text>', role: 'everyone', enabled: false },
   { name: 'tldr', category: 'AI', description: 'Summarize long anime arcs or chapter discussions', usage: '.tldr <text>', role: 'everyone', enabled: true },
-  { name: 'tts', category: 'AI', description: 'Generate expressive anime voice-script lines', usage: '.tts <text>', role: 'everyone', enabled: true },
+  { name: 'tts', category: 'AI', description: 'Generate expressive anime voice-script lines', usage: '.tts <text>', role: 'everyone', enabled: false },
 
   // Converter
-  { name: 's', aliases: ['sticker'], category: 'Converter', description: 'Convert quoted media into a WhatsApp WebP sticker', usage: '.s [pack | author]', role: 'everyone', enabled: true },
-  { name: 'take', category: 'Converter', description: 'Update sticker pack & author metadata', usage: '.take <pack | author>', role: 'everyone', enabled: true },
-  { name: 'toimg', category: 'Converter', description: 'Convert a static WhatsApp sticker back to PNG', usage: '.toimg', role: 'everyone', enabled: true },
-  { name: 'tovid', category: 'Converter', description: 'Convert an animated sticker to MP4', usage: '.tovid', role: 'everyone', enabled: true },
-  { name: 'rotate', category: 'Converter', description: 'Rotate image attachment by 90/180/270 degrees', usage: '.rotate <deg>', role: 'everyone', enabled: true },
+  { name: 's', aliases: ['sticker'], category: 'Converter', description: 'Convert quoted media into a WhatsApp WebP sticker', usage: '.s [pack | author]', role: 'everyone', enabled: false },
+  { name: 'take', category: 'Converter', description: 'Update sticker pack & author metadata', usage: '.take <pack | author>', role: 'everyone', enabled: false },
+  { name: 'toimg', category: 'Converter', description: 'Convert a static WhatsApp sticker back to PNG', usage: '.toimg', role: 'everyone', enabled: false },
+  { name: 'tovid', category: 'Converter', description: 'Convert an animated sticker to MP4', usage: '.tovid', role: 'everyone', enabled: false },
+  { name: 'rotate', category: 'Converter', description: 'Rotate image attachment by 90/180/270 degrees', usage: '.rotate <deg>', role: 'everyone', enabled: false },
   { name: 'carbon', category: 'Converter', description: 'Render code snippet inside a sleek monospace frame', usage: '.carbon <code>', role: 'everyone', enabled: true },
   { name: 'fancy', category: 'Converter', description: 'Convert text into Unicode fancy fonts', usage: '.fancy <text>', role: 'everyone', enabled: true },
 
@@ -418,13 +424,13 @@ export const DEFAULT_COMMANDS: BotCommandDef[] = [
   { name: 'cosplay', category: 'Anime SFW', description: 'Browse SFW anime cosplay spotlight', usage: '.cosplay', role: 'everyone', enabled: true },
 
   // Admin
-  { name: 'kick', category: 'Admin', description: 'Remove a member from the WhatsApp group', usage: '.kick <@user>', role: 'admin', enabled: true },
-  { name: 'delete', category: 'Admin', description: 'Delete a flagged message from group chat', usage: '.delete', role: 'admin', enabled: true },
+  { name: 'kick', category: 'Admin', description: 'Remove a member from the WhatsApp group', usage: '.kick <@user>', role: 'moderator', enabled: true },
+  { name: 'delete', category: 'Admin', description: 'Delete a flagged message from group chat', usage: '.delete', role: 'moderator', enabled: true },
   { name: 'antilink', category: 'Admin', description: 'Toggle automatic link blocking in group', usage: '.antilink <on|off>', role: 'admin', enabled: true },
   { name: 'antism', category: 'Admin', description: 'Toggle anti-spam flood protection', usage: '.antism <on|off>', role: 'admin', enabled: true },
   { name: 'antigs', aliases: ['antigroupstatus'], category: 'Admin', description: 'Toggle anti-group-status mention protection', usage: '.antigs <on|off>', role: 'admin', enabled: true },
-  { name: 'warn', category: 'Admin', description: 'Issue a moderation warning (3 warns = kick)', usage: '.warn <@user>', role: 'admin', enabled: true },
-  { name: 'resetwarn', category: 'Admin', description: 'Clear warnings for a member', usage: '.resetwarn <@user>', role: 'admin', enabled: true },
+  { name: 'warn', category: 'Admin', description: 'Issue a moderation warning (3 warns = kick)', usage: '.warn <@user>', role: 'moderator', enabled: true },
+  { name: 'resetwarn', category: 'Admin', description: 'Clear warnings for a member', usage: '.resetwarn <@user>', role: 'moderator', enabled: true },
   { name: 'gs', aliases: ['groupstats'], category: 'Admin', description: 'Show group moderation flags & activity stats', usage: '.gs', role: 'admin', enabled: true },
   { name: 'welcome', category: 'Admin', description: 'Toggle welcome greeting for new members', usage: '.welcome <on|off>', role: 'admin', enabled: true },
   { name: 'setwelcome', category: 'Admin', description: 'Customize the group welcome message', usage: '.setwelcome <message>', role: 'admin', enabled: true },
@@ -436,13 +442,14 @@ export const DEFAULT_COMMANDS: BotCommandDef[] = [
   { name: 'demote', category: 'Admin', description: 'Demote an admin back to Member', usage: '.demote <@user>', role: 'admin', enabled: true },
   { name: 'mute', category: 'Admin', description: 'Set group to Admins-only messaging', usage: '.mute', role: 'admin', enabled: true },
   { name: 'unmute', category: 'Admin', description: 'Allow all members to send messages', usage: '.unmute', role: 'admin', enabled: true },
-  { name: 'hidetag', category: 'Admin', description: 'Broadcast a clean announcement tagging all members silently', usage: '.hidetag <message>', role: 'admin', enabled: true },
-  { name: 'tagall', category: 'Admin', description: 'Mention all active members in the group', usage: '.tagall [note]', role: 'admin', enabled: true },
-  { name: 'activity', category: 'Admin', description: 'View message counts across group members', usage: '.activity', role: 'admin', enabled: true },
-  { name: 'active', category: 'Admin', description: 'List top active anime lounge members', usage: '.active', role: 'admin', enabled: true },
-  { name: 'inactive', category: 'Admin', description: 'List quiet members needing check-in', usage: '.inactive', role: 'admin', enabled: true },
+  { name: 'hidetag', category: 'Admin', description: 'Broadcast a clean announcement tagging all members silently', usage: '.hidetag <message>', role: 'moderator', enabled: true },
+  { name: 'tagall', category: 'Admin', description: 'Mention all active members in the group', usage: '.tagall [note]', role: 'moderator', enabled: true },
+  { name: 'activity', category: 'Admin', description: 'View message counts across group members', usage: '.activity', role: 'moderator', enabled: true },
+  { name: 'active', category: 'Admin', description: 'List top active anime lounge members', usage: '.active', role: 'moderator', enabled: true },
+  { name: 'inactive', category: 'Admin', description: 'List quiet members needing check-in', usage: '.inactive', role: 'moderator', enabled: true },
   { name: 'open', category: 'Admin', description: 'Open the group chat for all members', usage: '.open', role: 'admin', enabled: true },
   { name: 'close', category: 'Admin', description: 'Lock the group chat to admins only', usage: '.close', role: 'admin', enabled: true },
-  { name: 'news', category: 'Admin', description: 'Fetch & broadcast trending anime news via Jikan', usage: '.news', role: 'admin', enabled: true },
+  { name: 'news', category: 'Admin', description: 'Fetch & broadcast trending anime news via Jikan', usage: '.news', role: 'moderator', enabled: true },
   { name: 'nsfw', category: 'Admin', description: 'Content filter lock (locked to SFW-only in Pieck)', usage: '.nsfw <status>', role: 'admin', enabled: true },
 ];
+

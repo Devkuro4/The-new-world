@@ -25,7 +25,7 @@ import {
 type WorkspaceTab = 'commands' | 'economy' | 'group-ai' | 'deploy' | 'logs';
 
 interface SecretsStatus {
-  geminiConfigured: boolean;
+  groqConfigured: boolean;
   verifyTokenConfigured: boolean;
   accessTokenConfigured: boolean;
   phoneNumberIdConfigured: boolean;
@@ -92,7 +92,7 @@ export default function App() {
   const [logs, setLogs] = useState<ActivityLogEntry[]>([]);
   const [stats, setStats] = useState({ totalCommands: 0, totalAiCalls: 0, totalCardDrops: 0, startedAt: '' });
   const [secrets, setSecrets] = useState<SecretsStatus>({
-    geminiConfigured: false,
+    groqConfigured: false,
     verifyTokenConfigured: false,
     accessTokenConfigured: false,
     phoneNumberIdConfigured: false,
@@ -436,3 +436,4 @@ export default function App() {
     </div>
   );
 }
+

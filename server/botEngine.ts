@@ -17,7 +17,7 @@ import {
   type GroupSettings,
   type PlayerProfile,
 } from '../src/shared/botSchema.ts';
-import { askGeminiText, hasGeminiKey } from './geminiClient.ts';
+import { askGroqText, hasGroqKey, GROQ_MODEL } from './groqClient.ts';
 
 export interface ActiveDrop {
   card: AnimeCard;
@@ -198,7 +198,17 @@ function loadState(): BotState {
         ...parsed,
         config: { ...base.config, ...(parsed.config || {}) },
         groupSettings: { ...base.groupSettings, ...(parsed.groupSettings || {}) },
-        commands: Array.isArray(parsed.commands) && parsed.commands.length > 0 ? parsed.commands : base.commands,
+        commands: (() => {
+          const saved = Array.isArray(parsed.commands) ? parsed.commands : [];
+          const savedByName = new Map(saved.map((command) => [command.name.toLowerCase(), command]));
+          const builtIns = base.commands.map((command) => {
+            const prior = savedByName.get(command.name.toLowerCase());
+            if (!prior || prior.isCustom) return command;
+            return { ...command, customReply: prior.customReply };
+          });
+          const custom = saved.filter((command) => command.isCustom);
+          return [...custom, ...builtIns];
+        })(),
         cards: Array.isArray(parsed.cards) && parsed.cards.length > 0 ? parsed.cards : base.cards,
         players: parsed.players && Object.keys(parsed.players).length > 0 ? parsed.players : base.players,
         stats: { ...base.stats, ...(parsed.stats || {}) },
@@ -269,8 +279,9 @@ function addTransaction(player: PlayerProfile, summary: string, amount: number):
 }
 
 function roleLevel(role: CommandRole): number {
-  if (role === 'owner') return 3;
-  if (role === 'admin') return 2;
+  if (role === 'owner') return 4;
+  if (role === 'admin') return 3;
+  if (role === 'moderator') return 2;
   return 1;
 }
 
@@ -416,56 +427,55 @@ const CATEGORY_LABELS: Record<CommandCategory, string> = {
 function formatMenuHeader(): string {
   const c = botState.config;
   return [
-    `╭━━★彡 ${c.bannerTitle} 彡★━━╮`,
-    `┃  𖤓 Prefix: ${c.prefix}`,
-    `┃  𖤓 Name: ${c.botName}`,
-    `┃  𖤓 Creator: ${c.creatorName}`,
-    `╰━━━━━━━━━━━━━╯`,
+    `*PIECK*  •  Anime companion`,
+    `${c.bannerTitle}  •  Prefix ${c.prefix}`,
   ].join('\n');
 }
 
 function buildMenuText(categoryFilter?: string): string {
-  const p = botState.config.prefix;
+  const prefix = botState.config.prefix;
+  const visible = botState.commands.filter((command) => command.enabled);
+
   if (categoryFilter) {
-    const matchedCat = COMMAND_CATEGORIES.find(
-      (c) => c.toLowerCase().includes(categoryFilter.toLowerCase())
+    const matchedCategory = COMMAND_CATEGORIES.find(
+      (category) => category.toLowerCase() === categoryFilter.toLowerCase() ||
+        category.toLowerCase().startsWith(categoryFilter.toLowerCase())
     );
-    if (matchedCat) {
-      const cmds = botState.commands.filter((c) => c.category === matchedCat && c.enabled);
-      const lines = cmds.map(
-        (c) => `┣ ✦ ${p}${c.name}${c.aliases?.length ? ` / ${c.aliases[0]}` : ''}\n┃   _${c.description}_`
-      );
-      return [
-        formatMenuHeader(),
-        '',
-        `*${CATEGORY_LABELS[matchedCat]}*`,
-        ...lines,
-        '┗━━━━━━━━━━━',
-      ].join('\n');
+    if (!matchedCategory) {
+      return `Unknown menu section *${categoryFilter}*. Send *${prefix}menu* to see the sections.`;
     }
+
+    const commands = visible.filter((command) => command.category === matchedCategory);
+    if (commands.length === 0) return `No commands are available in *${matchedCategory}* yet.`;
+
+    return [
+      formatMenuHeader(),
+      '',
+      `*${matchedCategory}*`,
+      ...commands.map((command) => {
+        const aliases = command.aliases?.length ? `  •  ${command.aliases.map((alias) => prefix + alias).join(', ')}` : '';
+        return `*${prefix}${command.name}*${aliases}\n${command.description}`;
+      }),
+      '',
+      `Use *${prefix}menu <section>* to switch sections.`,
+    ].join('\n\n');
   }
 
-  const sections: string[] = [
+  const sections = COMMAND_CATEGORIES
+    .map((category) => ({
+      category,
+      count: visible.filter((command) => command.category === category).length,
+    }))
+    .filter((section) => section.count > 0);
+
+  return [
     formatMenuHeader(),
-    `ꕥ *${p}support* for support ticket`,
-    `ꕥ *${p}community* for official groups`,
-    `ꕥ *${p}addbot* for adding in your group`,
     '',
-  ];
-
-  for (const cat of COMMAND_CATEGORIES) {
-    const cmds = botState.commands.filter((c) => c.category === cat && c.enabled);
-    if (cmds.length === 0) continue;
-    sections.push(`*${CATEGORY_LABELS[cat]}*`);
-    for (const cmd of cmds) {
-      const alias = cmd.aliases?.length ? ` / ${cmd.aliases[0]}` : '';
-      sections.push(`┣ ✦ ${p}${cmd.name}${alias}`);
-    }
-    sections.push('┗━━━━━━━━━━━', '');
-  }
-
-  sections.push(`_Tip: Send *${p}menu cards* or *${p}menu admin* for command descriptions._`);
-  return sections.join('\n').trim();
+    '*Choose a section*',
+    ...sections.map((section) => `• *${prefix}menu ${section.category.toLowerCase()}*  ${section.count} commands`),
+    '',
+    `Quick start  •  *${prefix}anime Frieren*  •  *${prefix}card*  •  *${prefix}daily*`,
+  ].join('\n');
 }
 
 function findCommand(rawName: string): BotCommandDef | undefined {
@@ -535,20 +545,20 @@ export async function handleIncomingMessage(params: {
           text: `Type *${prefix}menu* to see ${botState.config.botName}'s commands (or enable AI Natural Chat in Group & AI settings).`,
           handler: 'Prefix Hint',
         };
-      } else if (!hasGeminiKey()) {
+      } else if (!hasGroqKey()) {
         reply = {
-          text: `Hi ${player.name}! Try a command like *${prefix}menu*, *${prefix}card*, *${prefix}anime Frieren*, or *${prefix}daily*. (Configure GEMINI_API_KEY in Secrets for natural AI chat.)`,
+          text: `Hi ${player.name}! Try a command like *${prefix}menu*, *${prefix}card*, *${prefix}anime Frieren*, or *${prefix}daily*. (Configure GROQ_API_KEY in Secrets for natural AI chat.)`,
           handler: 'Fallback Responder',
         };
       } else {
         botState.stats.totalAiCalls += 1;
-        const aiText = await askGeminiText(
+        const aiText = await askGroqText(
           `User (${player.name}) says in ${params.chatMode}: ${input}`,
           buildSystemInstruction()
         );
         reply = {
           text: aiText,
-          handler: 'Gemini AI (gemini-4-hydrogen)',
+          handler: `Groq AI (${GROQ_MODEL})`,
         };
       }
       recordLog(params, input, reply, Date.now() - started);
@@ -662,11 +672,13 @@ async function executeBuiltInCommand(
   if (cmd === 'menu' || cmd === 'help') {
     return {
       text: buildMenuText(argStr || undefined),
-      handler: 'Menu Renderer',
+      imageUrl: await fetchSfwAnimeImage('waifu'),
+      imageCaption: 'Pieck command menu',
+      handler: 'Menu',
       buttons: [
-        { id: 'menu_cards', label: 'Cards Menu', command: `${p}menu cards` },
-        { id: 'menu_econ', label: 'Economy Menu', command: `${p}menu economy` },
-        { id: 'menu_games', label: 'Games & Quiz', command: `${p}menu games` },
+        { id: 'menu_cards', label: 'Cards', command: `${p}menu cards` },
+        { id: 'menu_econ', label: 'Economy', command: `${p}menu economy` },
+        { id: 'menu_admin', label: 'Moderation', command: `${p}menu admin` },
       ],
     };
   }
@@ -700,7 +712,7 @@ async function executeBuiltInCommand(
         `*⚡ ${botState.config.botName} Online*`,
         `┣ Prefix: \`${p}\``,
         `┣ Community: ${botState.config.bannerTitle}`,
-        `┣ Gemini AI: ${hasGeminiKey() ? 'Connected' : 'Pending Secret'}`,
+        `┣ Groq AI: ${hasGroqKey() ? 'Connected' : 'Pending Secret'}`,
         `┗━━━━━━━━━━━`,
       ].join('\n'),
       handler: 'Diagnostics',
@@ -738,10 +750,32 @@ async function executeBuiltInCommand(
     };
   }
   if (cmd === 'mods') {
-    const mods = Object.values(botState.players).filter((u) => u.role === 'owner' || u.role === 'admin');
+    const admins = Object.values(botState.players).filter((user) => user.role === 'owner' || user.role === 'admin');
+    const moderators = botState.groupSettings.moderatorNumbers;
     return {
-      text: `*🛡️ Active Moderators*\n${mods.map((m) => `• ${m.name} (${m.role.toUpperCase()})`).join('\n')}`,
-      handler: 'General',
+      text: [
+        '*Pieck team*',
+        ...admins.map((user) => `• ${user.name}  —  ${user.role}`),
+        ...moderators.map((number) => `• +${number}  —  moderator`),
+        moderators.length === 0 ? '_No additional moderators._' : '',
+      ].filter(Boolean).join('\n'),
+      handler: 'Moderation',
+    };
+  }
+  if (cmd === 'addmod' || cmd === 'delmod' || cmd === 'unmod') {
+    const number = argStr.replace(/[^\d]/g, '');
+    if (number.length < 7 || number.length > 15) {
+      return { text: `Usage: *${p}${cmd} <country-code phone number>*`, handler: 'Moderation', status: 'error' };
+    }
+    const current = new Set(botState.groupSettings.moderatorNumbers);
+    if (cmd === 'addmod') current.add(number);
+    else current.delete(number);
+    botState.groupSettings.moderatorNumbers = Array.from(current);
+    return {
+      text: cmd === 'addmod'
+        ? `+${number} is now a Pieck moderator.`
+        : `+${number} is no longer a Pieck moderator.`,
+      handler: 'Moderation',
     };
   }
   if (cmd === 'bots') {
@@ -873,6 +907,42 @@ async function executeBuiltInCommand(
     return {
       text: `*🎴 ${player.name}'s ${cmd === 'deck' ? 'Active Battle Deck' : 'Card Collection'} (${ids.length})*\n${list}`,
       handler: 'Cards',
+    };
+  }
+
+  if (cmd === 'vs') {
+    if (player.deck.length === 0) {
+      return { text: `Your deck is empty. Add cards before using *${p}vs*.`, handler: 'Card Battle', status: 'error' };
+    }
+    const query = argStr.replace(/^@/, '').toLowerCase();
+    const opponent = Object.values(botState.players).find(
+      (candidate) => candidate.id !== player.id && (!query || candidate.name.toLowerCase().includes(query))
+    );
+    if (!opponent || opponent.deck.length === 0) {
+      return { text: `No battle-ready opponent found. Try *${p}vs <name>*.`, handler: 'Card Battle', status: 'error' };
+    }
+    const scoreDeck = (deck: string[]) => deck.reduce((total, cardId) => {
+      const card = botState.cards.find((item) => item.id === cardId);
+      return total + (card ? card.atk + card.def : 0);
+    }, 0);
+    const playerScore = scoreDeck(player.deck) + Math.floor(Math.random() * 40);
+    const opponentScore = scoreDeck(opponent.deck) + Math.floor(Math.random() * 40);
+    const won = playerScore >= opponentScore;
+    const reward = won ? 500 : 100;
+    player.wallet += reward;
+    player.xp += won ? 80 : 25;
+    addTransaction(player, `Card battle vs ${opponent.name}`, reward);
+    const leadCard = botState.cards.find((card) => card.id === player.deck[0]);
+    return {
+      text: [
+        '*Card battle*',
+        `${player.name}  ${playerScore} — ${opponentScore}  ${opponent.name}`,
+        won ? '*Victory*' : '*Defeat*',
+        `Reward  •  ¥${reward}`,
+      ].join('\n'),
+      imageUrl: leadCard?.imageUrl,
+      imageCaption: `${player.name} vs ${opponent.name}`,
+      handler: 'Card Battle',
     };
   }
 
@@ -1099,30 +1169,84 @@ async function executeBuiltInCommand(
   if (cmd === 'bal' || cmd === 'balance' || cmd === 'orbs' || cmd === 'ebal') {
     return {
       text: [
-        `*💳 ${player.name}'s Economy*`,
-        `┣ Wallet: *¥${player.wallet.toLocaleString()}*`,
-        `┣ Bank: *¥${player.bank.toLocaleString()}*`,
-        `┣ Spirit Orbs: *${player.orbs}* 🔮`,
-        `┣ Stardust: *${player.stardust.toLocaleString()}* ✨`,
-        `┗━━━━━━━━━━━`,
+        `*${player.name}'s balance*`,
+        `Wallet  •  ¥${player.wallet.toLocaleString()}`,
+        `Bank  •  ¥${player.bank.toLocaleString()}`,
+        `Orbs  •  ${player.orbs}`,
+        `Stardust  •  ${player.stardust.toLocaleString()}`,
       ].join('\n'),
+      imageUrl: await fetchSfwAnimeImage('smile'),
+      imageCaption: 'Economy balance',
       handler: 'Economy',
       buttons: [
-        { id: 'daily', label: 'Claim .daily', command: `${p}daily` },
-        { id: 'dep_all', label: 'Deposit All', command: `${p}dep all` },
+        { id: 'daily', label: 'Daily', command: `${p}daily` },
+        { id: 'fish', label: 'Fish', command: `${p}fish` },
       ],
     };
   }
 
+  if (cmd === 'fish') {
+    const cooldownMs = 5 * 60_000;
+    const remaining = cooldownMs - (Date.now() - (player.lastFish || 0));
+    if (remaining > 0) {
+      return {
+        text: `The water is still. Try again in *${Math.ceil(remaining / 60_000)} min*.`,
+        imageUrl: await fetchSfwAnimeImage('sleep'),
+        handler: 'Fishing',
+        status: 'blocked',
+      };
+    }
+    const catches = [
+      { name: 'Tiny Magikarp', yen: 180, item: 'Fish Scale' },
+      { name: 'Moonlit Koi', yen: 420, item: 'Koi Charm' },
+      { name: 'Water Dragon Fry', yen: 760, item: 'Dragon Scale' },
+      { name: 'Leviathan Relic', yen: 1400, item: 'Abyss Pearl' },
+    ];
+    const roll = Math.random();
+    const catchIndex = roll > 0.97 ? 3 : roll > 0.82 ? 2 : roll > 0.45 ? 1 : 0;
+    const caught = catches[catchIndex];
+    player.lastFish = Date.now();
+    player.wallet += caught.yen;
+    player.inventory[caught.item] = (player.inventory[caught.item] || 0) + 1;
+    addTransaction(player, `Fishing reward: ${caught.name}`, caught.yen);
+    return {
+      text: [
+        '*Catch landed*',
+        `${caught.name}`,
+        `Reward  •  ¥${caught.yen.toLocaleString()}`,
+        `Item  •  ${caught.item}`,
+        `Wallet  •  ¥${player.wallet.toLocaleString()}`,
+      ].join('\n'),
+      imageUrl: await fetchSfwAnimeImage(catchIndex >= 2 ? 'happy' : 'smile'),
+      imageCaption: caught.name,
+      handler: 'Fishing',
+      buttons: [{ id: 'balance', label: 'Balance', command: `${p}bal` }],
+    };
+  }
+
   if (cmd === 'daily') {
+    const cooldownMs = 20 * 60 * 60_000;
+    const remaining = cooldownMs - (Date.now() - (player.lastDaily || 0));
+    if (remaining > 0) {
+      const hours = Math.ceil(remaining / 3_600_000);
+      return { text: `Daily reward already claimed. Return in about *${hours}h*.`, handler: 'Economy', status: 'blocked' };
+    }
     const reward = botState.config.dailyReward;
     player.wallet += reward;
     player.orbs += 3;
     player.stardust += 120;
     player.lastDaily = Date.now();
-    addTransaction(player, 'Daily Stipend (.daily)', reward);
+    addTransaction(player, 'Daily reward', reward);
     return {
-      text: `🎁 *Daily Reward Claimed!*\n+ *¥${reward.toLocaleString()}* Yen\n+ *3* Spirit Orbs\n+ *120* Stardust\n\nWallet: *¥${player.wallet.toLocaleString()}*`,
+      text: [
+        '*Daily reward*',
+        `Yen  •  +¥${reward.toLocaleString()}`,
+        'Orbs  •  +3',
+        'Stardust  •  +120',
+        `Wallet  •  ¥${player.wallet.toLocaleString()}`,
+      ].join('\n'),
+      imageUrl: await fetchSfwAnimeImage('maid'),
+      imageCaption: 'Daily reward',
       handler: 'Economy',
     };
   }
@@ -1321,13 +1445,13 @@ async function executeBuiltInCommand(
 
   if (cmd === 'roast') {
     const target = argStr || player.name;
-    if (hasGeminiKey()) {
+    if (hasGroqKey()) {
       botState.stats.totalAiCalls += 1;
-      const roast = await askGeminiText(
+      const roast = await askGroqText(
         `Write one short, playful, PG-13 anime-themed roast (2 sentences max) aimed at "${target}" about their anime taste or gacha luck.`,
         buildSystemInstruction()
       );
-      return { text: roast, handler: 'Gemini AI (Roast)' };
+      return { text: roast, handler: 'Groq AI (Roast)' };
     }
     return { text: `*${target}*, your pull luck is so tragic even Aqua feels sorry for your gacha deck.`, handler: 'Fun' };
   }
@@ -1711,7 +1835,7 @@ async function executeBuiltInCommand(
   }
 
   if (cmd === 'wyr' || cmd === 'wouldyourather' || cmd === 'truth' || cmd === 'dare' || cmd === 'td' || cmd === 'darkjoke') {
-    if (hasGeminiKey()) {
+    if (hasGroqKey()) {
       botState.stats.totalAiCalls += 1;
       const promptMap: Record<string, string> = {
         wyr: 'Give one fun anime "Would You Rather" dilemma with two choices.',
@@ -1721,8 +1845,8 @@ async function executeBuiltInCommand(
         td: 'Give one random anime Truth or Dare prompt.',
         darkjoke: 'Tell one short, clever PG-13 dry-humor anime joke (keep it safe and non-offensive).',
       };
-      const out = await askGeminiText(promptMap[cmd], buildSystemInstruction());
-      return { text: out, handler: 'Gemini AI (Fun)' };
+      const out = await askGroqText(promptMap[cmd], buildSystemInstruction());
+      return { text: out, handler: 'Groq AI (Fun)' };
     }
     return {
       text: `🎲 *${cmd.toUpperCase()}*: Would you rather be reincarnated as a slime with Great Sage or as an overpowered hero with zero common sense?`,
@@ -1781,13 +1905,13 @@ async function executeBuiltInCommand(
   }
 
   if (['ig', 'ttk', 'yt', 'x', 'fb', 'play', 'reddit', 'sauce', 'reverseimg', 'lyrics', 'igstalk', 'shazam'].includes(cmd)) {
-    if ((cmd === 'lyrics' || cmd === 'sauce' || cmd === 'shazam') && argStr && hasGeminiKey()) {
+    if ((cmd === 'lyrics' || cmd === 'sauce' || cmd === 'shazam') && argStr && hasGroqKey()) {
       botState.stats.totalAiCalls += 1;
-      const ans = await askGeminiText(
+      const ans = await askGroqText(
         `Command .${cmd} query: "${argStr}". Provide concise anime music/scene info formatted for WhatsApp.`,
         buildSystemInstruction()
       );
-      return { text: ans, handler: 'Gemini AI (Search)' };
+      return { text: ans, handler: 'Groq AI (Search)' };
     }
     return {
       text: `*📲 Media Bridge (.${cmd})*\nTarget: \`${argStr || 'No URL/query provided'}\`\n\nIn the WhatsApp Simulator & Cloud API mode, direct binary video scraping is queued via the exported Baileys + yt-dlp runner in *Deploy & Webhook*.`,
@@ -1798,10 +1922,10 @@ async function executeBuiltInCommand(
   // ── AI & CONVERTER ──
   if (['gpt', 'copilot', 'perplexity', 'imagine', 'tt', 'translate', 'tb', 'transcribe', 'ocr', 'tldr', 'tts', 'upscale'].includes(cmd)) {
     if (!argStr && cmd !== 'upscale') {
-      return { text: `Usage: *${p}${cmd} <your prompt or text>*`, handler: 'Gemini AI' };
+      return { text: `Usage: *${p}${cmd} <your prompt or text>*`, handler: 'Groq AI' };
     }
-    if (!hasGeminiKey()) {
-      return { text: `GEMINI_API_KEY is not set in server secrets yet. Configure it in **Settings > Secrets**.`, handler: 'Gemini AI', status: 'error' };
+    if (!hasGroqKey()) {
+      return { text: `Groq chat is not configured yet. Add GROQ_API_KEY in Render Environment.`, handler: 'Groq AI', status: 'error' };
     }
     botState.stats.totalAiCalls += 1;
     const taskPrefix =
@@ -1814,8 +1938,8 @@ async function executeBuiltInCommand(
         : cmd === 'imagine'
         ? 'Write a vivid anime art prompt and scene breakdown for: '
         : '';
-    const answer = await askGeminiText(`${taskPrefix}${argStr || 'Enhance anime frame clarity'}`, buildSystemInstruction());
-    return { text: answer, handler: `Gemini AI (.${cmd})` };
+    const answer = await askGroqText(`${taskPrefix}${argStr || 'Enhance anime frame clarity'}`, buildSystemInstruction());
+    return { text: answer, handler: `Groq AI (.${cmd})` };
   }
 
   if (cmd === 'fancy') {
@@ -1902,7 +2026,11 @@ async function executeBuiltInCommand(
   }
   if (cmd === 'warn' || cmd === 'resetwarn') {
     const targetName = argStr.replace(/^@/, '') || 'Sora';
-    const target = Object.values(botState.players).find((u) => u.name.toLowerCase() === targetName.toLowerCase());
+    const targetDigits = targetName.replace(/[^\d]/g, '');
+    const target = Object.values(botState.players).find((user) =>
+      user.name.toLowerCase() === targetName.toLowerCase() ||
+      Boolean(targetDigits && user.id.replace(/[^\d]/g, '').endsWith(targetDigits))
+    );
     if (!target) return { text: `Member *${targetName}* not found.`, handler: 'Admin' };
     target.warnings = cmd === 'resetwarn' ? 0 : target.warnings + 1;
     return {
@@ -1928,7 +2056,7 @@ async function executeBuiltInCommand(
   }
   if (cmd === 'blacklist') {
     if (argStr) {
-      botState.groupSettings.blacklist.push(argStr);
+      if (!botState.groupSettings.blacklist.includes(argStr)) botState.groupSettings.blacklist.push(argStr);
       return { text: `🚫 Added \`${argStr}\` to group blacklist.`, handler: 'Admin' };
     }
     return { text: `*🚫 Blacklisted Terms*\n${botState.groupSettings.blacklist.join(', ')}`, handler: 'Admin' };
@@ -1949,9 +2077,14 @@ async function executeBuiltInCommand(
       handler: 'Jikan MAL API',
     };
   }
-  if (['kick', 'delete', 'purge', 'promote', 'demote'].includes(cmd)) {
+  if (cmd === 'purge') {
+    const warned = Object.values(botState.players).filter((user) => user.warnings > 0);
+    warned.forEach((user) => { user.warnings = 0; });
+    return { text: `Cleared warning records for *${warned.length}* members.`, handler: 'Admin' };
+  }
+  if (['kick', 'delete', 'promote', 'demote'].includes(cmd)) {
     return {
-      text: `⚙️ Executed *${p}${cmd}*${argStr ? ` on *${argStr}*` : ''} in *${chatMode === 'group' ? botState.groupSettings.groupName : 'DM'}*.`,
+      text: `*${p}${cmd}* completed${argStr ? ` for ${argStr}` : ''}.`,
       handler: 'Admin',
     };
   }
@@ -1965,10 +2098,9 @@ async function executeBuiltInCommand(
 export function generateBaileysBotCode(): string {
   const c = botState.config;
   const enabledNames = botState.commands.filter((cmd) => cmd.enabled).map((cmd) => cmd.name);
-  return `// Standalone ${c.bannerTitle} / ${c.botName} WhatsApp Group Bot (Baileys + Gemini)
+  return `// Standalone ${c.bannerTitle} / ${c.botName} WhatsApp Group Bot (Baileys + Groq)
 // Generated by The new world Studio for ${c.creatorName}
 import makeWASocket, { useMultiFileAuthState, DisconnectReason } from '@whiskeysockets/baileys';
-import { GoogleGenAI } from '@google/genai';
 
 const PREFIX = ${JSON.stringify(c.prefix)};
 const BOT_NAME = ${JSON.stringify(c.botName)};
@@ -1976,20 +2108,38 @@ const CREATOR = ${JSON.stringify(c.creatorName)};
 const OWNER_NUMBER = ${JSON.stringify(c.ownerNumber)};
 const ENABLED_COMMANDS = new Set(${JSON.stringify(enabledNames.slice(0, 30))});
 
-const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+async function askGroq(prompt) {
+  const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+    method: 'POST',
+    headers: {
+      Authorization: \`Bearer \${process.env.GROQ_API_KEY}\`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      model: 'llama-3.3-70b-versatile',
+      messages: [
+        { role: 'system', content: ${JSON.stringify(c.aiPersonaPrompt)} },
+        { role: 'user', content: prompt },
+      ],
+    }),
+  });
+  const payload = await response.json();
+  if (!response.ok) throw new Error(payload.error?.message || 'Groq request failed');
+  return payload.choices?.[0]?.message?.content || 'No response.';
+}
 
 function renderMenu() {
   return [
-    '╭━━★彡 ${c.bannerTitle} 彡★━━╮',
-    \`┃  𖤓 Prefix: \${PREFIX}\`,
-    \`┃  𖤓 Name: \${BOT_NAME}\`,
-    \`┃  𖤓 Creator: \${CREATOR}\`,
-    '╰━━━━━━━━━━━━━╯',
-    '• .anime <title>  • .card  • .claim',
-    '• .bal  • .daily  • .aquiz  • .gpt <prompt>',
+    '*' + BOT_NAME + '* - Anime companion',
+    'Prefix - ' + PREFIX,
+    '',
+    '- ' + PREFIX + 'anime <title>',
+    '- ' + PREFIX + 'card',
+    '- ' + PREFIX + 'bal',
+    '- ' + PREFIX + 'daily',
+    '- ' + PREFIX + 'gpt <question>',
   ].join('\\n');
 }
-
 async function startBot() {
   const { state, saveCreds } = await useMultiFileAuthState('./auth_pieck');
   const sock = makeWASocket({ auth: state, printQRInTerminal: true });
@@ -2005,8 +2155,24 @@ async function startBot() {
     const msg = messages[0];
     if (!msg?.message || msg.key.fromMe) return;
     const jid = msg.key.remoteJid;
+    if (!jid?.endsWith('@g.us')) return;
     const body = msg.message.conversation || msg.message.extendedTextMessage?.text || '';
-    if (!body.startsWith(PREFIX)) return;
+    const context = msg.message.extendedTextMessage?.contextInfo;
+    const botNumber = sock.user?.id?.split('@')[0]?.split(':')[0];
+    const isCommand = body.startsWith(PREFIX);
+    const isTagged = Boolean((context?.mentionedJid || []).some(
+      (jid) => jid.split('@')[0]?.split(':')[0] === botNumber
+    ));
+    const isReply = Boolean(
+      context?.stanzaId && context?.participant?.split('@')[0]?.split(':')[0] === botNumber
+    );
+    if (!isCommand && !isTagged && !isReply) return;
+
+    if (!isCommand) {
+      const prompt = body.replace(/@\d+/g, '').trim() || 'Hello Pieck';
+      await sock.sendMessage(jid, { text: await askGroq(prompt) });
+      return;
+    }
 
     const [cmd, ...rest] = body.slice(PREFIX.length).trim().split(/\\s+/);
     const arg = rest.join(' ');
@@ -2021,12 +2187,7 @@ async function startBot() {
         text: anime ? \`*\${anime.title}* (★ \${anime.score})\\n\${anime.synopsis?.slice(0, 220)}...\` : 'Anime not found.',
       });
     } else if ((cmd === 'gpt' || cmd === 'copilot') && arg) {
-      const res = await ai.models.generateContent({
-        model: 'gemini-4-hydrogen',
-        contents: arg,
-        config: { systemInstruction: ${JSON.stringify(c.aiPersonaPrompt)} },
-      });
-      await sock.sendMessage(jid, { text: res.text || 'No response.' });
+      await sock.sendMessage(jid, { text: await askGroq(arg) });
     }
   });
 }
@@ -2034,3 +2195,4 @@ async function startBot() {
 startBot();
 `;
 }
+

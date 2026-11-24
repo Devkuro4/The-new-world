@@ -15,7 +15,7 @@ import {
   handleIncomingMessage,
   persistState,
 } from './server/botEngine.ts';
-import { hasGeminiKey } from './server/geminiClient.ts';
+import { hasGroqKey } from './server/groqClient.ts';
 import type { AnimeCard, BotCommandDef, CommandRole } from './src/shared/botSchema.ts';
 
 dotenv.config();
@@ -33,7 +33,7 @@ function safeEqual(a: string, b: string): boolean {
 
 function getWhatsAppConfigStatus() {
   return {
-    geminiConfigured: hasGeminiKey(),
+    groqConfigured: hasGroqKey(),
     verifyTokenConfigured: Boolean(process.env.WHATSAPP_VERIFY_TOKEN?.trim()),
     accessTokenConfigured: Boolean(process.env.WHATSAPP_ACCESS_TOKEN?.trim()),
     phoneNumberIdConfigured: Boolean(process.env.WHATSAPP_PHONE_NUMBER_ID?.trim()),
@@ -87,63 +87,9 @@ async function sendMetaWhatsAppReply(toPhone: string, text: string, imageUrl?: s
 }
 
 async function processMetaWebhookBody(body: unknown): Promise<{ processed: number; replies: Array<{ to: string; handler: string; text: string }> }> {
-  const data = body as {
-    entry?: Array<{
-      changes?: Array<{
-        value?: {
-          contacts?: Array<{ wa_id?: string; profile?: { name?: string } }>;
-          messages?: Array<{
-            from?: string;
-            type?: string;
-            text?: { body?: string };
-            interactive?: { button_reply?: { id?: string; title?: string }; list_reply?: { id?: string; title?: string } };
-          }>;
-        };
-      }>;
-    }>;
-  };
-
-  const replies: Array<{ to: string; handler: string; text: string }> = [];
-  let processed = 0;
-
-  for (const entry of data.entry || []) {
-    for (const change of entry.changes || []) {
-      const value = change.value;
-      const contacts = value?.contacts || [];
-      for (const msg of value?.messages || []) {
-        const from = msg.from || '';
-        if (!from) continue;
-        const contactName = contacts.find((c) => c.wa_id === from)?.profile?.name || `WA-${from.slice(-4)}`;
-        const incomingText =
-          msg.text?.body ||
-          msg.interactive?.button_reply?.id ||
-          msg.interactive?.button_reply?.title ||
-          msg.interactive?.list_reply?.title ||
-          '';
-        if (!incomingText.trim()) continue;
-
-        processed += 1;
-        const ownerDigits = (botState.config.ownerNumber || '').replace(/[^\d]/g, '');
-        const cleanFrom = from.replace(/[^\d]/g, '');
-        const isOwner = Boolean(ownerDigits && cleanFrom === ownerDigits);
-        const botReply = await handleIncomingMessage({
-          senderId: isOwner ? 'owner-kuro' : `wa-${from}`,
-          senderName: isOwner ? botState.config.creatorName : contactName,
-          senderRole: isOwner ? 'owner' : 'everyone',
-          chatMode: 'dm',
-          source: 'meta-webhook',
-          text: incomingText,
-        });
-
-        replies.push({ to: from, handler: botReply.handler, text: botReply.text });
-        if (process.env.WHATSAPP_ACCESS_TOKEN && process.env.WHATSAPP_PHONE_NUMBER_ID) {
-          await sendMetaWhatsAppReply(from, botReply.text, botReply.imageUrl);
-        }
-      }
-    }
-  }
-
-  return { processed, replies };
+  void body;
+  // Meta Cloud API messages handled here are direct messages. Pieck is group-only.
+  return { processed: 0, replies: [] };
 }
 
 async function startServer() {
@@ -264,7 +210,7 @@ async function startServer() {
     }
     const body = req.body as { enabled?: boolean; role?: CommandRole; customReply?: string };
     if (typeof body.enabled === 'boolean') cmd.enabled = body.enabled;
-    if (body.role === 'everyone' || body.role === 'admin' || body.role === 'owner') cmd.role = body.role;
+    if (body.role === 'everyone' || body.role === 'moderator' || body.role === 'admin' || body.role === 'owner') cmd.role = body.role;
     if (typeof body.customReply === 'string') cmd.customReply = body.customReply.slice(0, 1000);
     persistState();
     res.json({ command: cmd });
@@ -290,7 +236,7 @@ async function startServer() {
       category: body.category || 'General',
       description: (body.description || 'Custom The new world command').slice(0, 160),
       usage: `${botState.config.prefix}${cleanName}`,
-      role: body.role === 'admin' || body.role === 'owner' ? body.role : 'everyone',
+      role: body.role === 'moderator' || body.role === 'admin' || body.role === 'owner' ? body.role : 'everyone',
       enabled: true,
       isCustom: true,
       customReply: (body.customReply || 'Custom response from *{bot}* for *{user}*!').slice(0, 1000),
@@ -348,14 +294,15 @@ async function startServer() {
       res.status(400).json({ error: 'Message text is required.' });
       return;
     }
-    const role: CommandRole = body.senderRole === 'owner' || body.senderRole === 'admin' ? body.senderRole : 'everyone';
+    const role: CommandRole = body.senderRole === 'owner' || body.senderRole === 'admin' || body.senderRole === 'moderator' ? body.senderRole : 'everyone';
     const senderMap: Record<CommandRole, { id: string; name: string }> = {
       owner: { id: 'owner-kuro', name: 'kuro' },
       admin: { id: 'admin-rem', name: 'Rem' },
+      moderator: { id: 'moderator-hange', name: 'Hange' },
       everyone: { id: 'member-sora', name: 'Sora' },
     };
     const sender = senderMap[role];
-    const chatMode = body.chatMode === 'dm' ? 'dm' : 'group';
+    const chatMode = 'group' as const;
 
     const reply = await handleIncomingMessage({
       senderId: sender.id,
@@ -519,3 +466,4 @@ async function startServer() {
 }
 
 startServer();
+

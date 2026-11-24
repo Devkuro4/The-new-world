@@ -141,3 +141,4 @@ export const LogsPanel: React.FC<LogsPanelProps> = ({
     </div>
   );
 };
+

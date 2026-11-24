@@ -375,3 +375,4 @@ export const EconomyCardsPanel: React.FC<EconomyCardsPanelProps> = ({
     </div>
   );
 };
+
