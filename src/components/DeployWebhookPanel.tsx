@@ -24,6 +24,7 @@ export interface BaileysStatusSnapshot {
   connectedUser: { id: string; name?: string } | null;
   lastError: string | null;
   hasSavedSession: boolean;
+  sessionEnvConfigured?: boolean;
   groups: BaileysGroupSummary[];
 }
 
@@ -52,6 +53,8 @@ export const DeployWebhookPanel: React.FC<DeployWebhookPanelProps> = ({
   const [pairingLoading, setPairingLoading] = useState(false);
   const [pairingError, setPairingError] = useState('');
   const [refreshingGroups, setRefreshingGroups] = useState(false);
+  const [backupSending, setBackupSending] = useState(false);
+  const [backupStatus, setBackupStatus] = useState<{ ok: boolean; text: string } | null>(null);
 
   // Meta webhook tester state
   const [testCommand, setTestCommand] = useState(`${prefix}anime Frieren`);
@@ -145,6 +148,27 @@ export const DeployWebhookPanel: React.FC<DeployWebhookPanelProps> = ({
       setBaileys(json);
     } finally {
       setRefreshingGroups(false);
+    }
+  };
+
+  const handleSendBackupToOwner = async () => {
+    setBackupSending(true);
+    setBackupStatus(null);
+    try {
+      const res = await fetch('/api/baileys/backup-to-owner', { method: 'POST' });
+      const json = (await res.json()) as { ok?: boolean; sentTo?: string; error?: string };
+      if (!res.ok) {
+        setBackupStatus({ ok: false, text: json.error || 'Could not send session backup.' });
+      } else {
+        setBackupStatus({
+          ok: true,
+          text: `Sent BAILEYS_SESSION_B64 privately to ${json.sentTo} on WhatsApp. Paste it in Render Environment Variables.`,
+        });
+      }
+    } catch (err) {
+      setBackupStatus({ ok: false, text: err instanceof Error ? err.message : 'Request failed.' });
+    } finally {
+      setBackupSending(false);
     }
   };
 
@@ -357,9 +381,38 @@ export const DeployWebhookPanel: React.FC<DeployWebhookPanelProps> = ({
           </div>
         )}
 
-        {/* Connected WhatsApp Groups List */}
+        {/* Connected WhatsApp Groups + Render Redeploy Persistence */}
         {baileys.status === 'connected' && (
-          <div className="space-y-3 pt-1">
+          <div className="space-y-4 pt-1">
+            <div className="rounded-lg border border-slate-200 bg-slate-50/80 p-3.5 space-y-2.5">
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <div>
+                  <div className="text-xs font-semibold text-slate-900">
+                    Stay Connected After Render Redeploys
+                  </div>
+                  <div className="text-xs text-slate-500">
+                    {baileys.sessionEnvConfigured
+                      ? 'BAILEYS_SESSION_B64 is set — Pieck auto-restores after container resets.'
+                      : 'Send your session backup privately to the owner WhatsApp DM and save it as BAILEYS_SESSION_B64 in Render.'}
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  disabled={backupSending}
+                  onClick={handleSendBackupToOwner}
+                  className="inline-flex items-center gap-1.5 rounded-lg border border-emerald-200 bg-white px-3 py-1.5 text-xs font-medium text-emerald-700 hover:bg-emerald-50 disabled:opacity-50 whitespace-nowrap shrink-0"
+                >
+                  <Send className="h-3.5 w-3.5" />
+                  <span>{backupSending ? 'Sending...' : 'DM Backup to Owner'}</span>
+                </button>
+              </div>
+              {backupStatus && (
+                <div className={`text-xs font-medium ${backupStatus.ok ? 'text-emerald-700' : 'text-rose-600'}`}>
+                  {backupStatus.text}
+                </div>
+              )}
+            </div>
+
             <div className="flex items-center justify-between">
               <div className="text-xs font-medium text-slate-700">
                 Participating WhatsApp Groups ({baileys.groups.length})

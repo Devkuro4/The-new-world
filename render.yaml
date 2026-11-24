@@ -13,5 +13,7 @@ services:
         value: 22.22.0
       - key: GEMINI_API_KEY
         sync: false
+      - key: BAILEYS_SESSION_B64
+        sync: false
       - key: DATA_DIR
         value: ./data
