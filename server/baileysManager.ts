@@ -236,7 +236,7 @@ async function sendBotReply(
   sock: WASocket,
   remoteJid: string,
   quoted: WAMessage,
-  reply: { text: string; imageUrl?: string; imageCaption?: string; audioUrl?: string; audioPath?: string; videoPath?: string; buttons?: Array<{ label: string; command: string }> },
+  reply: { text: string; imageUrl?: string; imageCaption?: string; audioUrl?: string; audioPath?: string; videoPath?: string; hideText?: boolean; buttons?: Array<{ label: string; command: string }> },
   mentions?: string[]
 ): Promise<void> {
   let finalText = reply.text;
@@ -245,6 +245,7 @@ async function sendBotReply(
     finalText = `${finalText}\n\n*Quick Actions*\n${quickLines}`;
   }
 
+  let imageSent = false;
   if (reply.imageUrl) {
     try {
       // Bundled artwork (e.g. the Pieck menu image) is read from disk; anything else is a URL.
@@ -259,43 +260,46 @@ async function sendBotReply(
         { quoted }
       );
       trackSentId(imageMessage?.key?.id);
+      imageSent = true;
     } catch {
       // Continue with the complete text when an external thumbnail is unavailable.
     }
   }
 
-  // Replies without their own image get a small link-preview card with the Pieck thumbnail.
-  // Off by default: only enabled with LINK_THUMBNAILS=on, so a card problem can never block replies.
-  const cardsEnabled = process.env.LINK_THUMBNAILS?.trim().toLowerCase() === 'on';
-  const thumb = cardsEnabled && !reply.imageUrl && !(mentions && mentions.length > 1) ? getThumbBuffer() : null;
-  const linkCard = thumb
-    ? {
-        externalAdReply: {
-          title: botState.config.bannerTitle,
-          body: `${botState.config.botName} · ${botState.config.prefix}menu`,
-          thumbnail: thumb,
-          mediaType: 1,
-          renderLargerThumbnail: false,
-          showAdAttribution: false,
-          sourceUrl: getPreviewLink(botState.config.ownerNumber),
-        },
-      }
-    : undefined;
+  if (!(reply.hideText && (imageSent || !reply.imageUrl))) {
+    // Replies without their own image get a small link-preview card with the Pieck thumbnail.
+    // Off by default: only enabled with LINK_THUMBNAILS=on, so a card problem can never block replies.
+    const cardsEnabled = process.env.LINK_THUMBNAILS?.trim().toLowerCase() === 'on';
+    const thumb = cardsEnabled && !reply.imageUrl && !(mentions && mentions.length > 1) ? getThumbBuffer() : null;
+    const linkCard = thumb
+      ? {
+          externalAdReply: {
+            title: botState.config.bannerTitle,
+            body: `${botState.config.botName} · ${botState.config.prefix}menu`,
+            thumbnail: thumb,
+            mediaType: 1,
+            renderLargerThumbnail: false,
+            showAdAttribution: false,
+            sourceUrl: getPreviewLink(botState.config.ownerNumber),
+          },
+        }
+      : undefined;
 
-  const plainContent = { text: finalText.slice(0, 4096), mentions };
-  let textMessage;
-  try {
-    textMessage = await sock.sendMessage(
-      remoteJid,
-      linkCard ? { ...plainContent, contextInfo: { ...linkCard, mentionedJid: mentions || [] } } : plainContent,
-      { quoted }
-    );
-  } catch (error) {
-    if (!linkCard) throw error;
-    // The thumbnail card was rejected: always fall back to the plain reply.
-    textMessage = await sock.sendMessage(remoteJid, plainContent, { quoted });
+    const plainContent = { text: finalText.slice(0, 4096), mentions };
+    let textMessage;
+    try {
+      textMessage = await sock.sendMessage(
+        remoteJid,
+        linkCard ? { ...plainContent, contextInfo: { ...linkCard, mentionedJid: mentions || [] } } : plainContent,
+        { quoted }
+      );
+    } catch (error) {
+      if (!linkCard) throw error;
+      // The thumbnail card was rejected: always fall back to the plain reply.
+      textMessage = await sock.sendMessage(remoteJid, plainContent, { quoted });
+    }
+    trackSentId(textMessage?.key?.id);
   }
-  trackSentId(textMessage?.key?.id);
 
   if (reply.videoPath) {
     try {

@@ -143,6 +143,8 @@ export interface BotReplyPayload {
   audioUrl?: string;
   /** Server-side temp audio file (sent by the Baileys runner, then deleted). */
   audioPath?: string;
+  /** When an image was sent with the caption, skip the separate text message. */
+  hideText?: boolean;
   /** Server-side temp video file (sent by the Baileys runner, then deleted). */
   videoPath?: string;
   buttons?: WhatsAppSimButton[];

@@ -377,50 +377,133 @@ async function searchYouTube(query: string): Promise<YtResult | null> {
   };
 }
 
+async function getYouTubeMeta(url: string): Promise<{ title: string; thumbnail?: string } | null> {
+  const id = url.match(/(?:youtu\.be\/|[?&]v=|\/shorts\/|\/embed\/)([\w-]{11})/)?.[1];
+  if (!id) return null;
+  try {
+    const v = await Promise.race([
+      yts({ videoId: id }),
+      new Promise<never>((_, reject) => setTimeout(() => reject(new Error('timeout')), 8_000)),
+    ]);
+    return { title: v.title, thumbnail: v.image || v.thumbnail || `https://i.ytimg.com/vi/${id}/hqdefault.jpg` };
+  } catch {
+    return { title: '', thumbnail: `https://i.ytimg.com/vi/${id}/hqdefault.jpg` };
+  }
+}
+
 const MAX_PLAY_SECONDS = Number(process.env.PLAY_MAX_SECONDS) || 900; // 15 min default
 const MAX_PLAY_BYTES = 40 * 1024 * 1024;
 
-/** Downloads media with yt-dlp into a temp file. Returns the path, or null if unavailable/failed/too big. */
-function downloadWithYtDlp(url: string, kind: 'audio' | 'video'): Promise<string | null> {
+/** Finds yt-dlp, or downloads the standalone Linux binary on first use (no build-step setup needed). */
+let ytDlpReady: Promise<string> | null = null;
+function ensureYtDlp(): Promise<string> {
+  if (ytDlpReady) return ytDlpReady;
+  ytDlpReady = (async () => {
+    const configured = process.env.YTDLP_PATH?.trim();
+    const works = (bin: string) =>
+      new Promise<boolean>((resolve) => execFile(bin, ['--version'], { timeout: 15_000 }, (err) => resolve(!err)));
+
+    if (configured && (await works(configured))) return configured;
+    if (await works('yt-dlp')) return 'yt-dlp';
+
+    const asset =
+      process.platform === 'linux'
+        ? process.arch === 'arm64' ? 'yt-dlp_linux_aarch64' : 'yt-dlp_linux'
+        : null;
+    if (!asset) throw new Error(`yt-dlp isn't installed and can't be auto-installed on ${process.platform}. Install it and set YTDLP_PATH.`);
+
+    const dir = path.join(process.env.DATA_DIR ? path.resolve(process.env.DATA_DIR) : process.cwd(), 'bin');
+    const target = path.join(dir, 'yt-dlp');
+    if (!(await works(target))) {
+      fs.mkdirSync(dir, { recursive: true });
+      const res = await fetch(`https://github.com/yt-dlp/yt-dlp/releases/latest/download/${asset}`, {
+        redirect: 'follow',
+        signal: AbortSignal.timeout(90_000),
+      });
+      if (!res.ok) throw new Error(`Couldn't download yt-dlp (HTTP ${res.status}).`);
+      fs.writeFileSync(target, Buffer.from(await res.arrayBuffer()));
+      fs.chmodSync(target, 0o755);
+      if (!(await works(target))) throw new Error('Downloaded yt-dlp but it will not run on this server.');
+      console.log(`[yt-dlp] auto-installed at ${target}`);
+    }
+    return target;
+  })().catch((err) => {
+    ytDlpReady = null; // allow a retry on the next command
+    throw err;
+  });
+  return ytDlpReady;
+}
+
+interface DownloadResult {
+  path?: string;
+  reason?: string;
+}
+
+/** Downloads media with yt-dlp into a temp file. Returns the path, or a human-readable failure reason. */
+async function downloadWithYtDlpDetailed(url: string, kind: 'audio' | 'video'): Promise<DownloadResult> {
+  let bin: string;
+  try {
+    bin = await ensureYtDlp();
+  } catch (err) {
+    console.warn(`[yt-dlp] setup failed: ${err instanceof Error ? err.message : err}`);
+    return { reason: err instanceof Error ? err.message : 'yt-dlp could not be set up.' };
+  }
   return new Promise((resolve) => {
-    const bin = process.env.YTDLP_PATH?.trim() || 'yt-dlp';
     const outBase = path.join(os.tmpdir(), `dl-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`);
     const maxBytes = kind === 'video' ? 30 * 1024 * 1024 : MAX_PLAY_BYTES;
     const args = [
       '-f',
-      kind === 'audio'
-        ? 'bestaudio[ext=m4a]/bestaudio'
-        : 'b[ext=mp4][height<=720]/b[ext=mp4]/b',
+      kind === 'audio' ? 'bestaudio[ext=m4a]/bestaudio' : 'b[ext=mp4][height<=720]/b[ext=mp4]/b',
       '--no-playlist',
       '--max-filesize', `${Math.round(maxBytes / (1024 * 1024))}M`,
       '--match-filter', `duration<=?${MAX_PLAY_SECONDS}`,
       '-o', `${outBase}.%(ext)s`,
     ];
-    // Optional cookies (helps with Instagram / age-gated / bot-checked content).
     const cookies = process.env.YTDLP_COOKIES?.trim();
     if (cookies && fs.existsSync(cookies)) args.push('--cookies', cookies);
     args.push(url);
 
     execFile(bin, args, { timeout: 120_000 }, (error, _stdout, stderr) => {
+      const errText = (stderr || '').toString();
+      const lastLine = errText.split('\n').map((l) => l.trim()).filter(Boolean).slice(-1)[0] || '';
       if (error) {
-        console.warn(`[yt-dlp] failed for ${url}: ${(stderr || error.message).toString().split('\n').filter(Boolean).slice(-2).join(' | ')}`);
-        return resolve(null);
+        const code = (error as NodeJS.ErrnoException).code;
+        console.warn(`[yt-dlp] failed for ${url} (code=${String(code)}): ${errText.split('\n').filter(Boolean).slice(-3).join(' | ') || error.message}`);
+        if (code === 'ENOENT') {
+          return resolve({ reason: `yt-dlp is not installed on the server (looked for "${bin}"). The build step that downloads it didn't run.` });
+        }
+        if (code === 'EACCES') {
+          return resolve({ reason: `yt-dlp was found at "${bin}" but isn't executable.` });
+        }
+        if (/sign in|not a bot|confirm you.?re not|cookies/i.test(errText)) {
+          return resolve({ reason: 'YouTube/the platform is blocking the server (bot check). Cookies or a different host are needed.' });
+        }
+        if (/429|too many requests/i.test(errText)) {
+          return resolve({ reason: 'Rate limited by the platform. Try again later.' });
+        }
+        if (/private|unavailable|removed|not available|login required|age/i.test(errText)) {
+          return resolve({ reason: 'The video is private, removed, age-restricted or login-only.' });
+        }
+        return resolve({ reason: `yt-dlp error: ${(lastLine || error.message).slice(0, 160)}` });
       }
       const dir = path.dirname(outBase);
       const prefix = path.basename(outBase);
       const file = fs.readdirSync(dir).find((f) => f.startsWith(prefix));
-      if (!file) return resolve(null);
+      if (!file) {
+        return resolve({ reason: `Skipped: longer than ${Math.round(MAX_PLAY_SECONDS / 60)} min or larger than ${Math.round(maxBytes / (1024 * 1024))} MB.` });
+      }
       const full = path.join(dir, file);
       if (fs.statSync(full).size > maxBytes) {
         fs.rmSync(full, { force: true });
-        return resolve(null);
+        return resolve({ reason: `File is larger than ${Math.round(maxBytes / (1024 * 1024))} MB.` });
       }
-      resolve(full);
+      resolve({ path: full });
     });
   });
 }
 
-const downloadYouTubeAudio = (url: string) => downloadWithYtDlp(url, 'audio');
+const downloadWithYtDlp = async (url: string, kind: 'audio' | 'video'): Promise<string | null> =>
+  (await downloadWithYtDlpDetailed(url, kind)).path ?? null;
 
 // Allowed hosts per downloader command (stops the bot being used to fetch arbitrary URLs).
 const DOWNLOADER_HOSTS: Record<string, { label: string; host: RegExp; example: string }> = {
@@ -2085,23 +2168,21 @@ async function executeBuiltInCommand(
       } else if (video.seconds > MAX_PLAY_SECONDS) {
         note = `\n\n⏱️ Too long to send as audio (limit ${Math.round(MAX_PLAY_SECONDS / 60)} min). Open the link to listen.`;
       } else {
-        audioPath = await downloadYouTubeAudio(video.url);
-        if (!audioPath) note = `\n\n_Audio download isn't available right now. Open the link to listen._`;
+        const dl = await downloadWithYtDlpDetailed(video.url, 'audio');
+        audioPath = dl.path ?? null;
+        if (!audioPath) note = `\n\n⚠️ Audio unavailable: ${dl.reason || 'unknown error'}\n_Open the link to listen._`;
       }
 
+      // Success: just the thumbnail with the song name, then the audio (no extra details).
+      // If the audio couldn't be fetched, show the name, link and the reason instead.
       return {
-        text: [
-          `*🎵 ${video.title}*`,
-          `┏━━━━━━━━━━━`,
-          `┣ Channel: *${video.channel}*`,
-          `┣ Duration: ${video.duration}`,
-          `┣ Views: ${video.views}  ·  ${video.ago}`,
-          `┗━━━━━━━━━━━`,
-          `\n🔗 ${video.url}${note}`,
-        ].join('\n'),
+        text: audioPath
+          ? `🎵 ${video.title}`
+          : `🎵 *${video.title}*\n🔗 ${video.url}${note}`,
         imageUrl: video.thumbnail,
         imageCaption: `🎵 ${video.title}`,
         audioPath: audioPath || undefined,
+        hideText: Boolean(audioPath),
         handler: 'YouTube Search',
       };
     } catch {
@@ -2117,6 +2198,7 @@ async function executeBuiltInCommand(
 
     let url = findUrl(cleanArg, quotedText);
     let title = '';
+    let thumb: string | undefined;
 
     // .yt also accepts a plain search query.
     if (!url && cmd === 'yt' && cleanArg) {
@@ -2125,6 +2207,7 @@ async function executeBuiltInCommand(
         if (!hit) return { text: `🔎 No YouTube results for *${cleanArg}*.`, handler: 'YouTube Search', status: 'error' };
         url = hit.url;
         title = hit.title;
+        thumb = hit.thumbnail;
       } catch {
         return { text: `🔎 YouTube search is unavailable right now. Try again shortly.`, handler: 'YouTube Search', status: 'error' };
       }
@@ -2156,17 +2239,29 @@ async function executeBuiltInCommand(
     }
 
     const kind = wantAudio ? 'audio' : 'video';
-    const file = await downloadWithYtDlp(url, kind);
+    const dl = await downloadWithYtDlpDetailed(url, kind);
+    const file = dl.path;
     if (!file) {
       return {
-        text: `❌ Couldn't download that ${cfg.label} ${kind}. It may be private, too long (limit ${Math.round(MAX_PLAY_SECONDS / 60)} min), too large, or the platform is blocking the server.\n🔗 ${url}`,
+        text: `❌ Couldn't download that ${cfg.label} ${kind}.\nReason: ${dl.reason || 'unknown error'}\n🔗 ${url}`,
         handler: `${cfg.label} Downloader`,
         status: 'error',
       };
     }
+    // Minimal output: (YouTube only) thumbnail + name, then the media. No extra text.
+    if (cmd === 'yt' && !title) {
+      const meta = await getYouTubeMeta(url);
+      if (meta) {
+        title = meta.title;
+        thumb = thumb || meta.thumbnail;
+      }
+    }
     return {
-      text: `✅ ${title ? `*${title}*\n` : ''}${cfg.label} ${kind} ready.\n🔗 ${url}`,
+      text: title ? `${kind === 'audio' ? '🎵' : '🎬'} ${title}` : `🔗 ${url}`,
+      imageUrl: cmd === 'yt' ? thumb : undefined,
+      imageCaption: title ? `${kind === 'audio' ? '🎵' : '🎬'} ${title}` : undefined,
       ...(kind === 'audio' ? { audioPath: file } : { videoPath: file }),
+      hideText: true,
       handler: `${cfg.label} Downloader`,
     };
   }
