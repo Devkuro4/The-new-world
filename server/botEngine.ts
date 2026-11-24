@@ -539,11 +539,12 @@ async function downloadWithYtDlpDetailed(url: string, kind: 'audio' | 'video'): 
     console.warn(`[yt-dlp] setup failed: ${err instanceof Error ? err.message : err}`);
     return { reason: err instanceof Error ? err.message : 'yt-dlp could not be set up.' };
   }
-  const first = await runYtDlpOnce(bin, url, kind, []);
+  let first = await runYtDlpOnce(bin, url, kind, [], true);
+  if (first.badFlag) first = await runYtDlpOnce(bin, url, kind, [], false); // older yt-dlp without the JS-runtime options
   if (!first.botCheck || !/youtube\.com|youtu\.be/i.test(url)) return first;
   // Bot check on YouTube: retry once with other player clients, which sometimes get through without cookies.
   console.warn('[yt-dlp] bot check hit, retrying with alternate YouTube clients');
-  const retry = await runYtDlpOnce(bin, url, kind, ['--extractor-args', 'youtube:player_client=tv_simply,android_vr,web_safari']);
+  const retry = await runYtDlpOnce(bin, url, kind, ['--extractor-args', 'youtube:player_client=tv_simply,android_vr,web_safari'], !first.badFlag);
   return retry.path ? retry : first;
 }
 
@@ -551,20 +552,23 @@ function runYtDlpOnce(
   bin: string,
   url: string,
   kind: 'audio' | 'video',
-  extraArgs: string[]
-): Promise<DownloadResult & { botCheck?: boolean }> {
+  extraArgs: string[],
+  useJsRuntime: boolean
+): Promise<DownloadResult & { botCheck?: boolean; badFlag?: boolean }> {
   return new Promise((resolve) => {
     const outBase = path.join(os.tmpdir(), `dl-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`);
     const maxBytes = kind === 'video' ? 30 * 1024 * 1024 : MAX_PLAY_BYTES;
     const args = [
       '-f',
-      kind === 'audio' ? 'bestaudio[ext=m4a][abr<=130]/bestaudio[ext=m4a]/bestaudio' : 'b[ext=mp4][height<=720]/b[ext=mp4]/b',
+      kind === 'audio' ? 'bestaudio[ext=m4a][abr<=130]/bestaudio[ext=m4a]/bestaudio/best' : 'b[ext=mp4][height<=720]/b[ext=mp4]/b',
       '--no-playlist', '--no-warnings', '--no-mtime',
       '--concurrent-fragments', '4', '--http-chunk-size', '10M',
       '--max-filesize', `${Math.round(maxBytes / (1024 * 1024))}M`,
       '--match-filter', `duration<=?${MAX_PLAY_SECONDS}`,
       '-o', `${outBase}.%(ext)s`,
     ];
+    // Recent yt-dlp needs a JavaScript runtime to read YouTube; Node is already running this bot.
+    if (useJsRuntime) args.push('--js-runtimes', `node:${process.execPath}`, '--remote-components', 'ejs:github');
     const cookies = getCookiesFile();
     if (cookies) args.push('--cookies', cookies);
     args.push(...extraArgs, url);
@@ -587,13 +591,19 @@ function runYtDlpOnce(
             botCheck: true,
           });
         }
+        if (/no such option|unrecognized arguments/i.test(errText)) {
+          return resolve({ reason: `yt-dlp rejected an option: ${lastLine.slice(0, 120)}`, badFlag: true });
+        }
         if (/429|too many requests/i.test(errText)) {
           return resolve({ reason: 'Rate limited by the platform. Try again later.' });
         }
-        if (/private|unavailable|removed|not available|login required|age/i.test(errText)) {
-          return resolve({ reason: 'The video is private, removed, age-restricted or login-only.' });
+        if (/requested format is not available|only images are available/i.test(errText)) {
+          return resolve({ reason: `YouTube returned no downloadable audio/video for this server (yt-dlp may be out of date, or the cookies are stale). Details: ${lastLine.slice(0, 140)}` });
         }
-        return resolve({ reason: `yt-dlp error: ${(lastLine || error.message).slice(0, 160)}` });
+        if (/private video|video unavailable|has been removed|removed by the uploader|not available in your country|age.restricted|confirm your age|login required|members.only/i.test(errText)) {
+          return resolve({ reason: `The video is private, removed, region/age-restricted or login-only. Details: ${lastLine.slice(0, 140)}` });
+        }
+        return resolve({ reason: `yt-dlp error: ${(lastLine || error.message).slice(0, 180)}` });
       }
       const dir = path.dirname(outBase);
       const prefix = path.basename(outBase);
