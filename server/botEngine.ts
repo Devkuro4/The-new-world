@@ -358,7 +358,58 @@ interface YtResult {
   thumbnail?: string;
 }
 
+/** Fast path: one direct request to YouTube's search endpoint (much lighter than scraping the results page). */
+async function searchYouTubeFast(query: string): Promise<YtResult | null> {
+  const res = await fetch('https://www.youtube.com/youtubei/v1/search?prettyPrint=false', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Safari/537.36',
+      'Accept-Language': 'en-US,en;q=0.9',
+    },
+    body: JSON.stringify({
+      context: { client: { clientName: 'WEB', clientVersion: '2.20240814.01.00', hl: 'en', gl: 'US' } },
+      query,
+      params: 'EgIQAQ%3D%3D', // videos only
+    }),
+    signal: AbortSignal.timeout(4_000),
+  });
+  if (!res.ok) throw new Error(`YouTube HTTP ${res.status}`);
+  const data = (await res.json()) as any;
+  const sections: any[] =
+    data?.contents?.twoColumnSearchResultsRenderer?.primaryContents?.sectionListRenderer?.contents || [];
+  for (const section of sections) {
+    for (const item of section?.itemSectionRenderer?.contents || []) {
+      const v = item?.videoRenderer;
+      if (!v?.videoId || !v?.lengthText?.simpleText) continue; // skip ads and live streams
+      const parts = String(v.lengthText.simpleText).split(':').map(Number);
+      const seconds = parts.reduce((acc, n) => acc * 60 + (Number.isFinite(n) ? n : 0), 0);
+      return {
+        title: v.title?.runs?.map((r: any) => r.text).join('') || 'Unknown title',
+        channel: v.ownerText?.runs?.[0]?.text || 'Unknown channel',
+        duration: v.lengthText.simpleText,
+        seconds,
+        views: '—',
+        ago: v.publishedTimeText?.simpleText || '—',
+        url: `https://www.youtube.com/watch?v=${v.videoId}`,
+        thumbnail: `https://i.ytimg.com/vi/${v.videoId}/mqdefault.jpg`,
+      };
+    }
+  }
+  return null;
+}
+
 async function searchYouTube(query: string): Promise<YtResult | null> {
+  try {
+    const fast = await searchYouTubeFast(query);
+    if (fast) return fast;
+  } catch {
+    // fall through to the slower scraper
+  }
+  return searchYouTubeSlow(query);
+}
+
+async function searchYouTubeSlow(query: string): Promise<YtResult | null> {
   const res = await Promise.race([
     yts(query),
     new Promise<never>((_, reject) => setTimeout(() => reject(new Error('YouTube search timed out')), 12_000)),
@@ -373,7 +424,7 @@ async function searchYouTube(query: string): Promise<YtResult | null> {
     views: video.views ? video.views.toLocaleString() : '—',
     ago: video.ago || '—',
     url: video.url,
-    thumbnail: video.image || video.thumbnail,
+    thumbnail: video.videoId ? `https://i.ytimg.com/vi/${video.videoId}/mqdefault.jpg` : video.image || video.thumbnail,
   };
 }
 
@@ -385,9 +436,9 @@ async function getYouTubeMeta(url: string): Promise<{ title: string; thumbnail?:
       yts({ videoId: id }),
       new Promise<never>((_, reject) => setTimeout(() => reject(new Error('timeout')), 8_000)),
     ]);
-    return { title: v.title, thumbnail: v.image || v.thumbnail || `https://i.ytimg.com/vi/${id}/hqdefault.jpg` };
+    return { title: v.title, thumbnail: `https://i.ytimg.com/vi/${id}/mqdefault.jpg` };
   } catch {
-    return { title: '', thumbnail: `https://i.ytimg.com/vi/${id}/hqdefault.jpg` };
+    return { title: '', thumbnail: `https://i.ytimg.com/vi/${id}/mqdefault.jpg` };
   }
 }
 
@@ -444,6 +495,25 @@ interface DownloadResult {
 }
 
 /** Downloads media with yt-dlp into a temp file. Returns the path, or a human-readable failure reason. */
+// Cookies file (e.g. a Render Secret File). yt-dlp wants to write back to it, so use a writable copy.
+let cookiesCopy: string | null | undefined;
+function getCookiesFile(): string | null {
+  if (cookiesCopy !== undefined) return cookiesCopy;
+  const src = process.env.YTDLP_COOKIES?.trim();
+  if (!src || !fs.existsSync(src)) {
+    cookiesCopy = null;
+    return null;
+  }
+  try {
+    const dest = path.join(os.tmpdir(), 'yt-cookies.txt');
+    fs.copyFileSync(src, dest);
+    cookiesCopy = dest;
+  } catch {
+    cookiesCopy = src;
+  }
+  return cookiesCopy;
+}
+
 async function downloadWithYtDlpDetailed(url: string, kind: 'audio' | 'video'): Promise<DownloadResult> {
   let bin: string;
   try {
@@ -452,6 +522,20 @@ async function downloadWithYtDlpDetailed(url: string, kind: 'audio' | 'video'): 
     console.warn(`[yt-dlp] setup failed: ${err instanceof Error ? err.message : err}`);
     return { reason: err instanceof Error ? err.message : 'yt-dlp could not be set up.' };
   }
+  const first = await runYtDlpOnce(bin, url, kind, []);
+  if (!first.botCheck || !/youtube\.com|youtu\.be/i.test(url)) return first;
+  // Bot check on YouTube: retry once with other player clients, which sometimes get through without cookies.
+  console.warn('[yt-dlp] bot check hit, retrying with alternate YouTube clients');
+  const retry = await runYtDlpOnce(bin, url, kind, ['--extractor-args', 'youtube:player_client=tv_simply,android_vr,web_safari']);
+  return retry.path ? retry : first;
+}
+
+function runYtDlpOnce(
+  bin: string,
+  url: string,
+  kind: 'audio' | 'video',
+  extraArgs: string[]
+): Promise<DownloadResult & { botCheck?: boolean }> {
   return new Promise((resolve) => {
     const outBase = path.join(os.tmpdir(), `dl-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`);
     const maxBytes = kind === 'video' ? 30 * 1024 * 1024 : MAX_PLAY_BYTES;
@@ -464,9 +548,9 @@ async function downloadWithYtDlpDetailed(url: string, kind: 'audio' | 'video'): 
       '--match-filter', `duration<=?${MAX_PLAY_SECONDS}`,
       '-o', `${outBase}.%(ext)s`,
     ];
-    const cookies = process.env.YTDLP_COOKIES?.trim();
-    if (cookies && fs.existsSync(cookies)) args.push('--cookies', cookies);
-    args.push(url);
+    const cookies = getCookiesFile();
+    if (cookies) args.push('--cookies', cookies);
+    args.push(...extraArgs, url);
 
     execFile(bin, args, { timeout: 120_000 }, (error, _stdout, stderr) => {
       const errText = (stderr || '').toString();
@@ -481,7 +565,10 @@ async function downloadWithYtDlpDetailed(url: string, kind: 'audio' | 'video'): 
           return resolve({ reason: `yt-dlp was found at "${bin}" but isn't executable.` });
         }
         if (/sign in|not a bot|confirm you.?re not|cookies/i.test(errText)) {
-          return resolve({ reason: 'YouTube/the platform is blocking the server (bot check). Cookies or a different host are needed.' });
+          return resolve({
+            reason: `YouTube/the platform is blocking the server (bot check). ${cookies ? 'The cookies file may have expired — export a fresh one.' : 'Cookies or a different host are needed.'}`,
+            botCheck: true,
+          });
         }
         if (/429|too many requests/i.test(errText)) {
           return resolve({ reason: 'Rate limited by the platform. Try again later.' });

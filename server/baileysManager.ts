@@ -661,6 +661,14 @@ async function startSocket(): Promise<WASocket> {
           }
         }
 
+        // Instant feedback for slow media commands: react right away so people know it's working.
+        if (isCommand) {
+          const cmdName = text.slice(prefix.length).trim().split(/\s+/)[0]?.toLowerCase();
+          if (cmdName && ['play', 'yt', 'ttk', 'ig', 'x', 'fb'].includes(cmdName)) {
+            sock.sendMessage(remoteJid, { react: { text: '🎧', key: msg.key } }).catch(() => {});
+          }
+        }
+
         const effect: GroupCommandEffect = isGroup
           ? await handleBaileysGroupCommandSideEffects(sock, remoteJid, msg, text, senderRole, meta)
           : {};
