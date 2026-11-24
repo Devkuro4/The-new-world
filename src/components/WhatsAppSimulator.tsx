@@ -159,13 +159,13 @@ export const WhatsAppSimulator: React.FC<WhatsAppSimulatorProps> = ({
                 )}
 
                 {msg.imageUrl && !brokenImages[msg.id] && (
-                  <div className="mb-2 overflow-hidden rounded-md border border-slate-200 bg-slate-100">
+                  <div className="mb-2 w-52 max-w-full overflow-hidden rounded-md border border-slate-200 bg-slate-950">
                     <img
                       src={msg.imageUrl}
                       alt={msg.imageCaption || 'Anime media preview'}
                       referrerPolicy="no-referrer"
                       onError={() => setBrokenImages((prev) => ({ ...prev, [msg.id]: true }))}
-                      className="max-h-60 w-full object-cover"
+                      className="h-72 w-full object-contain"
                     />
                     {msg.imageCaption && (
                       <div className="bg-slate-900/85 px-2.5 py-1 text-[11px] text-slate-100">

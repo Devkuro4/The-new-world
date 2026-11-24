@@ -1371,13 +1371,10 @@ async function executeBuiltInCommand(
 
     return {
       text: [
-        `*Card Series - ${bestSeries}*`,
-        `Closest match for: _${query}_`,
-        `Cards: *${seriesCards.length}*`,
-        '',
+        `*🎴 ${bestSeries.toUpperCase()}*`,
         ...seriesCards.map(
           (card) =>
-            `T${card.sourceTier ?? '?'} · [${card.tier}] *${card.name}* · \`${card.id}\``
+            `T${card.sourceTier ?? '?'} • *${card.name}*`
         ),
       ].join('\n'),
       handler: 'Series Search',
@@ -1413,29 +1410,49 @@ async function executeBuiltInCommand(
     }
 
     const card = cardMatches[0];
-    const owners = Object.values(botState.players).filter((owner) => owner.cards.includes(card.id));
+    const ownedCopies = Object.values(botState.players).flatMap((owner) =>
+      owner.cards.flatMap((ownedCardId, collectionIndex) =>
+        ownedCardId === card.id ? [{ owner, collectionIndex }] : []
+      )
+    );
+    const owners = [...new Map(ownedCopies.map((copy) => [copy.owner.id, copy.owner])).values()];
     if (!card.imageUrl) card.imageUrl = await fetchCharacterImage(card.name);
 
-    return {
-      text: [
-        `*Card Info - ${card.name}*`,
-        `ID: \`${card.id}\``,
-        `Shoob Tier: *T${card.sourceTier}*`,
-        `Bot Rank: *${card.tier}*`,
-        `Series: _${card.series}_`,
-        `Power: ATK *${card.atk}* / DEF *${card.def}*`,
-        `Stardust: *${card.stardustValue}*`,
-        `Price: *¥${card.price.toLocaleString()}*`,
-        `Owners: *${owners.length}*`,
-        owners.length > 0
-          ? owners.map((owner, index) => `${index + 1}. ${owner.name}`).join('\n')
-          : '_Nobody owns this card yet._',
+    const cardProfileText = [
+        '╭───── ✦ 🎴 ✦ ─────╮',
+        '*CARD PROFILE*',
+        '╰───── ✦ 🎴 ✦ ─────╯',
+        '',
+        `*Name:* ${card.name}`,
+        `*Series:* ${card.series}`,
+        `*Tier:* ${card.sourceTier}`,
+        `*Card ID:* \`${card.id}\``,
+        `*Total Owners:* ${owners.length}`,
+        '',
+        '┌───── 👥 HOLDERS ─────┐',
+        ownedCopies.length > 0
+          ? ownedCopies
+              .map((copy, index) => {
+                const issueCode = crypto
+                  .createHash('sha1')
+                  .update(`${card.id}:${copy.owner.id}:${copy.collectionIndex}`)
+                  .digest('hex')
+                  .slice(0, 5);
+                return `◆ *Issue ${index + 1}* · \`${issueCode}\`\n   ↳ @${copy.owner.name}`;
+              })
+              .join('\n')
+          : '   _No holders yet — this card is still unclaimed._',
+        '└────────────────────┘',
         cardMatches.length > 1
-          ? `_This name has ${cardMatches.length} T${requestedTier} variants; showing ${card.id}._`
+          ? `_Variant 1 of ${cardMatches.length} for ${card.name} at Tier ${requestedTier}._`
           : '',
-      ].filter(Boolean).join('\n'),
+      ].filter(Boolean).join('\n');
+
+    return {
+      text: cardProfileText,
       imageUrl: card.imageUrl,
-      imageCaption: `${card.name} · T${card.sourceTier} · ${owners.length} owner${owners.length === 1 ? '' : 's'}`,
+      imageCaption: cardProfileText,
+      hideText: true,
       handler: 'Card Info',
     };
   }

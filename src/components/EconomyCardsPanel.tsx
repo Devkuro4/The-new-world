@@ -231,12 +231,12 @@ export const EconomyCardsPanel: React.FC<EconomyCardsPanelProps> = ({
                           <img
                             src={card.imageUrl}
                             alt={card.name}
-                            className="h-20 w-14 rounded-md border border-slate-200 bg-slate-100 object-cover shadow-sm"
+                            className="h-24 w-16 rounded-md border border-slate-200 bg-slate-950 object-contain shadow-sm"
                             loading="lazy"
                           />
                         </a>
                       ) : (
-                        <div className="h-20 w-14 rounded-md border border-dashed border-slate-200 bg-slate-50" />
+                        <div className="h-24 w-16 rounded-md border border-dashed border-slate-200 bg-slate-50" />
                       )}
                     </td>
                     <td className="px-4 py-2.5 font-mono text-xs text-slate-500">{card.id}</td>
