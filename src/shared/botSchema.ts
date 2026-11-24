@@ -140,6 +140,11 @@ export interface BotReplyPayload {
   text: string;
   imageUrl?: string;
   imageCaption?: string;
+  audioUrl?: string;
+  /** Server-side temp audio file (sent by the Baileys runner, then deleted). */
+  audioPath?: string;
+  /** Server-side temp video file (sent by the Baileys runner, then deleted). */
+  videoPath?: string;
   buttons?: WhatsAppSimButton[];
   handler: string;
   status?: 'ok' | 'blocked' | 'error';
@@ -375,12 +380,12 @@ export const DEFAULT_COMMANDS: BotCommandDef[] = [
   { name: 'manga', category: 'Downloaders', description: 'Live Manga lookup via Jikan API (chapters, volumes, score, cover)', usage: '.manga <title>', role: 'everyone', enabled: true },
   { name: 'manhwa', category: 'Downloaders', description: 'Live Korean Manhwa lookup via Jikan API', usage: '.manhwa <title>', role: 'everyone', enabled: true },
   { name: 'novel', category: 'Downloaders', description: 'Live Light Novel lookup via Jikan API', usage: '.novel <title>', role: 'everyone', enabled: true },
-  { name: 'ig', category: 'Downloaders', description: 'Inspect Instagram reel/post URL for Baileys media bridge', usage: '.ig <url>', role: 'everyone', enabled: false },
-  { name: 'ttk', category: 'Downloaders', description: 'Inspect TikTok video URL for Baileys media bridge', usage: '.ttk <url>', role: 'everyone', enabled: false },
-  { name: 'yt', category: 'Downloaders', description: 'Inspect YouTube link & prepare audio/video metadata', usage: '.yt <url|query>', role: 'everyone', enabled: false },
-  { name: 'x', category: 'Downloaders', description: 'Inspect X/Twitter media link', usage: '.x <url>', role: 'everyone', enabled: false },
-  { name: 'fb', category: 'Downloaders', description: 'Inspect Facebook video link', usage: '.fb <url>', role: 'everyone', enabled: false },
-  { name: 'play', category: 'Downloaders', description: 'Find anime OP/ED track metadata & lyrics link', usage: '.play <song title>', role: 'everyone', enabled: false },
+  { name: 'ig', category: 'Downloaders', description: "Download an Instagram reel/post video", usage: '.ig <url>', role: 'everyone', enabled: true },
+  { name: 'ttk', category: 'Downloaders', description: "Download a TikTok video", usage: '.ttk <url>', role: 'everyone', enabled: true },
+  { name: 'yt', category: 'Downloaders', description: "Download a YouTube video, or search by name. Add 'audio' for audio only", usage: '.yt <url|query> [audio]', role: 'everyone', enabled: true },
+  { name: 'x', category: 'Downloaders', description: "Download an X/Twitter video", usage: '.x <url>', role: 'everyone', enabled: true },
+  { name: 'fb', category: 'Downloaders', description: "Download a Facebook video", usage: '.fb <url>', role: 'everyone', enabled: true },
+  { name: 'play', category: 'Downloaders', description: 'Search YouTube for a song/video and get its details, link & audio', usage: '.play <song title>', role: 'everyone', enabled: true },
   { name: 'reddit', category: 'Downloaders', description: 'Fetch top SFW post metadata from an anime subreddit', usage: '.reddit <subreddit>', role: 'everyone', enabled: false },
 
   // Search
@@ -397,7 +402,7 @@ export const DEFAULT_COMMANDS: BotCommandDef[] = [
   { name: 'perplexity', category: 'AI', description: 'Deep anime lore & studio research breakdown', usage: '.perplexity <topic>', role: 'everyone', enabled: true },
   { name: 'imagine', category: 'AI', description: 'Craft a detailed anime illustration prompt & scene spec', usage: '.imagine <scene>', role: 'everyone', enabled: true },
   { name: 'upscale', category: 'AI', description: 'Explain & queue HD anime frame enhancement', usage: '.upscale', role: 'everyone', enabled: false },
-  { name: 'tt', aliases: ['translate'], category: 'AI', description: 'Translate Japanese/English/any text with romaji notes', usage: '.tt <targetLang> <text>', role: 'everyone', enabled: true },
+  { name: 'tt', aliases: ['translate'], category: 'AI', description: 'Translate text into any language (reply to a message works too). Default: English', usage: '.tt <targetLang> <text> | reply + .tt <targetLang>', role: 'everyone', enabled: true },
   { name: 'tb', aliases: ['transcribe'], category: 'AI', description: 'Transcribe voice-note dialogue in WhatsApp runner', usage: '.tb <text|reply>', role: 'everyone', enabled: false },
   { name: 'ocr', category: 'AI', description: 'Extract & translate manga panel text', usage: '.ocr <panel text>', role: 'everyone', enabled: false },
   { name: 'tldr', category: 'AI', description: 'Summarize long anime arcs or chapter discussions', usage: '.tldr <text>', role: 'everyone', enabled: true },

@@ -10,6 +10,7 @@ export interface SimMessage {
   text: string;
   imageUrl?: string;
   imageCaption?: string;
+  audioUrl?: string;
   buttons?: WhatsAppSimButton[];
   handler?: string;
   timestamp: string;
@@ -172,6 +173,10 @@ export const WhatsAppSimulator: React.FC<WhatsAppSimulatorProps> = ({
                       </div>
                     )}
                   </div>
+                )}
+
+                {msg.audioUrl && (
+                  <audio controls preload="none" src={msg.audioUrl} className="mb-2 w-full max-w-[260px]" />
                 )}
 
                 {msg.imageUrl && brokenImages[msg.id] && (

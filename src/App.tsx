@@ -172,6 +172,7 @@ export default function App() {
         senderLabel: config.botName,
         text: replyPayload?.text || data.error || 'Unable to process command.',
         imageUrl: replyPayload?.imageUrl,
+        audioUrl: replyPayload?.audioUrl,
         imageCaption: replyPayload?.imageCaption,
         buttons: replyPayload?.buttons,
         handler: replyPayload?.handler,

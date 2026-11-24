@@ -1,5 +1,8 @@
 import fs from 'node:fs';
+import os from 'node:os';
 import path from 'node:path';
+import { execFile } from 'node:child_process';
+import yts from 'yt-search';
 import {
   COMMAND_CATEGORIES,
   DEFAULT_BOT_CONFIG,
@@ -316,6 +319,170 @@ async function fetchJsonWithTimeout(url: string, timeoutMs = 5500): Promise<unkn
   return res.json();
 }
 
+
+// ── .tt translation helpers ──
+const LANGUAGE_ALIASES: Record<string, string> = {
+  en: 'English', eng: 'English', english: 'English',
+  ja: 'Japanese', jp: 'Japanese', jap: 'Japanese', japanese: 'Japanese',
+  es: 'Spanish', spanish: 'Spanish', fr: 'French', french: 'French',
+  de: 'German', german: 'German', it: 'Italian', italian: 'Italian',
+  pt: 'Portuguese', portuguese: 'Portuguese', ru: 'Russian', russian: 'Russian',
+  ko: 'Korean', kr: 'Korean', korean: 'Korean', zh: 'Chinese', cn: 'Chinese', chinese: 'Chinese',
+  ar: 'Arabic', arabic: 'Arabic', hi: 'Hindi', hindi: 'Hindi', tr: 'Turkish', turkish: 'Turkish',
+  id: 'Indonesian', indonesian: 'Indonesian', th: 'Thai', thai: 'Thai', vi: 'Vietnamese', vietnamese: 'Vietnamese',
+  nl: 'Dutch', dutch: 'Dutch', pl: 'Polish', polish: 'Polish', sw: 'Swahili', swahili: 'Swahili',
+  yo: 'Yoruba', yoruba: 'Yoruba', ig: 'Igbo', igbo: 'Igbo', ha: 'Hausa', hausa: 'Hausa',
+  pcm: 'Nigerian Pidgin', pidgin: 'Nigerian Pidgin',
+};
+
+function parseTranslateArgs(argStr: string, quotedText?: string): { language: string; text: string } {
+  const [first = '', ...rest] = argStr.split(/\s+/);
+  const language = LANGUAGE_ALIASES[first.toLowerCase()];
+  if (language) {
+    return { language, text: (rest.join(' ').trim() || quotedText || '').trim() };
+  }
+  // No language given: translate everything (typed text, else the replied message) to English.
+  return { language: 'English', text: (argStr.trim() || quotedText || '').trim() };
+}
+
+
+// ── .play YouTube search + optional audio download (needs yt-dlp on the server) ──
+interface YtResult {
+  title: string;
+  channel: string;
+  duration: string;
+  seconds: number;
+  views: string;
+  ago: string;
+  url: string;
+  thumbnail?: string;
+}
+
+async function searchYouTube(query: string): Promise<YtResult | null> {
+  const res = await Promise.race([
+    yts(query),
+    new Promise<never>((_, reject) => setTimeout(() => reject(new Error('YouTube search timed out')), 12_000)),
+  ]);
+  const video = res.videos?.[0];
+  if (!video) return null;
+  return {
+    title: video.title,
+    channel: video.author?.name || 'Unknown channel',
+    duration: video.timestamp || '—',
+    seconds: video.seconds || 0,
+    views: video.views ? video.views.toLocaleString() : '—',
+    ago: video.ago || '—',
+    url: video.url,
+    thumbnail: video.image || video.thumbnail,
+  };
+}
+
+const MAX_PLAY_SECONDS = Number(process.env.PLAY_MAX_SECONDS) || 900; // 15 min default
+const MAX_PLAY_BYTES = 40 * 1024 * 1024;
+
+/** Downloads media with yt-dlp into a temp file. Returns the path, or null if unavailable/failed/too big. */
+function downloadWithYtDlp(url: string, kind: 'audio' | 'video'): Promise<string | null> {
+  return new Promise((resolve) => {
+    const bin = process.env.YTDLP_PATH?.trim() || 'yt-dlp';
+    const outBase = path.join(os.tmpdir(), `dl-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`);
+    const maxBytes = kind === 'video' ? 30 * 1024 * 1024 : MAX_PLAY_BYTES;
+    const args = [
+      '-f',
+      kind === 'audio'
+        ? 'bestaudio[ext=m4a]/bestaudio'
+        : 'b[ext=mp4][height<=720]/b[ext=mp4]/b',
+      '--no-playlist',
+      '--max-filesize', `${Math.round(maxBytes / (1024 * 1024))}M`,
+      '--match-filter', `duration<=?${MAX_PLAY_SECONDS}`,
+      '-o', `${outBase}.%(ext)s`,
+    ];
+    // Optional cookies (helps with Instagram / age-gated / bot-checked content).
+    const cookies = process.env.YTDLP_COOKIES?.trim();
+    if (cookies && fs.existsSync(cookies)) args.push('--cookies', cookies);
+    args.push(url);
+
+    execFile(bin, args, { timeout: 120_000 }, (error, _stdout, stderr) => {
+      if (error) {
+        console.warn(`[yt-dlp] failed for ${url}: ${(stderr || error.message).toString().split('\n').filter(Boolean).slice(-2).join(' | ')}`);
+        return resolve(null);
+      }
+      const dir = path.dirname(outBase);
+      const prefix = path.basename(outBase);
+      const file = fs.readdirSync(dir).find((f) => f.startsWith(prefix));
+      if (!file) return resolve(null);
+      const full = path.join(dir, file);
+      if (fs.statSync(full).size > maxBytes) {
+        fs.rmSync(full, { force: true });
+        return resolve(null);
+      }
+      resolve(full);
+    });
+  });
+}
+
+const downloadYouTubeAudio = (url: string) => downloadWithYtDlp(url, 'audio');
+
+// Allowed hosts per downloader command (stops the bot being used to fetch arbitrary URLs).
+const DOWNLOADER_HOSTS: Record<string, { label: string; host: RegExp; example: string }> = {
+  yt: { label: 'YouTube', host: /(^|\.)(youtube\.com|youtu\.be)$/i, example: 'https://youtu.be/xxxx' },
+  ttk: { label: 'TikTok', host: /(^|\.)tiktok\.com$/i, example: 'https://vm.tiktok.com/xxxx' },
+  ig: { label: 'Instagram', host: /(^|\.)instagram\.com$/i, example: 'https://instagram.com/reel/xxxx' },
+  x: { label: 'X/Twitter', host: /(^|\.)(x\.com|twitter\.com)$/i, example: 'https://x.com/user/status/123' },
+  fb: { label: 'Facebook', host: /(^|\.)(facebook\.com|fb\.watch|fb\.com)$/i, example: 'https://fb.watch/xxxx' },
+};
+
+function findUrl(...sources: Array<string | undefined>): string | null {
+  for (const src of sources) {
+    const m = src?.match(/https?:\/\/[^\s]+/i);
+    if (m) return m[0].replace(/[)\]>.,]+$/, '');
+  }
+  return null;
+}
+
+// ── .play fallback music search (iTunes Search API: no key required) ──
+interface PlayTrack {
+  title: string;
+  artist: string;
+  album: string;
+  year: string;
+  duration: string;
+  genre: string;
+  artwork?: string;
+  previewUrl?: string;
+  link?: string;
+}
+
+async function searchSong(query: string): Promise<PlayTrack | null> {
+  const params = new URLSearchParams({ term: query, media: 'music', entity: 'song', limit: '5' });
+  const data = (await fetchJsonWithTimeout(`https://itunes.apple.com/search?${params.toString()}`, 8000)) as {
+    results?: Array<{
+      trackName?: string;
+      artistName?: string;
+      collectionName?: string;
+      releaseDate?: string;
+      trackTimeMillis?: number;
+      primaryGenreName?: string;
+      artworkUrl100?: string;
+      previewUrl?: string;
+      trackViewUrl?: string;
+    }>;
+  };
+  const hit = data.results?.find((r) => r.trackName && r.previewUrl) || data.results?.[0];
+  if (!hit?.trackName) return null;
+  const secs = Math.round((hit.trackTimeMillis || 0) / 1000);
+  return {
+    title: hit.trackName,
+    artist: hit.artistName || 'Unknown artist',
+    album: hit.collectionName || 'Single',
+    year: hit.releaseDate ? hit.releaseDate.slice(0, 4) : '—',
+    duration: secs ? `${Math.floor(secs / 60)}:${String(secs % 60).padStart(2, '0')}` : '—',
+    genre: hit.primaryGenreName || '—',
+    artwork: hit.artworkUrl100?.replace('100x100', '600x600'),
+    previewUrl: hit.previewUrl,
+    link: hit.trackViewUrl,
+  };
+}
+
 async function fetchJikanMedia(type: 'anime' | 'manga', query: string, subType?: string): Promise<{
   title: string;
   japanese?: string;
@@ -469,6 +636,7 @@ export async function handleIncomingMessage(params: {
   chatMode: 'group' | 'dm';
   source: 'simulator' | 'meta-webhook' | 'baileys';
   text: string;
+  quotedText?: string;
 }): Promise<BotReplyPayload> {
   const started = Date.now();
   const input = params.text.trim();
@@ -594,7 +762,7 @@ export async function handleIncomingMessage(params: {
       return reply;
     }
 
-    reply = await executeBuiltInCommand(cmdDef.name, restTokens, argStr, player, params.chatMode);
+    reply = await executeBuiltInCommand(cmdDef.name, restTokens, argStr, player, params.chatMode, params.quotedText, params.source);
     reply = { ...reply, text: applyTextUi(reply.text) };
     recordLog(params, input, reply, Date.now() - started);
     persistState();
@@ -640,7 +808,9 @@ async function executeBuiltInCommand(
   args: string[],
   argStr: string,
   player: PlayerProfile,
-  chatMode: 'group' | 'dm'
+  chatMode: 'group' | 'dm',
+  quotedText?: string,
+  source?: string
 ): Promise<BotReplyPayload> {
   const p = botState.config.prefix;
 
@@ -1881,7 +2051,127 @@ async function executeBuiltInCommand(
     };
   }
 
-  if (['ig', 'ttk', 'yt', 'x', 'fb', 'play', 'reddit', 'sauce', 'reverseimg', 'lyrics', 'igstalk', 'shazam'].includes(cmd)) {
+  if (cmd === 'play') {
+    if (!argStr) {
+      return { text: `Usage: *${p}play <song title>*\nExample: *${p}play Gurenge LiSA*`, handler: 'YouTube Search' };
+    }
+    try {
+      let video: YtResult | null = null;
+      try {
+        video = await searchYouTube(argStr);
+      } catch {
+        video = null;
+      }
+
+      if (!video) {
+        // YouTube unreachable or no result: fall back to an iTunes preview so the command still works.
+        const track = await searchSong(argStr).catch(() => null);
+        if (!track) {
+          return { text: `🎵 No results found for *${argStr}*. Try adding the artist name.`, handler: 'YouTube Search', status: 'error' };
+        }
+        return {
+          text: `*🎵 ${track.title}*\nArtist: *${track.artist}*\nAlbum: ${track.album} · ${track.year}\n\n_YouTube was unavailable, so this is a 30s preview._${track.link ? `\n🔗 ${track.link}` : ''}`,
+          imageUrl: track.artwork,
+          imageCaption: `🎵 ${track.title} — ${track.artist}`,
+          audioUrl: track.previewUrl,
+          handler: 'iTunes Fallback',
+        };
+      }
+
+      let audioPath: string | null = null;
+      let note = '';
+      if (source !== 'baileys') {
+        note = `\n\n_Audio is only sent in the WhatsApp runner. Open the link to listen._`;
+      } else if (video.seconds > MAX_PLAY_SECONDS) {
+        note = `\n\n⏱️ Too long to send as audio (limit ${Math.round(MAX_PLAY_SECONDS / 60)} min). Open the link to listen.`;
+      } else {
+        audioPath = await downloadYouTubeAudio(video.url);
+        if (!audioPath) note = `\n\n_Audio download isn't available right now. Open the link to listen._`;
+      }
+
+      return {
+        text: [
+          `*🎵 ${video.title}*`,
+          `┏━━━━━━━━━━━`,
+          `┣ Channel: *${video.channel}*`,
+          `┣ Duration: ${video.duration}`,
+          `┣ Views: ${video.views}  ·  ${video.ago}`,
+          `┗━━━━━━━━━━━`,
+          `\n🔗 ${video.url}${note}`,
+        ].join('\n'),
+        imageUrl: video.thumbnail,
+        imageCaption: `🎵 ${video.title}`,
+        audioPath: audioPath || undefined,
+        handler: 'YouTube Search',
+      };
+    } catch {
+      return { text: `🎵 Music search is unavailable right now. Please try again in a moment.`, handler: 'YouTube Search', status: 'error' };
+    }
+  }
+
+  if (cmd in DOWNLOADER_HOSTS) {
+    const cfg = DOWNLOADER_HOSTS[cmd];
+    const tokens = argStr.split(/\s+/).filter(Boolean);
+    const wantAudio = cmd === 'yt' && ['audio', 'mp3'].includes((tokens[tokens.length - 1] || '').toLowerCase());
+    const cleanArg = wantAudio ? tokens.slice(0, -1).join(' ') : argStr;
+
+    let url = findUrl(cleanArg, quotedText);
+    let title = '';
+
+    // .yt also accepts a plain search query.
+    if (!url && cmd === 'yt' && cleanArg) {
+      try {
+        const hit = await searchYouTube(cleanArg);
+        if (!hit) return { text: `🔎 No YouTube results for *${cleanArg}*.`, handler: 'YouTube Search', status: 'error' };
+        url = hit.url;
+        title = hit.title;
+      } catch {
+        return { text: `🔎 YouTube search is unavailable right now. Try again shortly.`, handler: 'YouTube Search', status: 'error' };
+      }
+    }
+
+    if (!url) {
+      const extra = cmd === 'yt' ? `\nOr search: *${p}yt <song or video name>*\nAdd *audio* at the end to get audio only.` : '';
+      return {
+        text: `*📥 ${cfg.label} Downloader*\nUsage: *${p}${cmd} <link>*\nExample: *${p}${cmd} ${cfg.example}*\nYou can also reply to a message that has the link.${extra}`,
+        handler: `${cfg.label} Downloader`,
+      };
+    }
+
+    let host = '';
+    try {
+      host = new URL(url).hostname;
+    } catch {
+      return { text: `That doesn't look like a valid link.`, handler: `${cfg.label} Downloader`, status: 'error' };
+    }
+    if (!cfg.host.test(host)) {
+      return { text: `⚠️ *${p}${cmd}* only works with ${cfg.label} links.`, handler: `${cfg.label} Downloader`, status: 'error' };
+    }
+
+    if (source !== 'baileys') {
+      return {
+        text: `*📥 ${cfg.label} link detected*\n${url}\n\n_Media is only downloaded and sent in the WhatsApp runner._`,
+        handler: `${cfg.label} Downloader`,
+      };
+    }
+
+    const kind = wantAudio ? 'audio' : 'video';
+    const file = await downloadWithYtDlp(url, kind);
+    if (!file) {
+      return {
+        text: `❌ Couldn't download that ${cfg.label} ${kind}. It may be private, too long (limit ${Math.round(MAX_PLAY_SECONDS / 60)} min), too large, or the platform is blocking the server.\n🔗 ${url}`,
+        handler: `${cfg.label} Downloader`,
+        status: 'error',
+      };
+    }
+    return {
+      text: `✅ ${title ? `*${title}*\n` : ''}${cfg.label} ${kind} ready.\n🔗 ${url}`,
+      ...(kind === 'audio' ? { audioPath: file } : { videoPath: file }),
+      handler: `${cfg.label} Downloader`,
+    };
+  }
+
+  if (['reddit', 'sauce', 'reverseimg', 'lyrics', 'igstalk', 'shazam'].includes(cmd)) {
     if ((cmd === 'lyrics' || cmd === 'sauce' || cmd === 'shazam') && argStr && hasGroqKey()) {
       botState.stats.totalAiCalls += 1;
       const ans = await askGroqText(
@@ -1897,6 +2187,29 @@ async function executeBuiltInCommand(
   }
 
   // ── AI & CONVERTER ──
+  if (cmd === 'tt' || cmd === 'translate') {
+    const { language, text: toTranslate } = parseTranslateArgs(argStr, quotedText);
+    if (!toTranslate) {
+      return {
+        text: `*🌐 Translator*\nUsage: *${p}tt <language> <text>*\nOr reply to a message with *${p}tt <language>*\nExamples:\n• *${p}tt ja Good morning*\n• *${p}tt es I love anime*\n• reply + *${p}tt fr*\n\nNo language given = English.`,
+        handler: 'Translator',
+      };
+    }
+    if (!hasGroqKey()) {
+      return { text: `Groq chat is not configured yet. Add GROQ_API_KEY in Render Environment.`, handler: 'Translator', status: 'error' };
+    }
+    botState.stats.totalAiCalls += 1;
+    const answer = await askGroqText(
+      `Translate the text below into ${language}. Reply in exactly this format and nothing else:\n` +
+        `Line 1: the translation only.\n` +
+        `Line 2 (only if the source or target is Japanese, Chinese or Korean): "Romaji/Pinyin/Romanization: ..." for the Asian-script text.\n` +
+        `Do not add explanations, quotes or commentary. If the text is already in ${language}, still output it, and say so on a second line.\n\n` +
+        `Text:\n${toTranslate.slice(0, 1500)}`,
+      'You are a precise translation engine. Output only the requested translation format.'
+    );
+    return { text: `*🌐 Translation → ${language}*\n\n${answer}`, handler: 'Groq AI (.tt)' };
+  }
+
   if (['gpt', 'copilot', 'perplexity', 'imagine', 'tt', 'translate', 'tb', 'transcribe', 'ocr', 'tldr', 'tts', 'upscale'].includes(cmd)) {
     if (!argStr && cmd !== 'upscale') {
       return { text: `Usage: *${p}${cmd} <your prompt or text>*`, handler: 'Groq AI' };

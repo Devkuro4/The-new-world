@@ -111,6 +111,19 @@ function extractMessageText(msg: WAMessage): string {
   ).trim();
 }
 
+function extractQuotedText(msg: WAMessage): string {
+  const ctx = extractContextInfo(msg);
+  const q = ctx?.quotedMessage;
+  if (!q) return '';
+  return (
+    q.conversation ||
+    q.extendedTextMessage?.text ||
+    q.imageMessage?.caption ||
+    q.videoMessage?.caption ||
+    ''
+  ).trim();
+}
+
 function extractContextInfo(msg: WAMessage) {
   const message = msg.message;
   if (!message) return undefined;
@@ -223,7 +236,7 @@ async function sendBotReply(
   sock: WASocket,
   remoteJid: string,
   quoted: WAMessage,
-  reply: { text: string; imageUrl?: string; imageCaption?: string; buttons?: Array<{ label: string; command: string }> },
+  reply: { text: string; imageUrl?: string; imageCaption?: string; audioUrl?: string; audioPath?: string; videoPath?: string; buttons?: Array<{ label: string; command: string }> },
   mentions?: string[]
 ): Promise<void> {
   let finalText = reply.text;
@@ -283,6 +296,47 @@ async function sendBotReply(
     textMessage = await sock.sendMessage(remoteJid, plainContent, { quoted });
   }
   trackSentId(textMessage?.key?.id);
+
+  if (reply.videoPath) {
+    try {
+      const videoMessage = await sock.sendMessage(
+        remoteJid,
+        { video: fs.readFileSync(reply.videoPath), mimetype: 'video/mp4' },
+        { quoted }
+      );
+      trackSentId(videoMessage?.key?.id);
+    } catch {
+      // The text with the source link was already sent.
+    } finally {
+      fs.rmSync(reply.videoPath, { force: true });
+    }
+  }
+
+  if (reply.audioPath) {
+    try {
+      const audioMessage = await sock.sendMessage(
+        remoteJid,
+        { audio: fs.readFileSync(reply.audioPath), mimetype: 'audio/mp4', ptt: false },
+        { quoted }
+      );
+      trackSentId(audioMessage?.key?.id);
+    } catch {
+      // Details card already sent; link is in the text.
+    } finally {
+      fs.rmSync(reply.audioPath, { force: true });
+    }
+  } else if (reply.audioUrl) {
+    try {
+      const audioMessage = await sock.sendMessage(
+        remoteJid,
+        { audio: { url: reply.audioUrl }, mimetype: 'audio/mp4', ptt: false },
+        { quoted }
+      );
+      trackSentId(audioMessage?.key?.id);
+    } catch {
+      // The details card was already sent; a failed audio preview should not break the reply.
+    }
+  }
 }
 
 interface GroupCommandEffect {
@@ -581,6 +635,7 @@ async function startSocket(): Promise<WASocket> {
           chatMode: 'group',
           source: 'baileys',
           text,
+          quotedText: extractQuotedText(msg),
         });
 
         let outgoing = reply;
