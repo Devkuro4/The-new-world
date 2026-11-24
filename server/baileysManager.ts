@@ -252,7 +252,9 @@ async function sendBotReply(
   }
 
   // Replies without their own image get a small link-preview card with the Pieck thumbnail.
-  const thumb = !reply.imageUrl && !(mentions && mentions.length > 1) ? getThumbBuffer() : null;
+  // Off by default: only enabled with LINK_THUMBNAILS=on, so a card problem can never block replies.
+  const cardsEnabled = process.env.LINK_THUMBNAILS?.trim().toLowerCase() === 'on';
+  const thumb = cardsEnabled && !reply.imageUrl && !(mentions && mentions.length > 1) ? getThumbBuffer() : null;
   const linkCard = thumb
     ? {
         externalAdReply: {
@@ -267,15 +269,19 @@ async function sendBotReply(
       }
     : undefined;
 
-  const textMessage = await sock.sendMessage(
-    remoteJid,
-    {
-      text: finalText.slice(0, 4096),
-      mentions,
-      ...(linkCard ? { contextInfo: { ...linkCard, mentionedJid: mentions || [] } } : {}),
-    },
-    { quoted }
-  );
+  const plainContent = { text: finalText.slice(0, 4096), mentions };
+  let textMessage;
+  try {
+    textMessage = await sock.sendMessage(
+      remoteJid,
+      linkCard ? { ...plainContent, contextInfo: { ...linkCard, mentionedJid: mentions || [] } } : plainContent,
+      { quoted }
+    );
+  } catch (error) {
+    if (!linkCard) throw error;
+    // The thumbnail card was rejected: always fall back to the plain reply.
+    textMessage = await sock.sendMessage(remoteJid, plainContent, { quoted });
+  }
   trackSentId(textMessage?.key?.id);
 }
 
