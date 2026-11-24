@@ -2101,8 +2101,9 @@ async function askGroq(prompt) {
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
-      model: 'llama-3.3-70b-versatile',
-      max_completion_tokens: 300,
+      model: process.env.GROQ_MODEL || 'openai/gpt-oss-120b',
+      reasoning_effort: 'low',
+      max_completion_tokens: 1024,
       messages: [
         { role: 'system', content: ${JSON.stringify(c.aiPersonaPrompt)} },
         { role: 'user', content: prompt },

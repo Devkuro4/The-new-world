@@ -1,4 +1,4 @@
-export const GROQ_MODEL = process.env.GROQ_MODEL?.trim() || 'llama-3.3-70b-versatile';
+export const GROQ_MODEL = process.env.GROQ_MODEL?.trim() || 'openai/gpt-oss-120b';
 
 export function hasGroqKey(): boolean {
   return Boolean(process.env.GROQ_API_KEY?.trim());
@@ -22,7 +22,10 @@ export async function askGroqText(prompt: string, systemInstruction: string): Pr
       body: JSON.stringify({
         model: GROQ_MODEL,
         temperature: 0.75,
-        max_completion_tokens: 300,
+        // gpt-oss models are reasoning models: keep reasoning short so the
+        // token budget goes to the actual reply instead of hidden thinking.
+        reasoning_effort: 'low',
+        max_completion_tokens: 1024,
         messages: [
           { role: 'system', content: systemInstruction },
           { role: 'user', content: prompt },
