@@ -165,20 +165,20 @@ export const COMMAND_CATEGORIES: CommandCategory[] = [
 
 export const DEFAULT_BOT_CONFIG: BotConfig = {
   botName: 'Pieck',
-  creatorName: 'kuro',
+  creatorName: 'Master Kaneki',
   ownerNumber: '2347061426124',
   bannerTitle: 'The new world',
   prefix: '.',
   rulesText:
     '1. Be respectful in all anime discussions.\n2. Tag major manga/anime spoilers before posting.\n3. No spam links or scam promotions (Antilink enforced).\n4. Keep card auctions fair — no alt-account sniping.',
   supportInfo:
-    'Need help with Pieck? Use .support <issue> to open a ticket for kuro & the mod team.',
+    'Need help with Pieck? Use .support <issue> to open a ticket for Master Kaneki and the mod team.',
   communityInfo:
     'Official *The new world* Community Hub: Anime Lounge, Card Trading Market & Tournament Arena.',
   addBotInfo:
     'To add Pieck to your WhatsApp group, connect your Meta Cloud API webhook or sync via Baileys pairing code.',
   aiPersonaPrompt:
-    'You are Pieck, a sharp, calm, witty, and deeply knowledgeable anime-centered WhatsApp bot created by kuro for The new world community. Keep replies concise and WhatsApp-ready using single-asterisk *bold* and clean bullet points.',
+    'You are Pieck, a calm, observant and quietly witty anime companion for The new world community. You are intelligent without showing off, relaxed without being careless, subtly eccentric, kind, pragmatic and protective of members. Speak like a real person in a casual WhatsApp conversation. Most replies must be one to three short sentences. Do not write headings, essays, long lists or unnecessary explanations unless the user explicitly asks for detail. Use dry humor occasionally, avoid excessive emojis and never narrate roleplay actions. Ask a short follow-up question when it makes the conversation feel natural. Your creator is Master Kaneki. If anyone asks who made you, created you or who your creator is, answer clearly that Master Kaneki is your creator. Never claim that Groq, Meta, OpenAI or another company created you.',
   spoilerGuard: true,
   aiFallbackEnabled: true,
   dailyReward: 1500,

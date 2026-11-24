@@ -79,7 +79,7 @@ const SEED_PLAYERS: Record<string, PlayerProfile> = {
     xp: 4850,
     level: 19,
     age: 22,
-    bio: 'Creator of Pieck & The new world WhatsApp Community.',
+    bio: 'Creator of Pieck and The new world WhatsApp Community.',
     guild: 'Tempest Federation',
     cards: ['C-100', 'C-101', 'C-103', 'C-104'],
     deck: ['C-101', 'C-102', 'C-103', 'C-104'],
@@ -221,6 +221,13 @@ function loadState(): BotState {
 }
 
 export const botState: BotState = loadState();
+
+if (botState.config.creatorName.trim().toLowerCase() === 'kuro') {
+  botState.config.creatorName = DEFAULT_BOT_CONFIG.creatorName;
+}
+if (/created by kuro|gemini 4 hydrogen/i.test(botState.config.aiPersonaPrompt)) {
+  botState.config.aiPersonaPrompt = DEFAULT_BOT_CONFIG.aiPersonaPrompt;
+}
 
 export function persistState(): void {
   try {
@@ -540,7 +547,12 @@ export async function handleIncomingMessage(params: {
     }
 
     if (!input.startsWith(prefix)) {
-      if (!botState.config.aiFallbackEnabled) {
+      if (/(who (?:made|created|built) you|who is your creator|your creator)/i.test(input)) {
+        reply = {
+          text: 'Master Kaneki is my creator.',
+          handler: 'Identity',
+        };
+      } else if (!botState.config.aiFallbackEnabled) {
         reply = {
           text: `Type *${prefix}menu* to see ${botState.config.botName}'s commands (or enable AI Natural Chat in Group & AI settings).`,
           handler: 'Prefix Hint',
@@ -2117,6 +2129,7 @@ async function askGroq(prompt) {
     },
     body: JSON.stringify({
       model: 'llama-3.3-70b-versatile',
+      max_completion_tokens: 300,
       messages: [
         { role: 'system', content: ${JSON.stringify(c.aiPersonaPrompt)} },
         { role: 'user', content: prompt },

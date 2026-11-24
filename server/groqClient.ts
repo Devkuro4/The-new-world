@@ -22,7 +22,7 @@ export async function askGroqText(prompt: string, systemInstruction: string): Pr
       body: JSON.stringify({
         model: GROQ_MODEL,
         temperature: 0.75,
-        max_completion_tokens: 700,
+        max_completion_tokens: 300,
         messages: [
           { role: 'system', content: systemInstruction },
           { role: 'user', content: prompt },
