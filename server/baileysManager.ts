@@ -72,6 +72,24 @@ function normalizeJidToNumber(jid: string): string {
   return jid.split('@')[0].split(':')[0];
 }
 
+function jidNumbers(...jids: Array<string | null | undefined>): Set<string> {
+  const out = new Set<string>();
+  for (const jid of jids) {
+    if (jid) out.add(jid.split('@')[0].split(':')[0]);
+  }
+  return out;
+}
+
+// Newer WhatsApp groups use LIDs, so one person can appear under several identifiers.
+function participantNumbers(pt: { id: string; lid?: string; phoneNumber?: string }): Set<string> {
+  return jidNumbers(pt.id, pt.lid, pt.phoneNumber);
+}
+
+function sharesNumber(a: Set<string>, b: Set<string>): boolean {
+  for (const value of a) if (b.has(value)) return true;
+  return false;
+}
+
 function extractMessageText(msg: WAMessage): string {
   const m = msg.message;
   if (!m) return '';
@@ -294,24 +312,34 @@ async function handleBaileysGroupCommandSideEffects(
   const participants = meta?.participants || [];
   const mentions = participants.map((participant) => participant.id);
   if (cmd === 'tagall' || cmd === 'hidetag') {
-    const botNum = sock.user?.id ? normalizeJidToNumber(sock.user.id) : '';
-    const targets = participants.filter((participant) => normalizeJidToNumber(participant.id) !== botNum);
+    // Always use fresh metadata so new members are included and a stale cache never empties the list.
+    let members = participants;
+    try {
+      const fresh = await sock.groupMetadata(remoteJid);
+      groupMetadataCache.set(remoteJid, { meta: fresh, fetchedAt: Date.now() });
+      members = fresh.participants;
+    } catch {
+      // fall back to cached participants
+    }
+    const botNums = jidNumbers(sock.user?.id, sock.user?.lid);
+    const targets = members.filter((participant) => !sharesNumber(participantNumbers(participant), botNums));
     if (targets.length === 0) {
       return { error: 'Could not read the group member list. Try again in a few seconds.' };
     }
     // The visible @number must match the user part of each mentioned JID for WhatsApp to tag it.
+    const tags = targets.map((participant) => `@${normalizeJidToNumber(participant.id)}`);
     return {
       mentions: targets.map((participant) => participant.id),
-      tagList: targets.map((participant) => `@${normalizeJidToNumber(participant.id)}`).join(' '),
+      tagList: tags.join('\n'),
     };
   }
 
   const mutating = new Set(['mute', 'close', 'unmute', 'open', 'kick', 'promote', 'demote', 'delete']);
   if (!mutating.has(cmd)) return {};
 
-  const botNumber = sock.user?.id ? normalizeJidToNumber(sock.user.id) : '';
-  const botParticipant = participants.find(
-    (participant) => normalizeJidToNumber(participant.id) === botNumber
+  const botNums = jidNumbers(sock.user?.id, sock.user?.lid);
+  const botParticipant = participants.find((participant) =>
+    sharesNumber(participantNumbers(participant), botNums)
   );
   if (botParticipant?.admin !== 'admin' && botParticipant?.admin !== 'superadmin') {
     return { error: 'Pieck must be a WhatsApp group admin to run that command.' };
@@ -493,7 +521,8 @@ async function startSocket(): Promise<WASocket> {
         const senderJid = isGroup ? msg.key.participant || remoteJid : remoteJid;
         const senderNumber = normalizeJidToNumber(senderJid);
         const ownerDigits = (botState.config.ownerNumber || '').replace(/[^\d]/g, '');
-        const isOwnerNumber = Boolean(ownerDigits && senderNumber === ownerDigits);
+        const senderNums = jidNumbers(msg.key.participant, msg.key.participantAlt, senderJid);
+        const isOwnerNumber = Boolean(ownerDigits && senderNums.has(ownerDigits));
         const senderName = isOwnerNumber
           ? botState.config.creatorName
           : msg.pushName || `WA-${senderNumber.slice(-4)}`;
@@ -505,12 +534,12 @@ async function startSocket(): Promise<WASocket> {
           senderRole = 'owner';
         } else if (isGroup) {
           meta = await getGroupMeta(sock, remoteJid);
-          const participant = meta?.participants.find(
-            (pt) => normalizeJidToNumber(pt.id) === senderNumber
+          const participant = meta?.participants.find((pt) =>
+            sharesNumber(participantNumbers(pt), senderNums)
           );
           if (participant?.admin === 'admin' || participant?.admin === 'superadmin') {
             senderRole = 'admin';
-          } else if (botState.groupSettings.moderatorNumbers.includes(senderNumber)) {
+          } else if ([...senderNums].some((n) => botState.groupSettings.moderatorNumbers.includes(n))) {
             senderRole = 'moderator';
           }
         }
@@ -556,7 +585,7 @@ async function startSocket(): Promise<WASocket> {
             ...reply,
             text: isHidden
               ? `📢 *Announcement:* ${note || 'Check pinned anime schedule!'}`
-              : `📢 *Tag All*${note ? ` — ${note}` : ''}\n\n${effect.tagList}`,
+              : `📢 *TAG ALL*${note ? `  ·  ${note}` : ''}\n━━━━━━━━━━━━━━━━━━━━━━━━━━\n${effect.tagList}`,
           };
         }
         await sendBotReply(sock, remoteJid, msg, outgoing, effect.mentions);
