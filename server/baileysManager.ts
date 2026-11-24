@@ -5,8 +5,11 @@ import makeWASocket, {
   Browsers,
   DisconnectReason,
   fetchLatestBaileysVersion,
+  fetchLatestWaWebVersion,
+  getBinaryNodeChild,
   makeCacheableSignalKeyStore,
   useMultiFileAuthState,
+  type BinaryNode,
   type GroupMetadata,
   type WAMessage,
   type WASocket,
@@ -67,6 +70,56 @@ function trackSentId(id?: string | null): void {
 
 function hasSavedCreds(): boolean {
   return fs.existsSync(path.join(AUTH_DIR, 'creds.json'));
+}
+
+async function resolveWaVersion(): Promise<[number, number, number]> {
+  try {
+    const waWeb = await fetchLatestWaWebVersion({});
+    if (waWeb.isLatest && Array.isArray(waWeb.version) && waWeb.version.length === 3) {
+      return waWeb.version as [number, number, number];
+    }
+  } catch {
+    // Fallback below
+  }
+  try {
+    const latest = await fetchLatestBaileysVersion();
+    if (Array.isArray(latest.version) && latest.version.length === 3) {
+      return latest.version as [number, number, number];
+    }
+  } catch {
+    // Fallback below
+  }
+  return [2, 3000, 1056008220];
+}
+
+export function normalizePairingPhone(rawPhone: string): string {
+  let digits = rawPhone.replace(/[^\d]/g, '');
+  if (!digits) {
+    throw new Error('Enter any WhatsApp phone number with country code (e.g. 14155550199 or 2348012345678).');
+  }
+  if (digits.startsWith('00')) {
+    digits = digits.slice(2);
+  }
+
+  // Strip accidental national trunk '0' after common country codes (e.g. 2340801... -> 234801...)
+  digits = digits
+    .replace(/^2340(\d{10})$/, '234$1')
+    .replace(/^440(\d{10})$/, '44$1')
+    .replace(/^2330(\d{9})$/, '233$1')
+    .replace(/^2540(\d{9})$/, '254$1')
+    .replace(/^270(\d{9})$/, '27$1');
+
+  if (digits.startsWith('0')) {
+    throw new Error(
+      'Include the country code without "+" or leading "0" (e.g. 14155550199, 447700900123, or 2348012345678).'
+    );
+  }
+  if (digits.length < 8 || digits.length > 15) {
+    throw new Error(
+      'Enter a valid WhatsApp phone number with country code (8–15 digits).'
+    );
+  }
+  return digits;
 }
 
 function normalizeJidToNumber(jid: string): string {
@@ -321,7 +374,7 @@ async function startSocket(): Promise<WASocket> {
   }
 
   const { state, saveCreds } = await useMultiFileAuthState(AUTH_DIR);
-  const { version } = await fetchLatestBaileysVersion().catch(() => ({ version: [2, 3000, 1015901307] as [number, number, number] }));
+  const version = await resolveWaVersion();
 
   const sock = makeWASocket({
     version,
@@ -331,7 +384,10 @@ async function startSocket(): Promise<WASocket> {
       creds: state.creds,
       keys: makeCacheableSignalKeyStore(state.keys, logger),
     },
-    browser: Browsers.ubuntu('Chrome'),
+    browser: Browsers.macOS('Chrome'),
+    syncFullHistory: false,
+    connectTimeoutMs: 60_000,
+    qrTimeout: 60_000,
     markOnlineOnConnect: true,
     generateHighQualityLinkPreview: false,
   });
@@ -340,9 +396,27 @@ async function startSocket(): Promise<WASocket> {
 
   sock.ev.on('creds.update', saveCreds);
 
+  sock.ws.on('frame', (frame: BinaryNode) => {
+    if (activeSock !== sock || status !== 'pairing') return;
+    if (frame?.tag === 'iq' && frame?.attrs?.type === 'error') {
+      const errChild = getBinaryNodeChild(frame, 'error');
+      const code = errChild?.attrs?.code || '';
+      const text = errChild?.attrs?.text || 'Pairing rejected by WhatsApp servers.';
+      lastError = code
+        ? `WhatsApp error ${code} (${text}). Double-check the number (+${pairingPhone}) and request a fresh code.`
+        : `WhatsApp rejected pairing (${text}).`;
+    }
+  });
+
   sock.ev.on('connection.update', async (update) => {
     if (activeSock !== sock) return;
-    const { connection, lastDisconnect } = update;
+    const { connection, lastDisconnect, isNewLogin } = update;
+
+    if (isNewLogin) {
+      pairingCode = null;
+      status = 'connecting';
+      lastError = null;
+    }
 
     if (connection === 'open') {
       status = 'connected';
@@ -357,13 +431,18 @@ async function startSocket(): Promise<WASocket> {
     }
 
     if (connection === 'close') {
-      const statusCode = (lastDisconnect?.error as { output?: { statusCode?: number } })?.output?.statusCode;
+      const boomErr = lastDisconnect?.error as { output?: { statusCode?: number }; message?: string } | undefined;
+      const statusCode = boomErr?.output?.statusCode;
+      const errMessage = boomErr?.message || '';
       const isLoggedOut = statusCode === DisconnectReason.loggedOut;
       const isReplaced = statusCode === DisconnectReason.connectionReplaced;
+      const isRestartRequired = statusCode === DisconnectReason.restartRequired;
+      const isRegistered = Boolean(sock.authState.creds.registered);
 
       if (manualDisconnect) {
         status = 'disconnected';
         connectedUser = null;
+        pairingCode = null;
         return;
       }
 
@@ -373,6 +452,24 @@ async function startSocket(): Promise<WASocket> {
         pairingCode = null;
         cachedGroups = [];
         lastError = 'WhatsApp session logged out from phone. Pair again with your phone number.';
+        try {
+          fs.rmSync(AUTH_DIR, { recursive: true, force: true });
+        } catch {
+          // ignore
+        }
+        return;
+      }
+
+      // If socket closed before device registration completed (and not a 515 post-pair restart),
+      // discard the dead pairing code & incomplete creds so the next pairing starts clean.
+      if (!isRegistered && !isRestartRequired) {
+        pairingCode = null;
+        connectedUser = null;
+        status = 'error';
+        lastError =
+          statusCode === DisconnectReason.timedOut
+            ? 'Pairing code expired before your phone linked. Click "Get Pairing Code" for a fresh code and enter it within 60 seconds.'
+            : `WhatsApp closed the pairing connection${statusCode ? ` (${statusCode})` : ''}${errMessage ? `: ${errMessage}` : ''}. Click "Get Pairing Code" to try again.`;
         try {
           fs.rmSync(AUTH_DIR, { recursive: true, force: true });
         } catch {
@@ -391,9 +488,10 @@ async function startSocket(): Promise<WASocket> {
         }
       }
 
-      // Reconnect automatically (5s delay on 440 rolling-deploy overlap, 1.5s otherwise)
-      const delayMs = isReplaced ? 5000 : 1500;
-      status = pairingCode ? 'pairing' : 'connecting';
+      // Reconnect automatically (500ms after 515 post-pairing restart, 5s on 440 overlap, 1.5s otherwise)
+      const delayMs = isRestartRequired ? 500 : isReplaced ? 5000 : 1500;
+      pairingCode = null;
+      status = 'connecting';
       clearReconnectTimer();
       reconnectTimer = setTimeout(() => {
         if (!manualDisconnect) {
@@ -525,10 +623,7 @@ export async function requestPairingForNumber(
   rawPhone: string,
   customCode?: string
 ): Promise<BaileysStatusSnapshot> {
-  const cleanNumber = rawPhone.replace(/[^\d]/g, '');
-  if (cleanNumber.length < 7 || cleanNumber.length > 15) {
-    throw new Error('Enter a valid WhatsApp phone number with country code (7–15 digits, e.g. 15551234567).');
-  }
+  const cleanNumber = normalizePairingPhone(rawPhone);
 
   // Cleanly tear down previous socket & unregistered auth so pairing starts fresh
   manualDisconnect = true;
@@ -586,7 +681,7 @@ export async function requestPairingForNumber(
 
     const timeout = setTimeout(() => {
       finish(new Error('Timed out waiting for WhatsApp servers to initialize pairing.'));
-    }, 12000);
+    }, 20_000);
 
     sock.ev.on('connection.update', onUpdate);
   });
@@ -595,11 +690,69 @@ export async function requestPairingForNumber(
     throw new Error('Socket restarted during pairing initialization. Please try again.');
   }
 
+  // Allow pair-device IQ ack to settle before sending link_code_companion_reg
+  await new Promise((resolve) => setTimeout(resolve, 400));
+
   const sanitizedCustom = customCode?.replace(/[^A-Za-z0-9]/g, '').toUpperCase();
-  const rawCode =
-    sanitizedCustom && sanitizedCustom.length === 8
-      ? await sock.requestPairingCode(cleanNumber, sanitizedCustom)
-      : await sock.requestPairingCode(cleanNumber);
+
+  // Monitor WhatsApp's IQ response to link_code_companion_reg (Baileys sendNode does not await it)
+  let iqErrorMsg: string | null = null;
+  let iqSettled = false;
+  let resolveIqCheck: (() => void) | null = null;
+  const onPairingFrame = (frame: BinaryNode) => {
+    if (frame?.tag !== 'iq' || frame?.attrs?.from !== 's.whatsapp.net') return;
+    if (frame.attrs.type === 'result') {
+      iqSettled = true;
+      resolveIqCheck?.();
+    } else if (frame.attrs.type === 'error') {
+      const errChild = getBinaryNodeChild(frame, 'error');
+      const code = errChild?.attrs?.code || '';
+      const text = errChild?.attrs?.text || 'bad-request';
+      iqErrorMsg =
+        code === '429'
+          ? 'WhatsApp rate-limited pairing requests (429). Wait 2–5 minutes before requesting another code.'
+          : `WhatsApp rejected pairing for +${cleanNumber} (${code || 'error'}: ${text}). Check your number includes the country code without leading 0.`;
+      iqSettled = true;
+      resolveIqCheck?.();
+    }
+  };
+  sock.ws.on('frame', onPairingFrame);
+
+  let rawCode: string;
+  try {
+    rawCode =
+      sanitizedCustom && sanitizedCustom.length === 8
+        ? await sock.requestPairingCode(cleanNumber, sanitizedCustom)
+        : await sock.requestPairingCode(cleanNumber);
+
+    if (!iqSettled) {
+      await new Promise<void>((resolve) => {
+        resolveIqCheck = resolve;
+        setTimeout(resolve, 1800);
+      });
+    }
+  } finally {
+    sock.ws.off('frame', onPairingFrame);
+  }
+
+  if (iqErrorMsg) {
+    manualDisconnect = true;
+    try {
+      sock.end(undefined);
+    } catch {
+      // ignore
+    }
+    if (activeSock === sock) activeSock = null;
+    try {
+      fs.rmSync(AUTH_DIR, { recursive: true, force: true });
+    } catch {
+      // ignore
+    }
+    pairingCode = null;
+    status = 'error';
+    lastError = iqErrorMsg;
+    throw new Error(iqErrorMsg);
+  }
 
   const formatted = rawCode.length === 8 ? `${rawCode.slice(0, 4)}-${rawCode.slice(4)}` : rawCode;
   pairingCode = formatted;
