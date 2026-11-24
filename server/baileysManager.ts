@@ -234,7 +234,7 @@ async function sendBotReply(
   }
 
   // Replies without their own image get a small link-preview card with the Pieck thumbnail.
-  const thumb = !reply.imageUrl ? getThumbBuffer() : null;
+  const thumb = !reply.imageUrl && !(mentions && mentions.length > 1) ? getThumbBuffer() : null;
   const linkCard = thumb
     ? {
         externalAdReply: {
@@ -254,7 +254,7 @@ async function sendBotReply(
     {
       text: finalText.slice(0, 4096),
       mentions,
-      ...(linkCard ? { contextInfo: linkCard } : {}),
+      ...(linkCard ? { contextInfo: { ...linkCard, mentionedJid: mentions || [] } } : {}),
     },
     { quoted }
   );
@@ -263,6 +263,7 @@ async function sendBotReply(
 
 interface GroupCommandEffect {
   mentions?: string[];
+  tagList?: string;
   error?: string;
 }
 
@@ -292,7 +293,18 @@ async function handleBaileysGroupCommandSideEffects(
 
   const participants = meta?.participants || [];
   const mentions = participants.map((participant) => participant.id);
-  if (cmd === 'tagall' || cmd === 'hidetag') return { mentions };
+  if (cmd === 'tagall' || cmd === 'hidetag') {
+    const botNum = sock.user?.id ? normalizeJidToNumber(sock.user.id) : '';
+    const targets = participants.filter((participant) => normalizeJidToNumber(participant.id) !== botNum);
+    if (targets.length === 0) {
+      return { error: 'Could not read the group member list. Try again in a few seconds.' };
+    }
+    // The visible @number must match the user part of each mentioned JID for WhatsApp to tag it.
+    return {
+      mentions: targets.map((participant) => participant.id),
+      tagList: targets.map((participant) => `@${normalizeJidToNumber(participant.id)}`).join(' '),
+    };
+  }
 
   const mutating = new Set(['mute', 'close', 'unmute', 'open', 'kick', 'promote', 'demote', 'delete']);
   if (!mutating.has(cmd)) return {};
@@ -536,7 +548,18 @@ async function startSocket(): Promise<WASocket> {
           text,
         });
 
-        await sendBotReply(sock, remoteJid, msg, reply, effect.mentions);
+        let outgoing = reply;
+        if (effect.tagList) {
+          const note = text.slice(prefix.length).trim().split(/\s+/).slice(1).join(' ');
+          const isHidden = text.slice(prefix.length).trim().toLowerCase().startsWith('hidetag');
+          outgoing = {
+            ...reply,
+            text: isHidden
+              ? `📢 *Announcement:* ${note || 'Check pinned anime schedule!'}`
+              : `📢 *Tag All*${note ? ` — ${note}` : ''}\n\n${effect.tagList}`,
+          };
+        }
+        await sendBotReply(sock, remoteJid, msg, outgoing, effect.mentions);
       } catch (err) {
         lastError = err instanceof Error ? err.message : 'Message handler error';
       }
