@@ -23,9 +23,6 @@ export const GroupAiPanel: React.FC<GroupAiPanelProps> = ({
   const [aiPersonaPrompt, setAiPersonaPrompt] = useState(config.aiPersonaPrompt);
   const [spoilerGuard, setSpoilerGuard] = useState(config.spoilerGuard);
   const [aiFallbackEnabled, setAiFallbackEnabled] = useState(config.aiFallbackEnabled);
-  const [respondOnlyWhenTaggedOrReplied, setRespondOnlyWhenTaggedOrReplied] = useState(
-    config.respondOnlyWhenTaggedOrReplied ?? true
-  );
   const [savingBot, setSavingBot] = useState(false);
   const [savedNotice, setSavedNotice] = useState('');
 
@@ -47,7 +44,6 @@ export const GroupAiPanel: React.FC<GroupAiPanelProps> = ({
         aiPersonaPrompt,
         spoilerGuard,
         aiFallbackEnabled,
-        respondOnlyWhenTaggedOrReplied,
       });
       await onSaveGroup({
         groupName,
@@ -229,16 +225,6 @@ export const GroupAiPanel: React.FC<GroupAiPanelProps> = ({
               className="h-4 w-4 rounded border-slate-300 text-emerald-600 focus:ring-emerald-600"
             />
             <span>Respond naturally with AI to non-prefix messages</span>
-          </label>
-
-          <label className="inline-flex items-center gap-2 text-sm text-slate-700 cursor-pointer">
-            <input
-              type="checkbox"
-              checked={respondOnlyWhenTaggedOrReplied}
-              onChange={(e) => setRespondOnlyWhenTaggedOrReplied(e.target.checked)}
-              className="h-4 w-4 rounded border-slate-300 text-emerald-600 focus:ring-emerald-600"
-            />
-            <span>Only respond when tagged (@{config.botName}) or replied to</span>
           </label>
         </div>
 

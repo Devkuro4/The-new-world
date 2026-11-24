@@ -24,7 +24,6 @@ export interface BaileysStatusSnapshot {
   connectedUser: { id: string; name?: string } | null;
   lastError: string | null;
   hasSavedSession: boolean;
-  sessionEnvConfigured?: boolean;
   groups: BaileysGroupSummary[];
 }
 
@@ -53,8 +52,6 @@ export const DeployWebhookPanel: React.FC<DeployWebhookPanelProps> = ({
   const [pairingLoading, setPairingLoading] = useState(false);
   const [pairingError, setPairingError] = useState('');
   const [refreshingGroups, setRefreshingGroups] = useState(false);
-  const [backupSending, setBackupSending] = useState(false);
-  const [backupStatus, setBackupStatus] = useState<{ ok: boolean; text: string } | null>(null);
 
   // Meta webhook tester state
   const [testCommand, setTestCommand] = useState(`${prefix}anime Frieren`);
@@ -104,27 +101,6 @@ export const DeployWebhookPanel: React.FC<DeployWebhookPanelProps> = ({
     setTimeout(() => setter(false), 1800);
   };
 
-  const getPhonePreview = (raw: string): { normalized: string; warning: string | null } => {
-    let digits = raw.replace(/[^\d]/g, '');
-    if (!digits) return { normalized: '', warning: null };
-    if (digits.startsWith('00')) digits = digits.slice(2);
-    digits = digits
-      .replace(/^2340(\d{10})$/, '234$1')
-      .replace(/^440(\d{10})$/, '44$1')
-      .replace(/^2330(\d{9})$/, '233$1')
-      .replace(/^2540(\d{9})$/, '254$1')
-      .replace(/^270(\d{9})$/, '27$1');
-    if (digits.startsWith('0')) {
-      return {
-        normalized: '',
-        warning: 'Include the country code without "+" or leading "0" (e.g. 14155550199 or 447700900123).',
-      };
-    }
-    return { normalized: digits, warning: null };
-  };
-
-  const phonePreview = getPhonePreview(phoneInput);
-
   const handleRequestPairing = async (e: React.FormEvent) => {
     e.preventDefault();
     setPairingError('');
@@ -134,7 +110,7 @@ export const DeployWebhookPanel: React.FC<DeployWebhookPanelProps> = ({
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          phoneNumber: phonePreview.normalized || phoneInput,
+          phoneNumber: phoneInput,
           customCode: customCodeInput.trim() || undefined,
         }),
       });
@@ -169,27 +145,6 @@ export const DeployWebhookPanel: React.FC<DeployWebhookPanelProps> = ({
       setBaileys(json);
     } finally {
       setRefreshingGroups(false);
-    }
-  };
-
-  const handleSendBackupToOwner = async () => {
-    setBackupSending(true);
-    setBackupStatus(null);
-    try {
-      const res = await fetch('/api/baileys/backup-to-owner', { method: 'POST' });
-      const json = (await res.json()) as { ok?: boolean; sentTo?: string; error?: string };
-      if (!res.ok) {
-        setBackupStatus({ ok: false, text: json.error || 'Could not send session backup.' });
-      } else {
-        setBackupStatus({
-          ok: true,
-          text: `Sent BAILEYS_SESSION_B64 privately to ${json.sentTo} on WhatsApp. Paste it in Render Environment Variables.`,
-        });
-      }
-    } catch (err) {
-      setBackupStatus({ ok: false, text: err instanceof Error ? err.message : 'Request failed.' });
-    } finally {
-      setBackupSending(false);
     }
   };
 
@@ -318,16 +273,13 @@ export const DeployWebhookPanel: React.FC<DeployWebhookPanelProps> = ({
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
               <div className="sm:col-span-2">
                 <label className="mb-1 block text-xs font-medium text-slate-700">
-                  Any WhatsApp Number (country code, no + or leading 0)
+                  WhatsApp Phone Number (with country code, no +)
                 </label>
                 <input
                   type="text"
                   value={phoneInput}
-                  onChange={(e) => {
-                    setPhoneInput(e.target.value);
-                    if (pairingError) setPairingError('');
-                  }}
-                  placeholder="e.g. 14155550199, 447700900123, or 2348012345678"
+                  onChange={(e) => setPhoneInput(e.target.value)}
+                  placeholder="e.g. 15551234567 or 447700900123"
                   className="w-full rounded-lg border border-slate-200 px-3 py-2 font-mono text-sm text-slate-900 focus:border-emerald-600 focus:outline-none"
                 />
               </div>
@@ -348,19 +300,9 @@ export const DeployWebhookPanel: React.FC<DeployWebhookPanelProps> = ({
             </div>
 
             <div className="flex flex-wrap items-center justify-between gap-3">
-              <div className="text-xs">
-                {phonePreview.warning ? (
-                  <span className="font-medium text-rose-600">{phonePreview.warning}</span>
-                ) : phonePreview.normalized ? (
-                  <span className="text-slate-600">
-                    Will pair <span className="font-mono font-semibold text-slate-900">+{phonePreview.normalized}</span> (must match the WhatsApp phone entering the code).
-                  </span>
-                ) : (
-                  <span className="text-slate-500">
-                    Any WhatsApp number can connect — enter country code + digits without + or leading 0.
-                  </span>
-                )}
-              </div>
+              <p className="text-xs text-slate-500">
+                Use international format without spaces or + sign (e.g. <span className="font-mono">14155550199</span>).
+              </p>
               <button
                 type="submit"
                 disabled={pairingLoading || !phoneInput.trim()}
@@ -408,45 +350,16 @@ export const DeployWebhookPanel: React.FC<DeployWebhookPanelProps> = ({
             </div>
 
             <ol className="list-decimal list-inside space-y-1 text-xs text-slate-700">
-              <li>On the phone registered to <span className="font-mono font-semibold">+{baileys.pairingPhone}</span>, open WhatsApp → <strong>Linked Devices</strong>.</li>
+              <li>Open WhatsApp on your phone → <strong>Linked Devices</strong>.</li>
               <li>Tap <strong>Link a Device</strong> → <strong>Link with phone number instead</strong>.</li>
-              <li>Enter <span className="font-mono font-semibold">{baileys.pairingCode}</span> within 60 seconds. This panel switches to Connected automatically.</li>
+              <li>Enter <span className="font-mono font-semibold">{baileys.pairingCode}</span>. This panel will switch to Connected automatically.</li>
             </ol>
           </div>
         )}
 
-        {/* Connected WhatsApp Groups + Render Redeploy Persistence */}
+        {/* Connected WhatsApp Groups List */}
         {baileys.status === 'connected' && (
-          <div className="space-y-4 pt-1">
-            <div className="rounded-lg border border-slate-200 bg-slate-50/80 p-3.5 space-y-2.5">
-              <div className="flex flex-wrap items-center justify-between gap-3">
-                <div>
-                  <div className="text-xs font-semibold text-slate-900">
-                    Stay Connected After Render Redeploys
-                  </div>
-                  <div className="text-xs text-slate-500">
-                    {baileys.sessionEnvConfigured
-                      ? 'BAILEYS_SESSION_B64 is set — Pieck auto-restores after container resets.'
-                      : 'Send your session backup privately to the owner WhatsApp DM and save it as BAILEYS_SESSION_B64 in Render.'}
-                  </div>
-                </div>
-                <button
-                  type="button"
-                  disabled={backupSending}
-                  onClick={handleSendBackupToOwner}
-                  className="inline-flex items-center gap-1.5 rounded-lg border border-emerald-200 bg-white px-3 py-1.5 text-xs font-medium text-emerald-700 hover:bg-emerald-50 disabled:opacity-50 whitespace-nowrap shrink-0"
-                >
-                  <Send className="h-3.5 w-3.5" />
-                  <span>{backupSending ? 'Sending...' : 'DM Backup to Owner'}</span>
-                </button>
-              </div>
-              {backupStatus && (
-                <div className={`text-xs font-medium ${backupStatus.ok ? 'text-emerald-700' : 'text-rose-600'}`}>
-                  {backupStatus.text}
-                </div>
-              )}
-            </div>
-
+          <div className="space-y-3 pt-1">
             <div className="flex items-center justify-between">
               <div className="text-xs font-medium text-slate-700">
                 Participating WhatsApp Groups ({baileys.groups.length})

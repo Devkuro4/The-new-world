@@ -109,7 +109,6 @@ export interface BotConfig {
   aiPersonaPrompt: string;
   spoilerGuard: boolean;
   aiFallbackEnabled: boolean;
-  respondOnlyWhenTaggedOrReplied: boolean;
   dailyReward: number;
   starterBalance: number;
   cardSpawnCooldownSec: number;
@@ -180,7 +179,6 @@ export const DEFAULT_BOT_CONFIG: BotConfig = {
     'You are Pieck, a sharp, calm, witty, and deeply knowledgeable anime-centered WhatsApp bot created by kuro for The new world community. Keep replies concise and WhatsApp-ready using single-asterisk *bold* and clean bullet points.',
   spoilerGuard: true,
   aiFallbackEnabled: true,
-  respondOnlyWhenTaggedOrReplied: true,
   dailyReward: 1500,
   starterBalance: 2500,
   cardSpawnCooldownSec: 20,
@@ -234,7 +232,6 @@ export const DEFAULT_COMMANDS: BotCommandDef[] = [
   { name: 'bots', category: 'General', description: 'Check linked The new world bot nodes', usage: '.bots', role: 'everyone', enabled: true },
   { name: 'url', category: 'General', description: 'Show active webhook endpoint or media URL helper', usage: '.url', role: 'everyone', enabled: true },
   { name: 'otp', category: 'General', description: 'Generate a temporary 6-digit pairing/verification code', usage: '.otp', role: 'owner', enabled: true },
-  { name: 'getsession', category: 'General', description: 'DM BAILEYS_SESSION_B64 backup to owner for Render deploys', usage: '.getsession', role: 'owner', enabled: true },
   { name: 'memories', category: 'General', description: 'Recall recent highlighted group moments', usage: '.memories', role: 'everyone', enabled: true },
 
   // Cards

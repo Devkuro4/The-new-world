@@ -8,8 +8,6 @@ import {
   getBaileysStatus,
   refreshBaileysGroups,
   requestPairingForNumber,
-  sendSessionBackupToOwner,
-  shutdownBaileysGracefully,
 } from './server/baileysManager.ts';
 import {
   botState,
@@ -226,9 +224,6 @@ async function startServer() {
     }
     if (typeof body.aiFallbackEnabled === 'boolean') {
       botState.config.aiFallbackEnabled = body.aiFallbackEnabled;
-    }
-    if (typeof body.respondOnlyWhenTaggedOrReplied === 'boolean') {
-      botState.config.respondOnlyWhenTaggedOrReplied = body.respondOnlyWhenTaggedOrReplied;
     }
     if (typeof body.dailyReward === 'number' && Number.isFinite(body.dailyReward)) {
       botState.config.dailyReward = Math.max(100, Math.min(50000, Math.round(body.dailyReward)));
@@ -501,16 +496,6 @@ async function startServer() {
     res.json({ ...getBaileysStatus(), groups });
   });
 
-  app.post('/api/baileys/backup-to-owner', async (_req: Request, res: Response) => {
-    try {
-      const result = await sendSessionBackupToOwner();
-      res.json({ ok: true, sentTo: `+${result.sentTo}` });
-    } catch (err) {
-      const message = err instanceof Error ? err.message : 'Failed to send session backup.';
-      res.status(400).json({ error: message });
-    }
-  });
-
   // ── VITE / STATIC SERVING ──
   if (process.env.NODE_ENV !== 'production') {
     const { createServer: createViteServer } = await import('vite');
@@ -527,18 +512,10 @@ async function startServer() {
     });
   }
 
-  const server = app.listen(port, '0.0.0.0', () => {
+  app.listen(port, '0.0.0.0', () => {
     console.log(`The new world Studio (Pieck Bot) running on http://0.0.0.0:${port}`);
     autoResumeBaileysIfSaved().catch(() => {});
   });
-
-  const handleShutdown = () => {
-    shutdownBaileysGracefully();
-    server.close(() => process.exit(0));
-    setTimeout(() => process.exit(0), 1500);
-  };
-  process.on('SIGTERM', handleShutdown);
-  process.on('SIGINT', handleShutdown);
 }
 
 startServer();

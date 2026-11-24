@@ -1,6 +1,5 @@
 import fs from 'node:fs';
 import path from 'node:path';
-import zlib from 'node:zlib';
 import makeWASocket, {
   Browsers,
   DisconnectReason,
@@ -32,7 +31,6 @@ export interface BaileysStatusSnapshot {
   connectedUser: { id: string; name?: string } | null;
   lastError: string | null;
   hasSavedSession: boolean;
-  sessionEnvConfigured: boolean;
   groups: BaileysGroupSummary[];
 }
 
@@ -43,7 +41,6 @@ const AUTH_DIR = path.join(DATA_DIR, 'baileys_auth');
 const logger = pino({ level: 'silent' });
 
 let activeSock: WASocket | null = null;
-let sessionResume: Promise<WASocket> | null = null;
 let status: BaileysConnectionStatus = 'disconnected';
 let pairingCode: string | null = null;
 let pairingPhone: string | null = null;
@@ -51,7 +48,6 @@ let connectedUser: { id: string; name?: string } | null = null;
 let lastError: string | null = null;
 let reconnectTimer: NodeJS.Timeout | null = null;
 let manualDisconnect = false;
-let replacedRetries = 0;
 let cachedGroups: BaileysGroupSummary[] = [];
 
 const sentMessageIds = new Set<string>();
@@ -68,36 +64,6 @@ function trackSentId(id?: string | null): void {
 
 function hasSavedCreds(): boolean {
   return fs.existsSync(path.join(AUTH_DIR, 'creds.json'));
-}
-
-export function normalizePairingPhone(rawPhone: string): string {
-  let digits = rawPhone.replace(/[^\d]/g, '');
-  if (!digits) {
-    throw new Error('Enter any WhatsApp phone number with country code (e.g. 14155550199 or 2348012345678).');
-  }
-  if (digits.startsWith('00')) {
-    digits = digits.slice(2);
-  }
-
-  // Strip accidental national trunk '0' after common country codes (e.g. 2340801... -> 234801...)
-  digits = digits
-    .replace(/^2340(\d{10})$/, '234$1')
-    .replace(/^440(\d{10})$/, '44$1')
-    .replace(/^2330(\d{9})$/, '233$1')
-    .replace(/^2540(\d{9})$/, '254$1')
-    .replace(/^270(\d{9})$/, '27$1');
-
-  if (digits.startsWith('0')) {
-    throw new Error(
-      'Include the country code without "+" or leading "0" (e.g. 14155550199, 447700900123, or 2348012345678).'
-    );
-  }
-  if (digits.length < 8 || digits.length > 15) {
-    throw new Error(
-      'Enter a valid WhatsApp phone number with country code (8–15 digits).'
-    );
-  }
-  return digits;
 }
 
 function normalizeJidToNumber(jid: string): string {
@@ -125,85 +91,17 @@ function extractMessageText(msg: WAMessage): string {
   ).trim();
 }
 
-function extractContextInfo(msg: WAMessage) {
-  const m = msg.message;
-  if (!m) return undefined;
-  const inner =
-    m.ephemeralMessage?.message ||
-    m.viewOnceMessage?.message ||
-    m.viewOnceMessageV2?.message ||
-    m;
-  return (
-    inner.extendedTextMessage?.contextInfo ||
-    inner.imageMessage?.contextInfo ||
-    inner.videoMessage?.contextInfo ||
-    inner.documentMessage?.contextInfo ||
-    inner.buttonsResponseMessage?.contextInfo ||
-    inner.templateButtonReplyMessage?.contextInfo ||
-    inner.listResponseMessage?.contextInfo
-  );
-}
-
 function extractTargetJids(msg: WAMessage): string[] {
-  const ctx = extractContextInfo(msg);
+  const m = msg.message;
+  if (!m) return [];
+  const ctx =
+    m.extendedTextMessage?.contextInfo ||
+    m.imageMessage?.contextInfo ||
+    m.videoMessage?.contextInfo;
   const mentioned = ctx?.mentionedJid || [];
   if (mentioned.length > 0) return mentioned;
   if (ctx?.participant) return [ctx.participant];
   return [];
-}
-
-function getBotIdentifiers(sock: WASocket): string[] {
-  const ids = new Set<string>();
-  if (sock.user?.id) ids.add(normalizeJidToNumber(sock.user.id));
-  const lid = (sock.user as { lid?: string } | undefined)?.lid;
-  if (lid) ids.add(normalizeJidToNumber(lid));
-  return Array.from(ids).filter(Boolean);
-}
-
-function isBotTaggedOrReplied(sock: WASocket, msg: WAMessage, text: string): boolean {
-  const ctx = extractContextInfo(msg);
-  const botIds = getBotIdentifiers(sock);
-  const isBotJid = (jid?: string | null): boolean => {
-    if (!jid) return false;
-    const norm = normalizeJidToNumber(jid);
-    return botIds.includes(norm);
-  };
-
-  // 1. Replied/quoted a message sent by the bot
-  if (ctx?.stanzaId && (sentMessageIds.has(ctx.stanzaId) || isBotJid(ctx.participant))) {
-    return true;
-  }
-
-  // 2. Tagged via WhatsApp @mention (phone JID or LID)
-  const mentioned = ctx?.mentionedJid || [];
-  if (mentioned.some((jid) => isBotJid(jid))) {
-    return true;
-  }
-
-  // 3. Explicit text @botName or @botNumber mention
-  const lower = text.toLowerCase();
-  const botName = (botState.config.botName || 'Pieck').trim().toLowerCase();
-  if (botName && new RegExp(`(^|\\s)@${botName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}(\\b|$)`, 'i').test(lower)) {
-    return true;
-  }
-  return botIds.some((id) => new RegExp(`(^|\\s)@${id}(\\b|$)`).test(text));
-}
-
-function stripBotMentionFromText(sock: WASocket, text: string, prefix: string): string {
-  const botIds = getBotIdentifiers(sock);
-  const botName = (botState.config.botName || 'Pieck').trim();
-  let cleaned = text;
-  for (const id of botIds) {
-    cleaned = cleaned.replace(new RegExp(`@${id}\\b`, 'g'), '');
-  }
-  if (botName) {
-    cleaned = cleaned.replace(
-      new RegExp(`@${botName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\b`, 'gi'),
-      ''
-    );
-  }
-  cleaned = cleaned.replace(/\s{2,}/g, ' ').trim();
-  return cleaned || `${prefix}menu`;
 }
 
 async function getGroupMeta(sock: WASocket, groupJid: string): Promise<GroupMetadata | null> {
@@ -379,7 +277,6 @@ async function startSocket(): Promise<WASocket> {
       status = 'connected';
       pairingCode = null;
       lastError = null;
-      replacedRetries = 0;
       connectedUser = sock.user
         ? { id: normalizeJidToNumber(sock.user.id), name: sock.user.name }
         : null;
@@ -390,7 +287,6 @@ async function startSocket(): Promise<WASocket> {
     if (connection === 'close') {
       const statusCode = (lastDisconnect?.error as { output?: { statusCode?: number } })?.output?.statusCode;
       const isLoggedOut = statusCode === DisconnectReason.loggedOut;
-      const isReplaced = statusCode === DisconnectReason.connectionReplaced;
 
       if (manualDisconnect) {
         status = 'disconnected';
@@ -412,18 +308,7 @@ async function startSocket(): Promise<WASocket> {
         return;
       }
 
-      if (isReplaced) {
-        replacedRetries += 1;
-        if (replacedRetries > 3) {
-          status = 'error';
-          connectedUser = null;
-          lastError = 'Session was replaced by another active instance. Wait a moment before reconnecting or unlink.';
-          return;
-        }
-      }
-
-      // Reconnect automatically (5s delay on 440 rolling-deploy overlap, 1.5s otherwise)
-      const delayMs = isReplaced ? 5000 : 1500;
+      // Reconnect automatically (including DisconnectReason.restartRequired 515 right after pairing!)
       status = pairingCode ? 'pairing' : 'connecting';
       clearReconnectTimer();
       reconnectTimer = setTimeout(() => {
@@ -433,7 +318,7 @@ async function startSocket(): Promise<WASocket> {
             lastError = err instanceof Error ? err.message : 'Reconnect failed';
           });
         }
-      }, delayMs);
+      }, 1500);
     }
   });
 
@@ -476,20 +361,12 @@ async function startSocket(): Promise<WASocket> {
         const remoteJid = msg.key.remoteJid || '';
         if (!remoteJid || remoteJid === 'status@broadcast' || remoteJid.endsWith('@newsletter')) continue;
 
-        const rawText = extractMessageText(msg);
-        if (!rawText) continue;
+        const text = extractMessageText(msg);
+        if (!text) continue;
 
         const isGroup = remoteJid.endsWith('@g.us');
-        const taggedOrReplied = isBotTaggedOrReplied(sock, msg, rawText);
-
-        if (botState.config.respondOnlyWhenTaggedOrReplied) {
-          if (!taggedOrReplied) continue;
-        } else if (msg.key.fromMe && !rawText.startsWith(prefix)) {
-          // Prevent self-AI loops if open-chat mode is enabled
-          continue;
-        }
-
-        const text = taggedOrReplied ? stripBotMentionFromText(sock, rawText, prefix) : rawText;
+        // Allow owner testing commands starting with prefix from their own paired phone, but ignore non-prefix self messages
+        if (msg.key.fromMe && !text.startsWith(prefix)) continue;
 
         const senderJid = isGroup ? msg.key.participant || remoteJid : remoteJid;
         const senderNumber = normalizeJidToNumber(senderJid);
@@ -518,21 +395,6 @@ async function startSocket(): Promise<WASocket> {
           ? await handleBaileysGroupCommandSideEffects(sock, remoteJid, msg, text, senderRole, meta)
           : undefined;
 
-        const cleanCmd = text.startsWith(prefix) ? text.slice(prefix.length).trim().split(/\s+/)[0]?.toLowerCase() : '';
-        if (cleanCmd === 'getsession') {
-          if (senderRole !== 'owner') {
-            await sendBotReply(sock, remoteJid, msg, {
-              text: '⛔ *Permission Denied*\nOnly the bot owner can export the WhatsApp session backup.',
-            });
-          } else {
-            const sentResult = await sendSessionBackupToOwner();
-            await sendBotReply(sock, remoteJid, msg, {
-              text: `🔐 *Session Backup Sent*\nDelivered \`BAILEYS_SESSION_B64\` privately to *+${sentResult.sentTo}* DM.\nPaste it in Render → Environment Variables so Pieck stays connected across deploys.`,
-            });
-          }
-          continue;
-        }
-
         const reply = await handleIncomingMessage({
           senderId: isOwnerNumber ? 'owner-kuro' : `wa-${senderNumber}`,
           senderName,
@@ -556,9 +418,9 @@ export async function requestPairingForNumber(
   rawPhone: string,
   customCode?: string
 ): Promise<BaileysStatusSnapshot> {
-  const cleanNumber = normalizePairingPhone(rawPhone);
-  if (sessionResume) {
-    await sessionResume.catch(() => {});
+  const cleanNumber = rawPhone.replace(/[^\d]/g, '');
+  if (cleanNumber.length < 7 || cleanNumber.length > 15) {
+    throw new Error('Enter a valid WhatsApp phone number with country code (7–15 digits, e.g. 15551234567).');
   }
 
   // Cleanly tear down previous socket & unregistered auth so pairing starts fresh
@@ -684,109 +546,17 @@ export function getBaileysStatus(): BaileysStatusSnapshot {
     connectedUser,
     lastError,
     hasSavedSession: hasSavedCreds(),
-    sessionEnvConfigured: Boolean(process.env.BAILEYS_SESSION_B64?.trim()),
     groups: cachedGroups,
   };
 }
 
-function restoreSessionFromEnvIfMissing(): boolean {
-  if (hasSavedCreds()) return true;
-  const b64 = process.env.BAILEYS_SESSION_B64?.trim();
-  if (!b64) return false;
-
-  try {
-    const compressed = Buffer.from(b64, 'base64');
-    const jsonStr = zlib.gunzipSync(compressed).toString('utf8');
-    const parsed = JSON.parse(jsonStr) as { files?: Record<string, string> };
-    if (!parsed.files || !parsed.files['creds.json']) {
-      return false;
-    }
-
-    fs.mkdirSync(AUTH_DIR, { recursive: true });
-    for (const [rawName, content] of Object.entries(parsed.files)) {
-      const safeName = path.basename(rawName);
-      if (!/^[a-zA-Z0-9._-]+\.json$/.test(safeName) || typeof content !== 'string') continue;
-      fs.writeFileSync(path.join(AUTH_DIR, safeName), content, 'utf8');
-    }
-    return hasSavedCreds();
-  } catch (err) {
-    lastError = err instanceof Error ? `Invalid BAILEYS_SESSION_B64: ${err.message}` : 'Invalid BAILEYS_SESSION_B64';
-    return false;
-  }
-}
-
-export async function sendSessionBackupToOwner(): Promise<{ sentTo: string }> {
-  if (!activeSock || status !== 'connected' || !hasSavedCreds()) {
-    throw new Error('WhatsApp must be connected before exporting a session backup.');
-  }
-  const ownerDigits = (botState.config.ownerNumber || '').replace(/[^\d]/g, '');
-  if (ownerDigits.length < 7) {
-    throw new Error('Valid ownerNumber is required to deliver session backup.');
-  }
-
-  const allFiles = fs.readdirSync(AUTH_DIR).filter((f) => f.endsWith('.json'));
-  const files: Record<string, string> = {};
-  const credsPath = path.join(AUTH_DIR, 'creds.json');
-  files['creds.json'] = fs.readFileSync(credsPath, 'utf8');
-
-  let totalBytes = files['creds.json'].length;
-  for (const name of allFiles) {
-    if (name === 'creds.json') continue;
-    if (!name.startsWith('app-state-sync-key-') && !name.startsWith('pre-key-')) continue;
-    const raw = fs.readFileSync(path.join(AUTH_DIR, name), 'utf8');
-    if (totalBytes + raw.length > 24_000) break;
-    files[name] = raw;
-    totalBytes += raw.length;
-  }
-
-  const b64 = zlib.gzipSync(JSON.stringify({ files })).toString('base64');
-  const ownerJid = `${ownerDigits}@s.whatsapp.net`;
-
-  const intro = await activeSock.sendMessage(ownerJid, {
-    text: [
-      `*🔐 Pieck Render Session Backup*`,
-      `Copy the *BAILEYS_SESSION_B64* value in the next message and paste it into:`,
-      `*Render Dashboard → Environment → BAILEYS_SESSION_B64*`,
-      ``,
-      `_Keep this private — anyone with this string can access your bot session._`,
-    ].join('\n'),
-  });
-  trackSentId(intro?.key?.id);
-
-  const secretMsg = await activeSock.sendMessage(ownerJid, { text: b64 });
-  trackSentId(secretMsg?.key?.id);
-
-  return { sentTo: ownerDigits };
-}
-
-export function shutdownBaileysGracefully(): void {
-  manualDisconnect = true;
-  clearReconnectTimer();
-  if (activeSock) {
-    try {
-      activeSock.end(undefined);
-    } catch {
-      // ignore
-    }
-    activeSock = null;
-  }
-}
-
 export async function autoResumeBaileysIfSaved(): Promise<void> {
-  if (!hasSavedCreds() && !process.env.BAILEYS_SESSION_B64?.trim()) return;
-
-  // Give the previous Render instance time to close its socket.
-  await new Promise((resolve) => setTimeout(resolve, 2000));
-  if (activeSock || sessionResume || manualDisconnect || status !== 'disconnected') return;
-  if (!restoreSessionFromEnvIfMissing()) return;
-
-  sessionResume = startSocket();
-  try {
-    await sessionResume;
-  } catch (err) {
-    status = 'error';
-    lastError = err instanceof Error ? err.message : 'Failed to resume saved WhatsApp session.';
-  } finally {
-    sessionResume = null;
+  if (hasSavedCreds() && !activeSock) {
+    try {
+      await startSocket();
+    } catch (err) {
+      status = 'error';
+      lastError = err instanceof Error ? err.message : 'Failed to resume saved WhatsApp session.';
+    }
   }
 }

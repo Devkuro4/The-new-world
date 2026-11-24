@@ -2003,17 +2003,9 @@ async function startBot() {
 
   sock.ev.on('messages.upsert', async ({ messages }) => {
     const msg = messages[0];
-    if (!msg?.message) return;
+    if (!msg?.message || msg.key.fromMe) return;
     const jid = msg.key.remoteJid;
-    const ctx = msg.message.extendedTextMessage?.contextInfo;
-    const botId = sock.user?.id?.split('@')[0]?.split(':')[0];
-    const botLid = sock.user?.lid?.split('@')[0]?.split(':')[0];
-    const isReplyToBot = Boolean(ctx?.stanzaId && [botId, botLid].filter(Boolean).includes(ctx?.participant?.split('@')[0]?.split(':')[0]));
-    const isTaggedBot = Boolean((ctx?.mentionedJid || []).some((m) => [botId, botLid].filter(Boolean).includes(m.split('@')[0]?.split(':')[0])));
-    if (!isReplyToBot && !isTaggedBot) return;
-
-    const rawBody = msg.message.conversation || msg.message.extendedTextMessage?.text || '';
-    const body = rawBody.replace(/@\\d+/g, '').trim();
+    const body = msg.message.conversation || msg.message.extendedTextMessage?.text || '';
     if (!body.startsWith(PREFIX)) return;
 
     const [cmd, ...rest] = body.slice(PREFIX.length).trim().split(/\\s+/);
