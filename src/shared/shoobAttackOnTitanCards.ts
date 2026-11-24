@@ -1,4 +1,4 @@
-import type { AnimeCard } from './botSchema';
+import type { AnimeCard } from './botSchema.ts';
 
 const image = (id: string) => `https://api.shoob.gg/site/api/cardr/${id}?size=400`;
 const source = (id: string) => `https://shoob.gg/cards/info/${id}`;

@@ -1,4 +1,4 @@
-import { ATTACK_ON_TITAN_SHOOB_CARDS } from './shoobAttackOnTitanCards';
+import { ATTACK_ON_TITAN_SHOOB_CARDS } from './shoobAttackOnTitanCards.ts';
 
 export type CommandRole = 'everyone' | 'moderator' | 'admin' | 'owner';
 
