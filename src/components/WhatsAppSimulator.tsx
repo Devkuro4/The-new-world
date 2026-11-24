@@ -163,7 +163,7 @@ export const WhatsAppSimulator: React.FC<WhatsAppSimulatorProps> = ({
           return (
             <div key={msg.id} className={`flex flex-col ${isUser ? 'items-end' : 'items-start'}`}>
               <div
-                className={`max-w-[88%] rounded-lg px-3 py-2 shadow-xs ${
+                className={`max-w-[92%] rounded-lg px-3.5 py-2.5 shadow-xs ${
                   isUser ? 'bg-[#d9fdd3] text-slate-900' : 'bg-white text-slate-900 border border-slate-200/70'
                 }`}
               >

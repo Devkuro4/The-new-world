@@ -50,7 +50,7 @@ export const WhatsAppText: React.FC<WhatsAppTextProps> = ({ text }) => {
   const blocks = text.split(/(```[\s\S]*?```)/g);
 
   return (
-    <div className="space-y-1 text-[13.5px] leading-[1.45] text-slate-800 break-words">
+    <div className="space-y-1 text-[13px] leading-[1.5] text-slate-800 break-words">
       {blocks.map((block, bIdx) => {
         if (block.startsWith('```') && block.endsWith('```')) {
           const code = block.slice(3, -3).trim();
@@ -69,9 +69,17 @@ export const WhatsAppText: React.FC<WhatsAppTextProps> = ({ text }) => {
           <div key={bIdx} className="space-y-0.5">
             {lines.map((line, lIdx) => {
               if (!line.trim()) {
-                return <div key={lIdx} className="h-1.5" />;
+                return <div key={lIdx} className="h-2" />;
               }
-              return <div key={lIdx}>{renderInlineFormatting(line, lIdx)}</div>;
+              const isBoxLine = /^[╭┃╰┣┗ꕥ↳]/.test(line.trimStart());
+              return (
+                <div
+                  key={lIdx}
+                  className={isBoxLine ? 'whitespace-pre-wrap leading-[1.42]' : 'leading-[1.5]'}
+                >
+                  {renderInlineFormatting(line, lIdx)}
+                </div>
+              );
             })}
           </div>
         );

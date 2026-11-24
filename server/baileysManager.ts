@@ -149,8 +149,8 @@ async function sendBotReply(
 ): Promise<void> {
   let finalText = reply.text;
   if (reply.buttons && reply.buttons.length > 0) {
-    const quickLine = reply.buttons.map((b) => `*${b.command}* (${b.label})`).join(' · ');
-    finalText = `${finalText}\n\n_Quick actions:_ ${quickLine}`;
+    const quickLines = reply.buttons.map((b) => `↳ *${b.command}* — ${b.label}`).join('\n');
+    finalText = `${finalText}\n\n*Quick Actions*\n${quickLines}`;
   }
 
   if (reply.imageUrl) {

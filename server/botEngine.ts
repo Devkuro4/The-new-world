@@ -395,6 +395,24 @@ async function fetchCharacterImage(name: string): Promise<string | undefined> {
   }
 }
 
+const CATEGORY_LABELS: Record<CommandCategory, string> = {
+  General: '⚙️ GENERAL ⚙️',
+  Cards: '🎴 CARDS 🎴',
+  Economy: '🎮 ECONOMY 🎮',
+  Games: '🎮 GAMES 🎮',
+  'Events & Guilds': '🎉 EVENTS & GUILDS 🏰',
+  Gamble: '🎰 GAMBLE 🎰',
+  Pokémon: '🐉 POKÉMON 🐉',
+  Interaction: '👤 INTERACTION 👤',
+  Fun: '👤 FUN 👤',
+  Downloaders: '📲 DOWNLOADERS 📲',
+  Search: '🔍 SEARCH 🔍',
+  AI: '🤖 AI 🤖',
+  Converter: '👤 CONVERTER 👤',
+  'Anime SFW': '🎮 ANIME SFW 🎮',
+  Admin: '⚙️ ADMIN ⚙️',
+};
+
 function formatMenuHeader(): string {
   const c = botState.config;
   return [
@@ -414,11 +432,13 @@ function buildMenuText(categoryFilter?: string): string {
     );
     if (matchedCat) {
       const cmds = botState.commands.filter((c) => c.category === matchedCat && c.enabled);
-      const lines = cmds.map((c) => `┣ ✦ ${p}${c.name}${c.aliases?.length ? ` / ${c.aliases[0]}` : ''} — ${c.description}`);
+      const lines = cmds.map(
+        (c) => `┣ ✦ ${p}${c.name}${c.aliases?.length ? ` / ${c.aliases[0]}` : ''}\n┃   _${c.description}_`
+      );
       return [
         formatMenuHeader(),
         '',
-        `*${matchedCat.toUpperCase()} (${cmds.length})*`,
+        `*${CATEGORY_LABELS[matchedCat]}*`,
         ...lines,
         '┗━━━━━━━━━━━',
       ].join('\n');
@@ -436,13 +456,16 @@ function buildMenuText(categoryFilter?: string): string {
   for (const cat of COMMAND_CATEGORIES) {
     const cmds = botState.commands.filter((c) => c.category === cat && c.enabled);
     if (cmds.length === 0) continue;
-    sections.push(`*${cat.toUpperCase()}* (${cmds.length})`);
-    const preview = cmds.slice(0, 8).map((c) => `${p}${c.name}`).join(' · ');
-    sections.push(`┣ ${preview}${cmds.length > 8 ? ` (+${cmds.length - 8} more)` : ''}`);
+    sections.push(`*${CATEGORY_LABELS[cat]}*`);
+    for (const cmd of cmds) {
+      const alias = cmd.aliases?.length ? ` / ${cmd.aliases[0]}` : '';
+      sections.push(`┣ ✦ ${p}${cmd.name}${alias}`);
+    }
+    sections.push('┗━━━━━━━━━━━', '');
   }
 
-  sections.push('', `Tip: Type *${p}menu cards*, *${p}menu economy*, or *${p}menu admin* to inspect a category.`);
-  return sections.join('\n');
+  sections.push(`_Tip: Send *${p}menu cards* or *${p}menu admin* for command descriptions._`);
+  return sections.join('\n').trim();
 }
 
 function findCommand(rawName: string): BotCommandDef | undefined {
@@ -673,7 +696,13 @@ async function executeBuiltInCommand(
   }
   if (cmd === 'test') {
     return {
-      text: `*⚡ ${botState.config.botName} Online*\nPrefix: \`${p}\`\nSuite: ${botState.config.bannerTitle}\nGemini AI: ${hasGeminiKey() ? 'Connected' : 'Pending Secret'}`,
+      text: [
+        `*⚡ ${botState.config.botName} Online*`,
+        `┣ Prefix: \`${p}\``,
+        `┣ Community: ${botState.config.bannerTitle}`,
+        `┣ Gemini AI: ${hasGeminiKey() ? 'Connected' : 'Pending Secret'}`,
+        `┗━━━━━━━━━━━`,
+      ].join('\n'),
       handler: 'Diagnostics',
     };
   }
@@ -681,14 +710,30 @@ async function executeBuiltInCommand(
     const playerCount = Object.keys(botState.players).length;
     const enabledCount = botState.commands.filter((c) => c.enabled).length;
     return {
-      text: `*📊 ${botState.config.botName} Runtime Stats*\n• Enabled Commands: *${enabledCount}/${botState.commands.length}*\n• Registered Players: *${playerCount}*\n• Catalog Cards: *${botState.cards.length}*\n• Commands Processed: *${botState.stats.totalCommands}*\n• Card Drops Spawned: *${botState.stats.totalCardDrops}*`,
+      text: [
+        `*📊 ${botState.config.botName} Runtime Stats*`,
+        `┣ Enabled Commands: *${enabledCount}/${botState.commands.length}*`,
+        `┣ Registered Players: *${playerCount}*`,
+        `┣ Catalog Cards: *${botState.cards.length}*`,
+        `┣ Commands Processed: *${botState.stats.totalCommands}*`,
+        `┣ Card Drops Spawned: *${botState.stats.totalCardDrops}*`,
+        `┗━━━━━━━━━━━`,
+      ].join('\n'),
       handler: 'Telemetry',
     };
   }
   if (cmd === 'owner') {
     const cleanOwner = botState.config.ownerNumber.replace(/[^\d]/g, '');
     return {
-      text: `*👑 Bot Creator*\nName: *${botState.config.creatorName}*\nWhatsApp: *+${cleanOwner}*\nChat: https://wa.me/${cleanOwner}\nBot: *${botState.config.botName}* (${botState.config.bannerTitle})\nGuild: Tempest Federation`,
+      text: [
+        `*👑 Bot Creator*`,
+        `┣ Name: *${botState.config.creatorName}*`,
+        `┣ WhatsApp: *+${cleanOwner}*`,
+        `┣ Chat: https://wa.me/${cleanOwner}`,
+        `┣ Bot: *${botState.config.botName}* (${botState.config.bannerTitle})`,
+        `┣ Guild: Tempest Federation`,
+        `┗━━━━━━━━━━━`,
+      ].join('\n'),
       handler: 'General',
     };
   }
@@ -752,7 +797,14 @@ async function executeBuiltInCommand(
     if (cmd === 'rc') {
       player.cards.push(picked.id);
       return {
-        text: `*🎴 Gacha Pack Opened!*\nYou pulled *[${picked.tier}] ${picked.name}* (\`${picked.id}\`)\nSeries: _${picked.series}_\nATK ${picked.atk} · DEF ${picked.def} · ✨ ${picked.stardustValue} Stardust`,
+        text: [
+          `*🎴 Gacha Pack Opened!*`,
+          `┣ Card: *[${picked.tier}] ${picked.name}* (\`${picked.id}\`)`,
+          `┣ Series: _${picked.series}_`,
+          `┣ Stats: ATK *${picked.atk}* / DEF *${picked.def}*`,
+          `┣ Stardust: *${picked.stardustValue}* ✨`,
+          `┗━━━━━━━━━━━`,
+        ].join('\n'),
         imageUrl: picked.imageUrl,
         imageCaption: `${picked.name} (${picked.tier})`,
         handler: 'Card Gacha',
@@ -767,7 +819,15 @@ async function executeBuiltInCommand(
     botState.activeDrop = { card: picked, claimCode };
     botState.stats.totalCardDrops += 1;
     return {
-      text: `*🎴 Wild Anime Card Appeared!*\n*[${picked.tier}] ${picked.name}*\nSeries: _${picked.series}_\nATK ${picked.atk} · DEF ${picked.def} · Value ¥${picked.price.toLocaleString()}\n\nClaim with: *${p}claim ${claimCode}*`,
+      text: [
+        `*🎴 Wild Anime Card Appeared!*`,
+        `┣ Name: *[${picked.tier}] ${picked.name}*`,
+        `┣ Series: _${picked.series}_`,
+        `┣ Stats: ATK *${picked.atk}* / DEF *${picked.def}*`,
+        `┣ Value: *¥${picked.price.toLocaleString()}*`,
+        `┗━━━━━━━━━━━`,
+        `Claim with: *${p}claim ${claimCode}*`,
+      ].join('\n'),
       imageUrl: picked.imageUrl,
       imageCaption: `[${picked.tier}] ${picked.name} — Code: ${claimCode}`,
       handler: 'Card Spawn',
@@ -830,16 +890,28 @@ async function executeBuiltInCommand(
     if (cmd === 'ci' && matches.length === 1) {
       if (!top.imageUrl) top.imageUrl = await fetchCharacterImage(top.name);
       return {
-        text: `*🎴 Card Info — ${top.name}*\nID: \`${top.id}\` · Tier: *${top.tier}*\nSeries: _${top.series}_\nATK: *${top.atk}* · DEF: *${top.def}*\nStardust: *${top.stardustValue}* · Market Price: *¥${top.price.toLocaleString()}*`,
+        text: [
+          `*🎴 Card Info — ${top.name}*`,
+          `┣ ID: \`${top.id}\``,
+          `┣ Tier: *${top.tier}*`,
+          `┣ Series: _${top.series}_`,
+          `┣ Power: ATK *${top.atk}* / DEF *${top.def}*`,
+          `┣ Stardust: *${top.stardustValue}* ✨`,
+          `┣ Price: *¥${top.price.toLocaleString()}*`,
+          `┗━━━━━━━━━━━`,
+        ].join('\n'),
         imageUrl: top.imageUrl,
         handler: 'Card Info',
       };
     }
     return {
-      text: `*🔍 Card Catalog (${matches.length} matches)*\n${matches
-        .slice(0, 8)
-        .map((c) => `• \`${c.id}\` *[${c.tier}] ${c.name}* (${c.series}) — ¥${c.price.toLocaleString()}`)
-        .join('\n')}`,
+      text: [
+        `*🔍 Card Catalog (${matches.length} matches)*`,
+        ...matches
+          .slice(0, 8)
+          .map((c) => `┣ \`${c.id}\` *[${c.tier}] ${c.name}*\n┃   _${c.series}_ — ¥${c.price.toLocaleString()}`),
+        `┗━━━━━━━━━━━`,
+      ].join('\n'),
       handler: 'Card Search',
     };
   }
@@ -847,9 +919,12 @@ async function executeBuiltInCommand(
   if (cmd === 'cardshop') {
     const featured = botState.cards.slice(0, 6);
     return {
-      text: `*🏪 ${botState.config.bannerTitle} Card Shop*\n${featured
-        .map((c) => `• \`${c.id}\` *[${c.tier}] ${c.name}* — ¥${c.price.toLocaleString()}`)
-        .join('\n')}\n\nRoll a mystery card anytime with *${p}rc* (¥500).`,
+      text: [
+        `*🏪 ${botState.config.bannerTitle} Card Shop*`,
+        ...featured.map((c) => `┣ \`${c.id}\` *[${c.tier}] ${c.name}* — ¥${c.price.toLocaleString()}`),
+        `┗━━━━━━━━━━━`,
+        `Roll a mystery card anytime with *${p}rc* (¥500).`,
+      ].join('\n'),
       handler: 'Card Shop',
     };
   }
@@ -1023,7 +1098,14 @@ async function executeBuiltInCommand(
   // ── ECONOMY ──
   if (cmd === 'bal' || cmd === 'balance' || cmd === 'orbs' || cmd === 'ebal') {
     return {
-      text: `*💳 ${player.name}'s Economy*\n• Wallet: *¥${player.wallet.toLocaleString()}*\n• Bank: *¥${player.bank.toLocaleString()}*\n• Spirit Orbs: *${player.orbs} 🔮*\n• Stardust: *${player.stardust.toLocaleString()} ✨*`,
+      text: [
+        `*💳 ${player.name}'s Economy*`,
+        `┣ Wallet: *¥${player.wallet.toLocaleString()}*`,
+        `┣ Bank: *¥${player.bank.toLocaleString()}*`,
+        `┣ Spirit Orbs: *${player.orbs}* 🔮`,
+        `┣ Stardust: *${player.stardust.toLocaleString()}* ✨`,
+        `┗━━━━━━━━━━━`,
+      ].join('\n'),
       handler: 'Economy',
       buttons: [
         { id: 'daily', label: 'Claim .daily', command: `${p}daily` },
@@ -1099,7 +1181,18 @@ async function executeBuiltInCommand(
       return { text: `Edit your profile using:\n• *${p}rename <name>*\n• *${p}bio <text>*\n• *${p}setage <age>*`, handler: 'Profile' };
     }
     return {
-      text: `*🪪 ${botState.config.bannerTitle} Profile — ${player.name}*\n• Role: *${player.role.toUpperCase()}* · Level *${player.level}* (${player.xp} XP)\n• Guild: *${player.guild || 'Unaffiliated'}*\n• Age: *${player.age}*\n• Bio: _${player.bio}_\n• Net Worth: *¥${(player.wallet + player.bank).toLocaleString()}*\n• Cards Owned: *${player.cards.length}* · Pokémon: *${player.pokemon.length}*`,
+      text: [
+        `*🪪 ${botState.config.bannerTitle} Profile — ${player.name}*`,
+        `┣ Role: *${player.role.toUpperCase()}*`,
+        `┣ Level: *${player.level}* (${player.xp} XP)`,
+        `┣ Guild: *${player.guild || 'Unaffiliated'}*`,
+        `┣ Age: *${player.age}*`,
+        `┣ Net Worth: *¥${(player.wallet + player.bank).toLocaleString()}*`,
+        `┣ Cards: *${player.cards.length}*`,
+        `┣ Pokémon: *${player.pokemon.length}*`,
+        `┣ Bio: _${player.bio}_`,
+        `┗━━━━━━━━━━━`,
+      ].join('\n'),
       handler: 'Profile',
     };
   }
@@ -1658,7 +1751,18 @@ async function executeBuiltInCommand(
       return { text: `No ${cmd} found on MyAnimeList for "_${argStr}_".`, handler: 'Jikan MAL API' };
     }
     return {
-      text: `*📺 ${result.title}*${result.japanese ? `\n_${result.japanese}_` : ''}\n\n• Score: *★ ${result.score}* · Length: *${result.episodesOrChapters}*\n• Status: *${result.status}*\n• Genres: ${result.genres}\n\n${result.synopsis}\n\n🔗 ${result.url}`,
+      text: [
+        `*📺 ${result.title}*${result.japanese ? `\n_${result.japanese}_` : ''}`,
+        `┣ Score: *★ ${result.score}*`,
+        `┣ Length: *${result.episodesOrChapters}*`,
+        `┣ Status: *${result.status}*`,
+        `┣ Genres: ${result.genres}`,
+        `┗━━━━━━━━━━━`,
+        '',
+        result.synopsis,
+        '',
+        `🔗 ${result.url}`,
+      ].join('\n'),
       imageUrl: result.imageUrl,
       imageCaption: result.title,
       handler: 'Jikan MAL API',
@@ -1783,7 +1887,16 @@ async function executeBuiltInCommand(
   if (cmd === 'gs' || cmd === 'groupstats') {
     const gs = botState.groupSettings;
     return {
-      text: `*🛡️ Group Stats — ${gs.groupName}*\n• Status: *${gs.isOpen ? 'Open' : 'Muted'}*\n• Antilink: *${gs.antilink ? 'ON' : 'OFF'}* · Anti-Spam: *${gs.antism ? 'ON' : 'OFF'}*\n• Welcome: *${gs.welcomeEnabled ? 'ON' : 'OFF'}*\n• Content Mode: *SFW Locked*\n• Members Tracked: *${Object.keys(botState.players).length}*`,
+      text: [
+        `*🛡️ Group Stats — ${gs.groupName}*`,
+        `┣ Status: *${gs.isOpen ? 'Open' : 'Muted'}*`,
+        `┣ Antilink: *${gs.antilink ? 'ON' : 'OFF'}*`,
+        `┣ Anti-Spam: *${gs.antism ? 'ON' : 'OFF'}*`,
+        `┣ Welcome: *${gs.welcomeEnabled ? 'ON' : 'OFF'}*`,
+        `┣ Content Mode: *SFW Locked*`,
+        `┣ Members Tracked: *${Object.keys(botState.players).length}*`,
+        `┗━━━━━━━━━━━`,
+      ].join('\n'),
       handler: 'Admin',
     };
   }
