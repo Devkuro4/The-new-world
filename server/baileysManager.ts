@@ -260,7 +260,7 @@ async function sendBotReply(
   sock: WASocket,
   remoteJid: string,
   quoted: WAMessage,
-  reply: { text: string; imageUrl?: string; imageCaption?: string; audioUrl?: string; audioPath?: string; videoPath?: string; hideText?: boolean; pendingMedia?: Promise<{ path?: string; reason?: string }>; pendingKind?: 'audio' | 'video'; pendingLink?: string; buttons?: Array<{ label: string; command: string }> },
+  reply: { text: string; imageUrl?: string; imageCaption?: string; audioUrl?: string; audioPath?: string; videoPath?: string; hideText?: boolean; cardLink?: string; pendingMedia?: Promise<{ path?: string; reason?: string }>; pendingKind?: 'audio' | 'video'; pendingLink?: string; buttons?: Array<{ label: string; command: string }> },
   mentions?: string[]
 ): Promise<void> {
   let finalText = reply.text;
@@ -270,14 +270,59 @@ async function sendBotReply(
   }
 
   let imageSent = false;
-  if (reply.imageUrl) {
+
+  // Fast path: a text message with the thumbnail embedded in it. Nothing is uploaded to WhatsApp's
+  // media servers, so it arrives faster but looks like a link preview. Off by default: set PLAY_THUMB=card to enable it.
+  if (reply.imageUrl && reply.cardLink && process.env.PLAY_THUMB?.trim().toLowerCase() === 'card') {
+    try {
+      const res = await fetch(reply.imageUrl, { signal: AbortSignal.timeout(4_000) });
+      if (res.ok) {
+        const thumbnail = Buffer.from(await res.arrayBuffer());
+        const caption = (reply.imageCaption || reply.text).slice(0, 200);
+        const cardMessage = await sock.sendMessage(
+          remoteJid,
+          {
+            text: caption,
+            contextInfo: {
+              externalAdReply: {
+                title: caption,
+                body: 'YouTube',
+                thumbnail,
+                mediaType: 1,
+                renderLargerThumbnail: true,
+                showAdAttribution: false,
+                sourceUrl: reply.cardLink,
+              },
+            },
+          },
+          { quoted }
+        );
+        trackSentId(cardMessage?.key?.id);
+        imageSent = true;
+      }
+    } catch {
+      // Fall back to the normal image below.
+    }
+  }
+
+  if (reply.imageUrl && !imageSent) {
     try {
       // Bundled artwork (e.g. the Pieck menu image) is read from disk; anything else is a URL.
       const localFile = resolveLocalAsset(reply.imageUrl);
+      // Fetch remote images ourselves (short timeout) so the upload can start immediately.
+      let remoteBuffer: Buffer | null = null;
+      if (!localFile && reply.cardLink) {
+        try {
+          const imgRes = await fetch(reply.imageUrl, { signal: AbortSignal.timeout(4_000) });
+          if (imgRes.ok) remoteBuffer = Buffer.from(await imgRes.arrayBuffer());
+        } catch {
+          remoteBuffer = null;
+        }
+      }
       const imageMessage = await sock.sendMessage(
         remoteJid,
         {
-          image: localFile ? fs.readFileSync(localFile) : { url: reply.imageUrl },
+          image: localFile ? fs.readFileSync(localFile) : remoteBuffer || { url: reply.imageUrl },
           caption: (reply.imageCaption || botState.config.botName).slice(0, 1024),
           mentions,
         },

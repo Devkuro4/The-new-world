@@ -486,6 +486,8 @@ function ensureYtDlp(): Promise<string> {
 }
 
 export function warmUpYtDlp(): void {
+  getCookiesFile();
+  console.log(`[yt-dlp] cookies: ${cookiesStatus}`);
   ensureYtDlp().catch((err) => console.warn(`[yt-dlp] warm-up failed: ${err instanceof Error ? err.message : err}`));
 }
 
@@ -496,12 +498,23 @@ interface DownloadResult {
 
 /** Downloads media with yt-dlp into a temp file. Returns the path, or a human-readable failure reason. */
 // Cookies file (e.g. a Render Secret File). yt-dlp wants to write back to it, so use a writable copy.
+// Looks at YTDLP_COOKIES first, then the usual Render secret-file locations.
 let cookiesCopy: string | null | undefined;
+let cookiesStatus = 'no cookies file configured';
 function getCookiesFile(): string | null {
   if (cookiesCopy !== undefined) return cookiesCopy;
-  const src = process.env.YTDLP_COOKIES?.trim();
-  if (!src || !fs.existsSync(src)) {
+  const configured = process.env.YTDLP_COOKIES?.trim();
+  const candidates = [
+    configured,
+    '/etc/secrets/cookies.txt',
+    path.resolve(process.cwd(), 'cookies.txt'),
+  ].filter((c): c is string => Boolean(c));
+  const src = candidates.find((c) => fs.existsSync(c));
+  if (!src) {
     cookiesCopy = null;
+    cookiesStatus = configured
+      ? `YTDLP_COOKIES is set to "${configured}" but no file exists there`
+      : 'YTDLP_COOKIES is not set and no cookies.txt was found in /etc/secrets or the app folder';
     return null;
   }
   try {
@@ -511,6 +524,10 @@ function getCookiesFile(): string | null {
   } catch {
     cookiesCopy = src;
   }
+  const head = fs.readFileSync(src, 'utf8').slice(0, 200);
+  cookiesStatus = /Netscape|\t/.test(head)
+    ? `using cookies from ${src}`
+    : `found ${src} but it doesn't look like a Netscape cookies.txt`;
   return cookiesCopy;
 }
 
@@ -566,7 +583,7 @@ function runYtDlpOnce(
         }
         if (/sign in|not a bot|confirm you.?re not|cookies/i.test(errText)) {
           return resolve({
-            reason: `YouTube/the platform is blocking the server (bot check). ${cookies ? 'The cookies file may have expired — export a fresh one.' : 'Cookies or a different host are needed.'}`,
+            reason: `YouTube is blocking the server (bot check). Cookies status: ${cookiesStatus}.${cookies ? ' If so, the cookies may have expired: export a fresh file.' : ''}`,
             botCheck: true,
           });
         }
@@ -2268,6 +2285,7 @@ async function executeBuiltInCommand(
         text: pending ? `🎵 ${video.title}` : `🎵 *${video.title}*\n🔗 ${video.url}${note}`,
         imageUrl: video.thumbnail,
         imageCaption: `🎵 ${video.title}`,
+        cardLink: video.url,
         pendingMedia: pending,
         pendingKind: 'audio',
         pendingLink: video.url,
@@ -2344,6 +2362,7 @@ async function executeBuiltInCommand(
         text: title ? `${icon} ${title}` : `🔗 ${url}`,
         imageUrl: thumb,
         imageCaption: title ? `${icon} ${title}` : undefined,
+        cardLink: url,
         pendingMedia: pending,
         pendingKind: kind,
         pendingLink: url,
