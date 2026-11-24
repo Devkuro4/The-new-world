@@ -18,6 +18,7 @@ import {
   type PlayerProfile,
 } from '../src/shared/botSchema.ts';
 import { askGroqText, hasGroqKey, GROQ_MODEL } from './groqClient.ts';
+import { applyTextUi, buildMenuUi } from './textUi.ts';
 
 export interface ActiveDrop {
   card: AnimeCard;
@@ -431,31 +432,19 @@ const CATEGORY_LABELS: Record<CommandCategory, string> = {
   Admin: '⚙️ ADMIN ⚙️',
 };
 
-function formatMenuHeader(): string {
-  const c = botState.config;
-  return [
-    `*PIECK*  •  Anime companion`,
-    `${c.bannerTitle}  •  Prefix ${c.prefix}`,
-  ].join('\n');
-}
-
 function buildMenuText(): string {
-  const prefix = botState.config.prefix;
+  const c = botState.config;
   const visible = botState.commands.filter((command) => command.enabled);
-  const menuLines = [formatMenuHeader(), ''];
-
-  for (const category of COMMAND_CATEGORIES) {
-    const commands = visible.filter((command) => command.category === category);
-    if (commands.length === 0) continue;
-    menuLines.push(
-      `*${category}*`,
-      commands.map((command) => `${prefix}${command.name}`).join('  |  '),
-      ''
-    );
-  }
-
-  menuLines.push(`Use any command directly. Example: *${prefix}anime Frieren*`);
-  return menuLines.join('\n').trim();
+  return buildMenuUi({
+    title: c.bannerTitle,
+    botName: c.botName,
+    prefix: c.prefix,
+    groups: COMMAND_CATEGORIES.map((category) => ({
+      category,
+      commands: visible.filter((command) => command.category === category).map((command) => command.name),
+    })),
+    example: 'anime Frieren',
+  });
 }
 
 function findCommand(rawName: string): BotCommandDef | undefined {
@@ -605,6 +594,7 @@ export async function handleIncomingMessage(params: {
     }
 
     reply = await executeBuiltInCommand(cmdDef.name, restTokens, argStr, player, params.chatMode);
+    reply = { ...reply, text: applyTextUi(reply.text) };
     recordLog(params, input, reply, Date.now() - started);
     persistState();
     return reply;
@@ -2116,15 +2106,21 @@ async function askGroq(prompt) {
 }
 
 function renderMenu() {
+  const line = '━'.repeat(26);
   return [
-    '*' + BOT_NAME + '* - Anime companion',
-    'Prefix - ' + PREFIX,
+    '\`\`\`',
+    '✦ ' + ${JSON.stringify(c.bannerTitle.toUpperCase())} + ' ✦',
+    BOT_NAME + '  ·  prefix ' + PREFIX,
+    line,
     '',
-    '- ' + PREFIX + 'anime <title>',
-    '- ' + PREFIX + 'card',
-    '- ' + PREFIX + 'bal',
-    '- ' + PREFIX + 'daily',
-    '- ' + PREFIX + 'gpt <question>',
+    '  ' + PREFIX + 'anime <title>',
+    '  ' + PREFIX + 'card',
+    '  ' + PREFIX + 'bal',
+    '  ' + PREFIX + 'daily',
+    '  ' + PREFIX + 'gpt <question>',
+    '',
+    line,
+    '\`\`\`',
   ].join('\\n');
 }
 async function startBot() {
