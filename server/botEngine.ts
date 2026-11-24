@@ -560,11 +560,15 @@ function runYtDlpOnce(
     const maxBytes = kind === 'video' ? 30 * 1024 * 1024 : MAX_PLAY_BYTES;
     const args = [
       '-f',
-      kind === 'audio' ? 'bestaudio[ext=m4a][abr<=130]/bestaudio[ext=m4a]/bestaudio/best' : 'b[ext=mp4][height<=720]/b[ext=mp4]/b',
+      kind === 'audio'
+        // Audio-only formats first. Never fall back to plain `best` (that is a 720p video, easily 40+ MB for one song);
+        // the last resorts are the smallest combined formats.
+        ? 'bestaudio[ext=m4a][abr<=130]/bestaudio[abr<=130]/bestaudio[filesize<35M]/bestaudio[filesize_approx<35M]/worstaudio/worst[ext=mp4]/worst'
+        : 'b[ext=mp4][height<=720]/b[ext=mp4]/b',
       '--no-playlist', '--no-warnings', '--no-mtime',
       '--concurrent-fragments', '4', '--http-chunk-size', '10M',
       '--max-filesize', `${Math.round(maxBytes / (1024 * 1024))}M`,
-      '--match-filter', `duration<=?${MAX_PLAY_SECONDS}`,
+      '--match-filter', `!is_live & duration<=${MAX_PLAY_SECONDS}`,
       '-o', `${outBase}.%(ext)s`,
     ];
     // Recent yt-dlp needs a JavaScript runtime to read YouTube; Node is already running this bot.
@@ -2719,4 +2723,3 @@ async function startBot() {
 startBot();
 `;
 }
-
