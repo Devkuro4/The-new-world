@@ -50,9 +50,16 @@ export function buildMenuUi(opts: {
   prefix: string;
   groups: Array<{ category: string; commands: string[] }>;
   example: string;
-}): string {
-  const lines: string[] = [`✦ ${opts.title.toUpperCase()} ✦`, `${opts.botName}  ·  prefix ${opts.prefix}`, DIVIDER, ''];
+}): { caption: string; body: string } {
+  // Short header — goes in the image caption (WhatsApp captions are length-limited).
+  const caption = fence([
+    `✦ ${opts.title.toUpperCase()} ✦`,
+    `${opts.botName}  ·  prefix ${opts.prefix}`,
+    DIVIDER,
+    `  try  ${opts.prefix}${opts.example}`,
+  ]);
 
+  const lines: string[] = [];
   // One column width for the whole menu so every category lines up.
   const allCmds = opts.groups.flatMap((g) => g.commands.map((c) => `${opts.prefix}${c}`));
   const width = Math.min(Math.max(0, ...allCmds.map((c) => c.length)) + 2, 16);
@@ -71,8 +78,8 @@ export function buildMenuUi(opts: {
     lines.push('');
   }
 
-  lines.push(DIVIDER, `  try  ${opts.prefix}${opts.example}`);
-  return fence(lines);
+  lines.push(DIVIDER);
+  return { caption, body: fence(lines) };
 }
 
 // ───────────── Automatic reply styling ─────────────

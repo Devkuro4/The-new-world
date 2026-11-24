@@ -16,6 +16,7 @@ import {
   persistState,
 } from './server/botEngine.ts';
 import { hasGroqKey } from './server/groqClient.ts';
+import { ASSET_DIR } from './server/assets.ts';
 import type { AnimeCard, BotCommandDef, CommandRole } from './src/shared/botSchema.ts';
 
 dotenv.config();
@@ -441,6 +442,23 @@ async function startServer() {
   app.post('/api/baileys/groups/refresh', async (_req: Request, res: Response) => {
     const groups = await refreshBaileysGroups();
     res.json({ ...getBaileysStatus(), groups });
+  });
+
+  // ── BOT ARTWORK & LINK-PREVIEW PAGE ──
+  app.use('/assets', express.static(ASSET_DIR, { maxAge: '1d' }));
+  app.get('/pieck', (req: Request, res: Response) => {
+    const appUrl = process.env.APP_URL?.trim().replace(/\/+$/, '');
+    const base = appUrl && /^https?:\/\//i.test(appUrl) ? appUrl : `${req.protocol}://${req.get('host')}`;
+    const title = botState.config.bannerTitle;
+    res.type('html').send(`<!doctype html><html><head><meta charset="utf-8">
+<title>${title} · ${botState.config.botName}</title>
+<meta property="og:title" content="${title}">
+<meta property="og:description" content="${botState.config.botName} — anime companion bot">
+<meta property="og:image" content="${base}/assets/pieck.jpg">
+<meta property="og:type" content="website">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>body{margin:0;min-height:100vh;display:grid;place-items:center;background:#111;color:#eee;font-family:system-ui,sans-serif;text-align:center}img{width:220px;border-radius:50%}</style>
+</head><body><main><img src="/assets/pieck.jpg" alt="${botState.config.botName}"><h1>${title}</h1><p>${botState.config.botName}</p></main></body></html>`);
   });
 
   // ── VITE / STATIC SERVING ──

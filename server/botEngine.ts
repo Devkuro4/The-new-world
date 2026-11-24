@@ -19,6 +19,7 @@ import {
 } from '../src/shared/botSchema.ts';
 import { askGroqText, hasGroqKey, GROQ_MODEL } from './groqClient.ts';
 import { applyTextUi, buildMenuUi } from './textUi.ts';
+import { MENU_IMAGE_URL } from './assets.ts';
 
 export interface ActiveDrop {
   card: AnimeCard;
@@ -432,7 +433,7 @@ const CATEGORY_LABELS: Record<CommandCategory, string> = {
   Admin: '⚙️ ADMIN ⚙️',
 };
 
-function buildMenuText(): string {
+function buildMenu(): { caption: string; body: string } {
   const c = botState.config;
   const visible = botState.commands.filter((command) => command.enabled);
   return buildMenuUi({
@@ -645,10 +646,11 @@ async function executeBuiltInCommand(
 
   // ── GENERAL ──
   if (cmd === 'menu' || cmd === 'help') {
+    const menu = buildMenu();
     return {
-      text: buildMenuText(),
-      imageUrl: await fetchSfwAnimeImage('waifu'),
-      imageCaption: 'Pieck command menu',
+      text: menu.body,
+      imageUrl: MENU_IMAGE_URL,
+      imageCaption: menu.caption,
       handler: 'Menu',
       buttons: [
         { id: 'balance', label: 'Balance', command: `${p}bal` },

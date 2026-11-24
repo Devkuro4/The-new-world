@@ -12,6 +12,7 @@ import makeWASocket, {
 } from '@whiskeysockets/baileys';
 import pino from 'pino';
 import { botState, handleIncomingMessage } from './botEngine.ts';
+import { getPreviewLink, getThumbBuffer, resolveLocalAsset } from './assets.ts';
 import type { CommandRole } from '../src/shared/botSchema.ts';
 
 export type BaileysConnectionStatus = 'disconnected' | 'connecting' | 'pairing' | 'connected' | 'error';
@@ -215,10 +216,12 @@ async function sendBotReply(
 
   if (reply.imageUrl) {
     try {
+      // Bundled artwork (e.g. the Pieck menu image) is read from disk; anything else is a URL.
+      const localFile = resolveLocalAsset(reply.imageUrl);
       const imageMessage = await sock.sendMessage(
         remoteJid,
         {
-          image: { url: reply.imageUrl },
+          image: localFile ? fs.readFileSync(localFile) : { url: reply.imageUrl },
           caption: (reply.imageCaption || botState.config.botName).slice(0, 1024),
           mentions,
         },
@@ -230,11 +233,28 @@ async function sendBotReply(
     }
   }
 
+  // Replies without their own image get a small link-preview card with the Pieck thumbnail.
+  const thumb = !reply.imageUrl ? getThumbBuffer() : null;
+  const linkCard = thumb
+    ? {
+        externalAdReply: {
+          title: botState.config.bannerTitle,
+          body: `${botState.config.botName} · ${botState.config.prefix}menu`,
+          thumbnail: thumb,
+          mediaType: 1,
+          renderLargerThumbnail: false,
+          showAdAttribution: false,
+          sourceUrl: getPreviewLink(botState.config.ownerNumber),
+        },
+      }
+    : undefined;
+
   const textMessage = await sock.sendMessage(
     remoteJid,
     {
       text: finalText.slice(0, 4096),
       mentions,
+      ...(linkCard ? { contextInfo: linkCard } : {}),
     },
     { quoted }
   );
