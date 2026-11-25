@@ -12,7 +12,7 @@ import makeWASocket, {
 } from '@whiskeysockets/baileys';
 import pino from 'pino';
 import { botState, handleIncomingMessage } from './botEngine.ts';
-import { getPreviewLink, getThumbBufferByKey, resolveLocalAsset } from './assets.ts';
+import { getPreviewLink, getThumbBufferByKey, getThumbImageUrl, resolveLocalAsset } from './assets.ts';
 import type { BotReplyPayload, CommandRole } from '../src/shared/botSchema.ts';
 
 export type BaileysConnectionStatus = 'disconnected' | 'connecting' | 'pairing' | 'connected' | 'error';
@@ -341,7 +341,37 @@ async function sendBotReply(
     }
   }
 
-  if (!(reply.hideText && (imageSent || !reply.imageUrl))) {
+  // Reliable thumbnail mode (LINK_THUMBNAILS=image): send the command artwork as a real image with the
+  // reply as its caption, the same way .menu works. Falls back to plain text if the image can't be sent.
+  let thumbImageSent = false;
+  if (
+    !imageSent &&
+    !reply.imageUrl &&
+    reply.thumbnail &&
+    process.env.LINK_THUMBNAILS?.trim().toLowerCase() === 'image' &&
+    finalText.length <= 1024
+  ) {
+    try {
+      const file = resolveLocalAsset(getThumbImageUrl(reply.thumbnail.thumbKey));
+      if (file) {
+        const imageMessage = await sock.sendMessage(
+          remoteJid,
+          {
+            image: fs.readFileSync(file),
+            caption: finalText,
+            ...(mentions && mentions.length > 0 ? { mentions } : {}),
+          },
+          { quoted }
+        );
+        trackSentId(imageMessage?.key?.id);
+        thumbImageSent = true;
+      }
+    } catch {
+      // Fall through to plain text below.
+    }
+  }
+
+  if (!thumbImageSent && !(reply.hideText && (imageSent || !reply.imageUrl))) {
     // Link-preview cards (externalAdReply) are OFF by default: WhatsApp can accept them without an error
     // and then never display the message, which made every command except .menu / AI chat look dead.
     // Set LINK_THUMBNAILS=on to opt back in.
