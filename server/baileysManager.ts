@@ -342,8 +342,10 @@ async function sendBotReply(
   }
 
   if (!(reply.hideText && (imageSent || !reply.imageUrl))) {
-    // Replies without their own image get a compact command link-preview card (disable with LINK_THUMBNAILS=off).
-    const cardsEnabled = process.env.LINK_THUMBNAILS?.trim().toLowerCase() !== 'off';
+    // Link-preview cards (externalAdReply) are OFF by default: WhatsApp can accept them without an error
+    // and then never display the message, which made every command except .menu / AI chat look dead.
+    // Set LINK_THUMBNAILS=on to opt back in.
+    const cardsEnabled = process.env.LINK_THUMBNAILS?.trim().toLowerCase() === 'on';
     const thumb =
       cardsEnabled && Boolean(reply.thumbnail) && !reply.imageUrl && !(mentions && mentions.length > 1)
         ? getThumbBufferByKey(reply.thumbnail?.thumbKey)
@@ -764,7 +766,17 @@ async function startSocket(): Promise<WASocket> {
               : `📢 *TAG ALL*${note ? `  ·  ${note}` : ''}\n━━━━━━━━━━━━━━━━━━━━━━━━━━\n${effect.tagList}`,
           };
         }
-        await sendBotReply(sock, remoteJid, msg, outgoing, effect.mentions);
+        try {
+          await sendBotReply(sock, remoteJid, msg, outgoing, effect.mentions);
+        } catch (sendErr) {
+          console.error('[Baileys] sendBotReply failed, retrying as plain text:', sendErr);
+          const fallback = await sock.sendMessage(
+            remoteJid,
+            { text: (outgoing.text || 'Done.').slice(0, 4096) },
+            { quoted: msg }
+          );
+          trackSentId(fallback?.key?.id);
+        }
       } catch (err) {
         lastError = err instanceof Error ? err.message : 'Message handler error';
         console.error('[Baileys] incoming message error:', err);
