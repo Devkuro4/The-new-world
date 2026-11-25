@@ -12,7 +12,7 @@ import makeWASocket, {
 } from '@whiskeysockets/baileys';
 import pino from 'pino';
 import { botState, handleIncomingMessage } from './botEngine.ts';
-import { getPreviewLink, getThumbBufferByKey, resolveLocalAsset } from './assets.ts';
+import { getCommandImageBuffer, resolveLocalAsset } from './assets.ts';
 import type { BotReplyPayload, CommandRole } from '../src/shared/botSchema.ts';
 
 export type BaileysConnectionStatus = 'disconnected' | 'connecting' | 'pairing' | 'connected' | 'error';
@@ -262,7 +262,7 @@ async function sendMediaFile(
   }
 }
 
-async function sendBotReply(
+export async function sendBotReply(
   sock: WASocket,
   remoteJid: string,
   quoted: WAMessage,
@@ -313,78 +313,82 @@ async function sendBotReply(
 
   if (reply.imageUrl && !imageSent) {
     try {
-      // Bundled artwork (e.g. the Pieck menu image) is read from disk; anything else is a URL.
+      // Bundled artwork (e.g. the Pieck menu image) is read from disk; anything else is fetched from URL.
       const localFile = resolveLocalAsset(reply.imageUrl);
-      // Fetch remote images ourselves (short timeout) so the upload can start immediately.
       let remoteBuffer: Buffer | null = null;
-      if (!localFile && reply.cardLink) {
+      if (!localFile) {
         try {
-          const imgRes = await fetch(reply.imageUrl, { signal: AbortSignal.timeout(4_000) });
+          const imgRes = await fetch(reply.imageUrl, { signal: AbortSignal.timeout(5_000) });
           if (imgRes.ok) remoteBuffer = Buffer.from(await imgRes.arrayBuffer());
         } catch {
           remoteBuffer = null;
         }
       }
-      const imageMessage = await sock.sendMessage(
-        remoteJid,
-        {
-          image: localFile ? fs.readFileSync(localFile) : remoteBuffer || { url: reply.imageUrl },
-          caption: (reply.imageCaption || botState.config.botName).slice(0, 1024),
-          mentions,
-        },
-        { quoted }
-      );
-      trackSentId(imageMessage?.key?.id);
-      imageSent = true;
-    } catch {
-      // Continue with the complete text when an external thumbnail is unavailable.
+      const imgPayload = localFile ? fs.readFileSync(localFile) : remoteBuffer;
+      if (imgPayload) {
+        const captionText =
+          reply.hideText && finalText.length <= 1024
+            ? finalText
+            : reply.imageCaption || botState.config.botName;
+        const imagePayload =
+          mentions && mentions.length > 0
+            ? { image: imgPayload, caption: captionText.slice(0, 1024), mentions }
+            : { image: imgPayload, caption: captionText.slice(0, 1024) };
+        const imageMessage = await sock.sendMessage(
+          remoteJid,
+          imagePayload,
+          { quoted }
+        );
+        trackSentId(imageMessage?.key?.id);
+        imageSent = true;
+      }
+    } catch (err) {
+      console.warn('[Baileys] reply.imageUrl send failed, continuing with text:', err instanceof Error ? err.message : err);
     }
   }
 
   if (!(reply.hideText && (imageSent || !reply.imageUrl))) {
-    // Replies without their own image get a compact command link-preview card (disable with LINK_THUMBNAILS=off).
-    const cardsEnabled = process.env.LINK_THUMBNAILS?.trim().toLowerCase() !== 'off';
-    const thumb =
-      cardsEnabled && Boolean(reply.thumbnail) && !reply.imageUrl && !(mentions && mentions.length > 1)
-        ? getThumbBufferByKey(reply.thumbnail?.thumbKey)
-        : null;
-    const cmdNameMatch = reply.thumbnail?.title?.slice(botState.config.prefix.length).split(/\s+/)[0];
-    const linkCard = thumb
-      ? {
-          externalAdReply: {
-            title: reply.thumbnail?.title || botState.config.bannerTitle,
-            body: reply.thumbnail?.body || `${botState.config.botName} · ${botState.config.prefix}menu`,
-            thumbnail: thumb,
-            mediaType: 1,
-            renderLargerThumbnail: false,
-            showAdAttribution: false,
-            sourceUrl: getPreviewLink(botState.config.ownerNumber, cmdNameMatch),
-          },
-        }
-      : undefined;
+    // Commands without their own image send their matched anime artwork + caption in ONE native WhatsApp message
+    // (disable with COMMAND_IMAGES=off or LINK_THUMBNAILS=off). No externalAdReply is used so WhatsApp never drops replies.
+    const thumbsEnabled =
+      process.env.COMMAND_IMAGES?.trim().toLowerCase() !== 'off' &&
+      process.env.LINK_THUMBNAILS?.trim().toLowerCase() !== 'off';
+    const canAttachCommandImage =
+      thumbsEnabled &&
+      !imageSent &&
+      !reply.imageUrl &&
+      Boolean(reply.thumbnail) &&
+      reply.status !== 'blocked' &&
+      reply.status !== 'error' &&
+      !(mentions && mentions.length > 0) &&
+      finalText.length <= 1024;
 
-    const plainContent = mentions && mentions.length > 0
-      ? { text: finalText.slice(0, 4096), mentions }
-      : { text: finalText.slice(0, 4096) };
-    const cardContextInfo = linkCard
-      ? {
-          ...linkCard,
-          ...(mentions && mentions.length > 0 ? { mentionedJid: mentions } : {}),
-        }
-      : undefined;
-    let textMessage;
-    try {
-      textMessage = await sock.sendMessage(
-        remoteJid,
-        cardContextInfo ? { ...plainContent, contextInfo: cardContextInfo } : plainContent,
-        { quoted }
-      );
-    } catch (error) {
-      if (!linkCard) throw error;
-      console.warn('[Baileys] externalAdReply rejected, falling back to plain text:', error instanceof Error ? error.message : error);
-      textMessage = await sock.sendMessage(remoteJid, plainContent, { quoted });
+    const cmdImageBuf = canAttachCommandImage ? getCommandImageBuffer(reply.thumbnail?.thumbKey) : null;
+    if (cmdImageBuf) {
+      try {
+        const imgMsg = await sock.sendMessage(
+          remoteJid,
+          {
+            image: cmdImageBuf,
+            caption: finalText,
+          },
+          { quoted }
+        );
+        trackSentId(imgMsg?.key?.id);
+        imageSent = true;
+      } catch (err) {
+        console.warn('[Baileys] command image send failed, falling back to text:', err instanceof Error ? err.message : err);
+      }
     }
-    trackSentId(textMessage?.key?.id);
+
+    if (!imageSent || reply.imageUrl) {
+      const plainContent =
+        mentions && mentions.length > 0
+          ? { text: finalText.slice(0, 4096), mentions }
+          : { text: finalText.slice(0, 4096) };
+      const textMessage = await sock.sendMessage(remoteJid, plainContent, { quoted });
+      trackSentId(textMessage?.key?.id);
+    }
   }
 
   if (reply.pendingMedia) {
@@ -760,8 +764,11 @@ async function startSocket(): Promise<WASocket> {
           outgoing = {
             ...reply,
             text: isHidden
-              ? `📢 *Announcement:* ${note || 'Check pinned anime schedule!'}`
-              : `📢 *TAG ALL*${note ? `  ·  ${note}` : ''}\n━━━━━━━━━━━━━━━━━━━━━━━━━━\n${effect.tagList}`,
+              ? `▎✦ 📢 ANNOUNCEMENT ✦\n▎┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈\n▎${note || 'Check pinned anime schedule!'}`
+              : `▎✦ 📢 TAG ALL ✦\n▎┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈${note ? `\n▎📝 ${note}` : ''}\n${effect.tagList
+                  .split('\n')
+                  .map((line) => `▎${line}`)
+                  .join('\n')}`,
           };
         }
         await sendBotReply(sock, remoteJid, msg, outgoing, effect.mentions);

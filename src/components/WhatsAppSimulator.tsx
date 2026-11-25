@@ -210,7 +210,7 @@ export const WhatsAppSimulator: React.FC<WhatsAppSimulatorProps> = ({
                       onError={() => setBrokenImages((prev) => ({ ...prev, [msg.id]: true }))}
                       className="max-h-60 w-full object-cover"
                     />
-                    {msg.imageCaption && (
+                    {msg.imageCaption && msg.imageCaption !== msg.text && (
                       <div className="bg-slate-900/80 px-2.5 py-1 text-[11px] text-slate-100">
                         {msg.imageCaption}
                       </div>

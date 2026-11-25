@@ -1409,10 +1409,12 @@ async function executeBuiltInCommand(
   // ── GENERAL ──
   if (cmd === 'menu' || cmd === 'help') {
     const menu = buildMenu(argStr);
+    const singleMessage = menu.body.length <= 1000;
     return {
       text: menu.body,
       imageUrl: MENU_IMAGE_URL,
-      imageCaption: menu.caption,
+      imageCaption: singleMessage ? menu.body : menu.caption,
+      hideText: singleMessage,
       handler: 'Menu',
       buttons: [
         { id: 'balance', label: 'Balance', command: `${p}bal` },

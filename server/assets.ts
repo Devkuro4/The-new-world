@@ -105,7 +105,7 @@ export function getThumbImageUrl(thumbKey?: string): string {
 
 const thumbCache = new Map<string, Buffer | null>();
 
-/** Small JPEG (<10KB) used for WhatsApp Baileys externalAdReply thumbnail cards. */
+/** Small JPEG (<10KB) buffer helper. */
 export function getThumbBufferByKey(thumbKey?: string): Buffer | null {
   const key = thumbKey && THUMB_KEYS.has(thumbKey) ? thumbKey : 'pieck';
   if (thumbCache.has(key)) return thumbCache.get(key) ?? null;
@@ -122,6 +122,27 @@ export function getThumbBufferByKey(thumbKey?: string): Buffer | null {
     }
   }
   thumbCache.set(key, buf);
+  return buf;
+}
+
+const fullThumbCache = new Map<string, Buffer | null>();
+
+/** Crisp 512x256 anime JPEG buffer for native single-message image+caption command replies. */
+export function getCommandImageBuffer(thumbKey?: string): Buffer | null {
+  const key = thumbKey && THUMB_KEYS.has(thumbKey) ? thumbKey : 'pieck';
+  if (fullThumbCache.has(key)) return fullThumbCache.get(key) ?? null;
+  const relPath = key === 'pieck' ? 'pieck-thumb.jpg' : path.join('thumbs', `${key}.jpg`);
+  let buf: Buffer | null = null;
+  try {
+    buf = fs.readFileSync(path.join(ASSET_DIR, relPath));
+  } catch {
+    try {
+      buf = fs.readFileSync(path.join(ASSET_DIR, 'pieck-thumb.jpg'));
+    } catch {
+      buf = null;
+    }
+  }
+  fullThumbCache.set(key, buf);
   return buf;
 }
 
