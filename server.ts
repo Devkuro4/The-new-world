@@ -1,6 +1,7 @@
 import crypto from 'node:crypto';
 import path from 'node:path';
-import dotenv from 'dotenv';
+import 'dotenv/config';
+import { cloudEnabled, flushBotSnapshot } from './server/supabaseStore.ts';
 import express, { type Request, type Response } from 'express';
 import {
   autoResumeBaileysIfSaved,
@@ -14,6 +15,7 @@ import {
   generateBaileysBotCode,
   handleIncomingMessage,
   persistState,
+  restoreCloudState,
   warmUpYtDlp,
 } from './server/botEngine.ts';
 import { hasGroqKey } from './server/groqClient.ts';
@@ -21,7 +23,7 @@ import { ASSET_DIR, getThumbImageUrl, resolveThumbKey } from './server/assets.ts
 import { renderProfileCardBuffer } from './server/profileRenderer.ts';
 import type { AnimeCard, BotCommandDef, CommandRole } from './src/shared/botSchema.ts';
 
-dotenv.config();
+
 
 interface RawBodyRequest extends Request {
   rawBody?: Buffer;
@@ -96,6 +98,9 @@ async function processMetaWebhookBody(body: unknown): Promise<{ processed: numbe
 }
 
 async function startServer() {
+  const adminPassword = process.env.ADMIN_PASSWORD;
+  if (cloudEnabled && !adminPassword) throw new Error('ADMIN_PASSWORD is required with cloud storage');
+  await restoreCloudState();
   const app = express();
   const port = Number(process.env.PORT) || 3000;
 
@@ -108,6 +113,14 @@ async function startServer() {
     })
   );
 
+  // Protect the dashboard and its APIs, including pairing and simulator.
+  if (adminPassword) app.use((req, res, next) => {
+    if (req.path === '/api/health' || req.path === '/api/webhook') return next();
+    const expected = 'Basic ' + Buffer.from('admin:' + adminPassword).toString('base64');
+    if (safeEqual(req.headers.authorization || '', expected)) return next();
+    res.set('WWW-Authenticate', 'Basic realm="Pieck Studio"').status(401).send('Authentication required');
+  });
+  process.once('SIGTERM', () => { void flushBotSnapshot().finally(() => process.exit(0)); });
   // ── HEALTH & STATE API ──
   app.get('/api/health', (_req: Request, res: Response) => {
     res.json({
@@ -535,10 +548,10 @@ async function startServer() {
 
   app.listen(port, '0.0.0.0', () => {
     console.log(`The new world Studio (Pieck Bot) running on http://0.0.0.0:${port}`);
-    autoResumeBaileysIfSaved().catch(() => {});
+    autoResumeBaileysIfSaved().catch(err => console.error('WhatsApp restore failed', err));
     warmUpYtDlp(); // install/check yt-dlp at boot so the first .play isn't slow
   });
 }
 
-startServer();
+startServer().catch(err => { console.error('Startup failed', err); process.exit(1); });
 

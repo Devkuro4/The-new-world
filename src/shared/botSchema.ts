@@ -426,7 +426,7 @@ export const DEFAULT_COMMANDS: BotCommandDef[] = [
   { name: 'yt', category: 'Downloaders', description: "Download a YouTube video, or search by name. Add 'audio' for audio only", usage: '.yt <url|query> [audio]', role: 'everyone', enabled: false },
   { name: 'x', category: 'Downloaders', description: 'Download an X/Twitter video', usage: '.x <url>', role: 'everyone', enabled: false },
   { name: 'fb', category: 'Downloaders', description: 'Download a Facebook video', usage: '.fb <url>', role: 'everyone', enabled: false },
-  { name: 'play', category: 'Downloaders', description: 'Search YouTube for a song/video and get its details, link & audio', usage: '.play <song title>', role: 'everyone', enabled: false },
+  { name: 'play', category: 'Downloaders', description: 'Search YouTube for a song/video and get its details, link & audio', usage: '.play <song title>', role: 'everyone', enabled: true },
   { name: 'reddit', category: 'Downloaders', description: 'Fetch top SFW post metadata from an anime subreddit', usage: '.reddit <subreddit>', role: 'everyone', enabled: false },
 
   // Search

@@ -1,3 +1,6 @@
+import { cloudEnabled } from './supabaseStore.ts';
+import { useCloudAuthState, clearCloudSession, inspectCloudSession, hasCloudSession } from './cloudAuth.ts';
+import { linkReply } from './aiThreads.ts';
 import fs from 'node:fs';
 import path from 'node:path';
 import makeWASocket, {
@@ -12,7 +15,7 @@ import makeWASocket, {
   type WASocket,
 } from '@whiskeysockets/baileys';
 import pino from 'pino';
-import { botState, handleIncomingMessage } from './botEngine.ts';
+import { botState, handleIncomingMessage, aiReplyThreads } from './botEngine.ts';
 import { getCommandImageBuffer, resolveLocalAsset } from './assets.ts';
 import type { BotReplyPayload, CommandRole } from '../src/shared/botSchema.ts';
 
@@ -50,6 +53,7 @@ let connectedUser: { id: string; name?: string } | null = null;
 let lastError: string | null = null;
 let reconnectTimer: NodeJS.Timeout | null = null;
 let manualDisconnect = false;
+let reconnectAttempts = 0;
 let cachedGroups: BaileysGroupSummary[] = [];
 
 const sentMessageIds = new Set<string>();
@@ -66,7 +70,7 @@ function trackSentId(id?: string | null): void {
 }
 
 function hasSavedCreds(): boolean {
-  return fs.existsSync(path.join(AUTH_DIR, 'creds.json'));
+  return cloudEnabled ? hasCloudSession() : fs.existsSync(path.join(AUTH_DIR, 'creds.json'));
 }
 
 function normalizeJidToNumber(jid: string): string {
@@ -322,7 +326,8 @@ export async function sendBotReply(
   remoteJid: string,
   quoted: WAMessage,
   reply: BotReplyPayload,
-  mentions?: string[]
+  mentions?: string[],
+  onTextSent?: (id: string) => void
 ): Promise<void> {
   let finalText = reply.text;
   if (reply.buttons && reply.buttons.length > 0 && !finalText.includes('▎↳')) {
@@ -447,6 +452,7 @@ export async function sendBotReply(
           : { text: finalText.slice(0, 4096) };
       const textMessage = await sock.sendMessage(remoteJid, plainContent, { quoted });
       trackSentId(textMessage?.key?.id);
+      if (textMessage?.key?.id) onTextSent?.(textMessage.key.id);
     }
   }
 
@@ -613,6 +619,19 @@ function clearReconnectTimer(): void {
   }
 }
 
+function scheduleReconnect(): void {
+  clearReconnectTimer();
+  if (manualDisconnect) return;
+  const delay = Math.min(60000, 1500 * 2 ** Math.min(reconnectAttempts++, 6));
+  reconnectTimer = setTimeout(() => {
+    if (manualDisconnect || activeSock) return;
+    void startSocket().catch(err => {
+      status = 'error'; lastError = err instanceof Error ? err.message : 'Reconnect failed';
+      scheduleReconnect();
+    });
+  }, delay);
+}
+
 async function startSocket(): Promise<WASocket> {
   clearReconnectTimer();
   manualDisconnect = false;
@@ -623,7 +642,7 @@ async function startSocket(): Promise<WASocket> {
     fs.mkdirSync(AUTH_DIR, { recursive: true });
   }
 
-  const { state, saveCreds } = await useMultiFileAuthState(AUTH_DIR);
+  const { state, saveCreds } = await (cloudEnabled ? useCloudAuthState() : useMultiFileAuthState(AUTH_DIR));
   const { version } = await fetchLatestBaileysVersion().catch(() => ({ version: [2, 3000, 1015901307] as [number, number, number] }));
 
   const sock = makeWASocket({
@@ -641,7 +660,7 @@ async function startSocket(): Promise<WASocket> {
 
   activeSock = sock;
 
-  sock.ev.on('creds.update', saveCreds);
+  sock.ev.on('creds.update', () => { if (activeSock === sock) void saveCreds().catch(err => { lastError = 'WhatsApp credential save failed'; console.error(lastError, err); }); });
 
   sock.ev.on('connection.update', async (update) => {
     if (activeSock !== sock) return;
@@ -649,6 +668,7 @@ async function startSocket(): Promise<WASocket> {
 
     if (connection === 'open') {
       status = 'connected';
+      reconnectAttempts = 0;
       pairingCode = null;
       lastError = null;
       connectedUser = sock.user
@@ -675,6 +695,7 @@ async function startSocket(): Promise<WASocket> {
         cachedGroups = [];
         lastError = 'WhatsApp session logged out from phone. Pair again with your phone number.';
         try {
+          if (cloudEnabled) await clearCloudSession();
           fs.rmSync(AUTH_DIR, { recursive: true, force: true });
         } catch {
           // ignore
@@ -682,17 +703,12 @@ async function startSocket(): Promise<WASocket> {
         return;
       }
 
+      activeSock = null;
+      if (statusCode === DisconnectReason.connectionReplaced) { status = 'disconnected'; lastError = 'Connection replaced by another instance'; return; }
       // Reconnect automatically (including DisconnectReason.restartRequired 515 right after pairing!)
       status = pairingCode ? 'pairing' : 'connecting';
       clearReconnectTimer();
-      reconnectTimer = setTimeout(() => {
-        if (!manualDisconnect) {
-          startSocket().catch((err) => {
-            status = 'error';
-            lastError = err instanceof Error ? err.message : 'Reconnect failed';
-          });
-        }
-      }, 1500);
+      scheduleReconnect();
     }
   });
 
@@ -746,8 +762,10 @@ async function startSocket(): Promise<WASocket> {
         if (!isCommand && !taggedOrReplied) continue;
         const text = isCommand ? rawText : stripBotMention(sock, rawText);
 
-        const senderJid = isGroup ? msg.key.participant || remoteJid : remoteJid;
-        const senderNumber = normalizeJidToNumber(senderJid);
+        const senderJid = msg.key.participant || msg.key.participantAlt;
+        if (!senderJid) continue;
+        const phoneJid = [senderJid, msg.key.participantAlt].find(jid => jid?.endsWith("@s.whatsapp.net"));
+        const senderNumber = normalizeJidToNumber(phoneJid || senderJid);
         const ownerDigits = (botState.config.ownerNumber || '').replace(/[^\d]/g, '');
         const senderNums = jidNumbers(msg.key.participant, msg.key.participantAlt, senderJid);
         const isOwnerNumber = Boolean(ownerDigits && senderNums.has(ownerDigits));
@@ -817,16 +835,22 @@ async function startSocket(): Promise<WASocket> {
             ? await extractImageMediaBuffer(sock, msg)
             : undefined;
 
-        const reply = await handleIncomingMessage({
-          senderId: isOwnerNumber ? 'owner-kuro' : `wa-${senderNumber}`,
+        const context = extractContextInfo(msg);
+        const incoming = {
+          senderId: isOwnerNumber || msg.key.fromMe ? 'owner-kuro' : phoneJid ? `wa-${senderNumber}` : `wa-lid-${senderNumber}`,
           senderName,
           senderRole,
-          chatMode: 'group',
-          source: 'baileys',
+          chatMode: 'group' as const,
+          source: 'baileys' as const,
+          groupId: remoteJid,
+          messageId: msg.key.id || undefined,
+          quotedMessageId: context?.stanzaId || undefined,
+          quotedSenderId: context?.participant || undefined,
           text,
           quotedText: extractQuotedText(msg),
           mediaBuffer,
-        });
+        };
+        const reply = await handleIncomingMessage(incoming);
 
         let outgoing = reply;
         if (effect.tagList) {
@@ -842,7 +866,10 @@ async function startSocket(): Promise<WASocket> {
                   .join('\n')}`,
           };
         }
-        await sendBotReply(sock, remoteJid, msg, outgoing, effect.mentions);
+        await sendBotReply(sock, remoteJid, msg, outgoing, effect.mentions, id => {
+          const key = aiReplyThreads.get(incoming);
+          if (key) linkReply(incoming, incoming.senderId, key, id);
+        });
       } catch (err) {
         lastError = err instanceof Error ? err.message : 'Message handler error';
         console.error('[Baileys] incoming message error:', err);
@@ -874,7 +901,8 @@ export async function requestPairingForNumber(
     activeSock = null;
   }
   try {
-    fs.rmSync(AUTH_DIR, { recursive: true, force: true });
+    if (cloudEnabled) await clearCloudSession();
+          fs.rmSync(AUTH_DIR, { recursive: true, force: true });
   } catch {
     // ignore
   }
@@ -957,7 +985,8 @@ export async function disconnectBaileysSession(): Promise<BaileysStatusSnapshot>
     activeSock = null;
   }
   try {
-    fs.rmSync(AUTH_DIR, { recursive: true, force: true });
+    if (cloudEnabled) await clearCloudSession();
+          fs.rmSync(AUTH_DIR, { recursive: true, force: true });
   } catch {
     // ignore
   }
@@ -990,12 +1019,14 @@ export function getBaileysStatus(): BaileysStatusSnapshot {
 }
 
 export async function autoResumeBaileysIfSaved(): Promise<void> {
+  if (cloudEnabled) await inspectCloudSession();
   if (hasSavedCreds() && !activeSock) {
     try {
       await startSocket();
     } catch (err) {
       status = 'error';
       lastError = err instanceof Error ? err.message : 'Failed to resume saved WhatsApp session.';
+      scheduleReconnect();
     }
   }
 }
