@@ -3,7 +3,7 @@ services:
     name: the-new-world-pieck-bot
     runtime: node
     plan: free
-    buildCommand: npm install --include=dev && npm run build && mkdir -p bin && curl -sL https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp_linux -o bin/yt-dlp && chmod +x bin/yt-dlp
+    buildCommand: npm install --include=dev && npm run build && mkdir -p bin && curl -sL https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp_linux -o bin/yt-dlp && chmod +x bin/yt-dlp && (command -v ffmpeg >/dev/null || (curl -fsSL https://github.com/eugeneware/ffmpeg-static/releases/download/b6.0/ffmpeg-linux-x64 -o bin/ffmpeg && chmod +x bin/ffmpeg))
     startCommand: npm start
     healthCheckPath: /api/health
     envVars:

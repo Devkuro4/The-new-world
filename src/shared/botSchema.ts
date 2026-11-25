@@ -164,6 +164,8 @@ export interface CommandThumbnail {
 export interface BotReplyPayload {
   text: string;
   imageUrl?: string;
+  reactionTag?: string;
+  reactionMentions?: string[];
   /** Server-side rendered image bytes (e.g. dynamic .profile card), sent directly by Baileys and stripped from JSON. */
   imageBuffer?: Uint8Array;
   imageCaption?: string;
@@ -398,6 +400,13 @@ export const DEFAULT_COMMANDS: BotCommandDef[] = [
   { name: 'bonk', category: 'Interaction', description: 'Send a comedic anime bonk', usage: '.bonk [@user]', role: 'everyone', enabled: true },
   { name: 'tickle', category: 'Interaction', description: 'Playful anime tickle reaction', usage: '.tickle [@user]', role: 'everyone', enabled: true },
   { name: 'shrug', category: 'Interaction', description: 'Anime shrug reaction', usage: '.shrug', role: 'everyone', enabled: true },
+
+  { name: 'poke', category: 'Interaction', description: 'Anime poke GIF', usage: '.poke [@user]', role: 'everyone', enabled: true },
+  { name: 'cuddle', category: 'Interaction', description: 'Anime cuddle GIF', usage: '.cuddle [@user]', role: 'everyone', enabled: true },
+  { name: 'bite', category: 'Interaction', description: 'Anime bite GIF', usage: '.bite [@user]', role: 'everyone', enabled: true },
+  { name: 'highfive', category: 'Interaction', description: 'Anime highfive GIF', usage: '.highfive [@user]', role: 'everyone', enabled: true },
+  { name: 'cry', category: 'Interaction', description: 'Anime cry GIF', usage: '.cry', role: 'everyone', enabled: true },
+  { name: 'blush', category: 'Interaction', description: 'Anime blush GIF', usage: '.blush', role: 'everyone', enabled: true },
 
   // Fun (SFW)
   { name: 'ship', category: 'Fun', description: 'Calculate anime compatibility meter between two names', usage: '.ship <name1> <name2>', role: 'everyone', enabled: true },

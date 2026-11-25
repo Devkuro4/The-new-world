@@ -1,3 +1,4 @@
+import { reactions, mentionLabel } from './animeReactions.ts';
 import { cloudEnabled, readCloud, queueBotSnapshot } from './supabaseStore.ts';
 import { type AiContext, threadKey, serialize, clearThreads, relevantMemories, chatPrompt } from './aiThreads.ts';
 import crypto from 'node:crypto';
@@ -1330,6 +1331,8 @@ type IncomingParams = AiContext & {
   quotedText?: string;
   quotedImageUrl?: string;
   mediaBuffer?: Buffer;
+  reactionSenderJid?: string;
+  reactionTargetJid?: string;
 };
 export function handleIncomingMessage(params: IncomingParams): Promise<BotReplyPayload> {
   return serialize(params, params.senderId, () => handleIncomingMessageInternal(params));
@@ -3794,39 +3797,15 @@ async function executeBuiltInCommand(
   }
 
   // ── INTERACTIONS & ANIME SFW ──
-  const interactionVerbs: Record<string, string> = {
-    hug: 'gave a warm anime hug to',
-    kiss: 'sent a sweet anime kiss to',
-    slap: 'delivered a comedic anime slap to',
-    wave: 'waved cheerfully at',
-    pat: 'gave wholesome headpats to',
-    dance: 'started an anime victory dance',
-    sad: 'looked dramatically sad',
-    smile: 'flashed a bright anime smile',
-    laugh: 'burst out laughing',
-    lick: 'playfully teased',
-    punch: 'unleashed a shonen punch at',
-    bonk: 'delivered an anti-chaos bonk to',
-    tickle: 'tickled',
-    shrug: 'shrugged calmly',
-  };
-
-  if (cmd in interactionVerbs) {
-    const tagMap: Record<string, string> = {
-      punch: 'bonk',
-      laugh: 'happy',
-      sad: 'cry',
-      tickle: 'pat',
-      shrug: 'smile',
-    };
-    const apiTag = tagMap[cmd] || cmd;
-    const img = await fetchSfwAnimeImage(apiTag);
-    const target = argStr ? ` *${argStr}*` : '';
-    return {
-      text: `✨ *${player.name}* ${interactionVerbs[cmd]}${target}!`,
-      imageUrl: img,
-      handler: 'SFW Anime Interaction',
-    };
+  const reaction = reactions[cmd];
+  if (reaction) {
+    const sender = aiContext?.reactionSenderJid;
+    const target = aiContext?.reactionTargetJid;
+    if (reaction.target && !target && (source === 'baileys' || !argStr)) {
+      return { text: `Mention someone or reply to their message with ${p}${cmd}.`, handler: 'Anime Interaction', status: 'blocked' };
+    }
+    const caption = `${sender ? mentionLabel(sender) : player.name} ${reaction.verb}${reaction.target ? ` ${target ? mentionLabel(target) : argStr}` : ''}!`;
+    return { text: caption, reactionTag: reaction.tag, reactionMentions: [sender, reaction.target ? target : undefined].filter((jid): jid is string => Boolean(jid)), handler: 'Anime Interaction' };
   }
 
   const sfwArtTags = ['waifu', 'neko', 'maid', 'mori-calliope', 'raiden-shogun', 'kamisato-ayaka', 'selfies', 'uniform', 'cosplay'];

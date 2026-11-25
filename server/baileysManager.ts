@@ -1,3 +1,4 @@
+import { mentionsName, reactionVideo } from './animeReactions.ts';
 import { cloudEnabled } from './supabaseStore.ts';
 import { useCloudAuthState, clearCloudSession, inspectCloudSession, hasCloudSession } from './cloudAuth.ts';
 import { linkReply } from './aiThreads.ts';
@@ -329,6 +330,19 @@ export async function sendBotReply(
   mentions?: string[],
   onTextSent?: (id: string) => void
 ): Promise<void> {
+  if (reply.reactionTag) {
+    const reactionMentions = [...new Set(reply.reactionMentions || [])];
+    try {
+      const video = await reactionVideo(reply.reactionTag);
+      const sent = await sock.sendMessage(remoteJid, { video, gifPlayback: true, caption: reply.text, mentions: reactionMentions }, { quoted });
+      trackSentId(sent?.key?.id);
+      return;
+    } catch {
+      const sent = await sock.sendMessage(remoteJid, { text: `${reply.text}\n(GIF temporarily unavailable.)`, mentions: reactionMentions }, { quoted });
+      trackSentId(sent?.key?.id);
+      return;
+    }
+  }
   let finalText = reply.text;
   if (reply.buttons && reply.buttons.length > 0 && !finalText.includes('▎↳')) {
     const quickLines = reply.buttons.map((b) => `${b.command} (${b.label})`).join(' · ');
@@ -759,7 +773,7 @@ async function startSocket(): Promise<WASocket> {
         const isCommand = rawText.startsWith(prefix);
         if (msg.key.fromMe && !isCommand) continue;
         const taggedOrReplied = isBotTaggedOrReplied(sock, msg, rawText);
-        if (!isCommand && !taggedOrReplied) continue;
+        if (!isCommand && !taggedOrReplied && !mentionsName(rawText, botState.config.botName)) continue;
         const text = isCommand ? rawText : stripBotMention(sock, rawText);
 
         const senderJid = msg.key.participant || msg.key.participantAlt;
@@ -849,6 +863,8 @@ async function startSocket(): Promise<WASocket> {
           text,
           quotedText: extractQuotedText(msg),
           mediaBuffer,
+          reactionSenderJid: senderJid,
+          reactionTargetJid: extractTargetJids(msg)[0],
         };
         const reply = await handleIncomingMessage(incoming);
 
