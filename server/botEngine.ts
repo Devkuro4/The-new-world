@@ -3924,21 +3924,25 @@ async function askGroq(prompt, quotedText) {
   const sys = ${JSON.stringify(c.aiPersonaPrompt)} + (quotedText
     ? \`\\nCRITICAL FOLLOW-UP RULE: The user is replying to: """\${quotedText}""". Answer as a direct follow-up continuing that exact topic.\`
     : '');
+  const model = process.env.GROQ_MODEL || 'openai/gpt-oss-120b';
+  const payloadBody = {
+    model,
+    max_completion_tokens: 1024,
+    messages: [
+      { role: 'system', content: sys },
+      { role: 'user', content: quotedText ? \`[Replying to: "\${quotedText}"]\\n\${prompt}\` : prompt },
+    ],
+  };
+  if (/^(openai\\/gpt-oss|qwen)/i.test(model)) {
+    payloadBody.reasoning_effort = 'low';
+  }
   const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
     method: 'POST',
     headers: {
       Authorization: \`Bearer \${process.env.GROQ_API_KEY}\`,
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify({
-      model: process.env.GROQ_MODEL || 'openai/gpt-oss-120b',
-      reasoning_effort: 'low',
-      max_completion_tokens: 1024,
-      messages: [
-        { role: 'system', content: sys },
-        { role: 'user', content: quotedText ? \`[Replying to: "\${quotedText}"]\\n\${prompt}\` : prompt },
-      ],
-    }),
+    body: JSON.stringify(payloadBody),
   });
   const payload = await response.json();
   if (!response.ok) throw new Error(payload.error?.message || 'Groq request failed');

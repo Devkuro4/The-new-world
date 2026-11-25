@@ -424,6 +424,11 @@ async function startServer() {
     });
   });
 
+  app.get('/api/download-zip', (_req: Request, res: Response) => {
+    const zipPath = path.join(ASSET_DIR, 'the-new-world-pieck-bot.zip');
+    res.download(zipPath, 'the-new-world-pieck-bot.zip');
+  });
+
   // ── BAILEYS WHATSAPP MULTI-DEVICE (PAIRING CODE & GROUPS) ──
   app.get('/api/baileys/status', (_req: Request, res: Response) => {
     res.json(getBaileysStatus());

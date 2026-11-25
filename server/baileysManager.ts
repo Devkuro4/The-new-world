@@ -345,7 +345,7 @@ async function sendBotReply(
     // Replies without their own image get a compact command link-preview card (disable with LINK_THUMBNAILS=off).
     const cardsEnabled = process.env.LINK_THUMBNAILS?.trim().toLowerCase() !== 'off';
     const thumb =
-      cardsEnabled && !reply.imageUrl && !(mentions && mentions.length > 1)
+      cardsEnabled && Boolean(reply.thumbnail) && !reply.imageUrl && !(mentions && mentions.length > 1)
         ? getThumbBufferByKey(reply.thumbnail?.thumbKey)
         : null;
     const cmdNameMatch = reply.thumbnail?.title?.slice(botState.config.prefix.length).split(/\s+/)[0];

@@ -542,7 +542,15 @@ export const DeployWebhookPanel: React.FC<DeployWebhookPanelProps> = ({
             </p>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2">
+            <a
+              href="/api/download-zip"
+              download="the-new-world-pieck-bot.zip"
+              className="inline-flex items-center gap-1.5 rounded-lg bg-emerald-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-emerald-700 whitespace-nowrap"
+            >
+              <Download className="h-3.5 w-3.5" />
+              <span>Download Full .zip</span>
+            </a>
             <button
               type="button"
               onClick={() => copyText(exportedCode, setCopiedCode)}

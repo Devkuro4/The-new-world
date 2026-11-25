@@ -76,7 +76,7 @@ export const GroupAiPanel: React.FC<GroupAiPanelProps> = ({
           Group Moderation & AI Persona
         </h1>
         <p className="mt-0.5 text-sm text-slate-500">
-          Customize Pieck&apos;s identity, The new world group protection flags, and Groq Llama 3.3 behavior.
+          Customize Pieck&apos;s identity, The new world group protection flags, and Groq GPT-OSS AI behavior.
         </p>
       </div>
 

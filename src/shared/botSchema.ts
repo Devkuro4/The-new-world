@@ -432,7 +432,7 @@ export const DEFAULT_COMMANDS: BotCommandDef[] = [
   { name: 'shazam', category: 'Search', description: 'Identify an anime soundtrack snippet from description', usage: '.shazam <hummed/lyric>', role: 'everyone', enabled: true },
 
   // AI (Groq powered)
-  { name: 'gpt', category: 'AI', description: 'Ask Pieck AI (powered by Groq Llama 3.3)', usage: '.gpt <question>', role: 'everyone', enabled: true },
+  { name: 'gpt', category: 'AI', description: 'Ask Pieck AI (powered by OpenAI GPT-OSS on Groq)', usage: '.gpt <question>', role: 'everyone', enabled: true },
   { name: 'copilot', category: 'AI', description: 'Ask Pieck coding & bot-scripting assistant', usage: '.copilot <prompt>', role: 'everyone', enabled: true },
   { name: 'perplexity', category: 'AI', description: 'Deep anime lore & studio research breakdown', usage: '.perplexity <topic>', role: 'everyone', enabled: true },
   { name: 'imagine', category: 'AI', description: 'Craft a detailed anime illustration prompt & scene spec', usage: '.imagine <scene>', role: 'everyone', enabled: true },
