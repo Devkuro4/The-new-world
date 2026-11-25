@@ -3,6 +3,7 @@ import path from 'node:path';
 import makeWASocket, {
   Browsers,
   DisconnectReason,
+  downloadMediaMessage,
   fetchLatestBaileysVersion,
   makeCacheableSignalKeyStore,
   useMultiFileAuthState,
@@ -147,6 +148,60 @@ function extractContextInfo(msg: WAMessage) {
     inner.templateButtonReplyMessage?.contextInfo ||
     inner.listResponseMessage?.contextInfo
   );
+}
+
+async function extractImageMediaBuffer(sock: WASocket, msg: WAMessage): Promise<Buffer | undefined> {
+  const m = msg.message;
+  if (!m) return undefined;
+  const ownInner =
+    m.ephemeralMessage?.message ||
+    m.viewOnceMessage?.message ||
+    m.viewOnceMessageV2?.message ||
+    m;
+  if (ownInner.imageMessage) {
+    try {
+      const buf = await downloadMediaMessage(
+        msg,
+        'buffer',
+        {},
+        { logger, reuploadRequest: sock.updateMediaMessage }
+      );
+      if (Buffer.isBuffer(buf) && buf.length > 0) return buf;
+    } catch {
+      // ignore own-image download failure and inspect quoted message next
+    }
+  }
+
+  const ctx = extractContextInfo(msg);
+  const q = ctx?.quotedMessage;
+  if (!q) return undefined;
+  const quotedInner =
+    q.ephemeralMessage?.message ||
+    q.viewOnceMessage?.message ||
+    q.viewOnceMessageV2?.message ||
+    q;
+  if (!quotedInner.imageMessage && !quotedInner.stickerMessage) return undefined;
+
+  try {
+    const quotedWrapper = {
+      key: {
+        remoteJid: msg.key.remoteJid || '',
+        id: ctx?.stanzaId || msg.key.id || '',
+        participant: ctx?.participant || undefined,
+      },
+      message: quotedInner,
+    } as WAMessage;
+    const buf = await downloadMediaMessage(
+      quotedWrapper,
+      'buffer',
+      {},
+      { logger, reuploadRequest: sock.updateMediaMessage }
+    );
+    if (Buffer.isBuffer(buf) && buf.length > 0) return buf;
+  } catch (err) {
+    console.warn('[Baileys] Failed to download quoted image for .setpp:', err instanceof Error ? err.message : err);
+  }
+  return undefined;
 }
 
 function getBotIdentifiers(sock: WASocket): string[] {
@@ -311,20 +366,23 @@ export async function sendBotReply(
     }
   }
 
-  if (reply.imageUrl && !imageSent) {
+  if ((reply.imageBuffer || reply.imageUrl) && !imageSent) {
     try {
-      // Bundled artwork (e.g. the Pieck menu image) is read from disk; anything else is fetched from URL.
-      const localFile = resolveLocalAsset(reply.imageUrl);
-      let remoteBuffer: Buffer | null = null;
-      if (!localFile) {
-        try {
-          const imgRes = await fetch(reply.imageUrl, { signal: AbortSignal.timeout(5_000) });
-          if (imgRes.ok) remoteBuffer = Buffer.from(await imgRes.arrayBuffer());
-        } catch {
-          remoteBuffer = null;
+      let imgPayload: Buffer | null = reply.imageBuffer ? Buffer.from(reply.imageBuffer) : null;
+      if (!imgPayload && reply.imageUrl) {
+        // Bundled artwork (e.g. the Pieck menu image) is read from disk; anything else is fetched from HTTP(S) URL.
+        const localFile = resolveLocalAsset(reply.imageUrl);
+        if (localFile) {
+          imgPayload = fs.readFileSync(localFile);
+        } else if (/^https?:\/\//i.test(reply.imageUrl)) {
+          try {
+            const imgRes = await fetch(reply.imageUrl, { signal: AbortSignal.timeout(5_000) });
+            if (imgRes.ok) imgPayload = Buffer.from(await imgRes.arrayBuffer());
+          } catch {
+            imgPayload = null;
+          }
         }
       }
-      const imgPayload = localFile ? fs.readFileSync(localFile) : remoteBuffer;
       if (imgPayload) {
         const captionText =
           reply.hideText && finalText.length <= 1024
@@ -343,11 +401,12 @@ export async function sendBotReply(
         imageSent = true;
       }
     } catch (err) {
-      console.warn('[Baileys] reply.imageUrl send failed, continuing with text:', err instanceof Error ? err.message : err);
+      console.warn('[Baileys] reply image send failed, continuing with text:', err instanceof Error ? err.message : err);
     }
   }
 
-  if (!(reply.hideText && (imageSent || !reply.imageUrl))) {
+  const hasExplicitImage = Boolean(reply.imageBuffer || reply.imageUrl);
+  if (!(reply.hideText && (imageSent || !hasExplicitImage))) {
     // Commands without their own image send their matched anime artwork + caption in ONE native WhatsApp message
     // (disable with COMMAND_IMAGES=off or LINK_THUMBNAILS=off). No externalAdReply is used so WhatsApp never drops replies.
     const thumbsEnabled =
@@ -356,7 +415,7 @@ export async function sendBotReply(
     const canAttachCommandImage =
       thumbsEnabled &&
       !imageSent &&
-      !reply.imageUrl &&
+      !hasExplicitImage &&
       Boolean(reply.thumbnail) &&
       reply.status !== 'blocked' &&
       reply.status !== 'error' &&
@@ -381,7 +440,7 @@ export async function sendBotReply(
       }
     }
 
-    if (!imageSent || reply.imageUrl) {
+    if (!imageSent || hasExplicitImage) {
       const plainContent =
         mentions && mentions.length > 0
           ? { text: finalText.slice(0, 4096), mentions }
@@ -747,6 +806,17 @@ async function startSocket(): Promise<WASocket> {
           continue;
         }
 
+        const cmdToken = isCommand ? text.slice(prefix.length).trim().split(/\s+/)[0]?.toLowerCase() : '';
+        const mediaBuffer =
+          cmdToken === 'setpp' ||
+          cmdToken === 'setpfp' ||
+          cmdToken === 'setavatar' ||
+          cmdToken === 'setcover' ||
+          cmdToken === 'setbanner' ||
+          cmdToken === 'setbg'
+            ? await extractImageMediaBuffer(sock, msg)
+            : undefined;
+
         const reply = await handleIncomingMessage({
           senderId: isOwnerNumber ? 'owner-kuro' : `wa-${senderNumber}`,
           senderName,
@@ -755,6 +825,7 @@ async function startSocket(): Promise<WASocket> {
           source: 'baileys',
           text,
           quotedText: extractQuotedText(msg),
+          mediaBuffer,
         });
 
         let outgoing = reply;

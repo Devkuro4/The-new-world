@@ -71,7 +71,7 @@ export const WhatsAppText: React.FC<WhatsAppTextProps> = ({ text }) => {
               if (!line.trim()) {
                 return <div key={lIdx} className="h-2" />;
               }
-              const isBoxLine = /^[╭┃╰┣┗ꕥ↳▎✦]/.test(line.trimStart());
+              const isBoxLine = /^[╭┏┃╰┣┗ꕥ↳▎✦━✠]/.test(line.trimStart());
               return (
                 <div
                   key={lIdx}

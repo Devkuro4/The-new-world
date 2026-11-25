@@ -90,6 +90,11 @@ export interface PlayerProfile {
   luckBoostUntil?: number;
   robShieldUntil?: number;
   messagesSent: number;
+  lastChatXpAt?: number;
+  avatarFile?: string;
+  coverFile?: string;
+  joinedAt?: string;
+  customName?: boolean;
   transactions: Array<{ id: string; summary: string; amount: number; timestamp: string }>;
 }
 
@@ -159,6 +164,8 @@ export interface CommandThumbnail {
 export interface BotReplyPayload {
   text: string;
   imageUrl?: string;
+  /** Server-side rendered image bytes (e.g. dynamic .profile card), sent directly by Baileys and stripped from JSON. */
+  imageBuffer?: Uint8Array;
   imageCaption?: string;
   audioUrl?: string;
   /** Server-side temp audio file (sent by the Baileys runner, then deleted). */
@@ -323,8 +330,11 @@ export const DEFAULT_COMMANDS: BotCommandDef[] = [
   { name: 'rich', category: 'Economy', description: 'Global richest players ranking by net Gold worth', usage: '.rich', role: 'everyone', enabled: true },
   { name: 'richg', category: 'Economy', description: 'Richest active players in this group', usage: '.richg', role: 'everyone', enabled: true },
   { name: 'p', aliases: ['profile'], category: 'Economy', description: 'Show your anime RPG profile card', usage: '.p', role: 'everyone', enabled: true },
+  { name: 'xp', aliases: ['level', 'rank'], category: 'Economy', description: 'View your live XP progress, level & rank', usage: '.xp', role: 'everyone', enabled: true },
+  { name: 'setpp', aliases: ['setpfp', 'setavatar'], category: 'Economy', description: 'Set your profile picture (reply to an image message)', usage: '.setpp [clear]', role: 'everyone', enabled: true },
+  { name: 'setcover', aliases: ['setbanner', 'setbg'], category: 'Economy', description: 'Set your profile cover image (reply to an image or send with caption)', usage: '.setcover [clear]', role: 'everyone', enabled: true },
   { name: 'edit', category: 'Economy', description: 'Show editable profile fields', usage: '.edit', role: 'everyone', enabled: true },
-  { name: 'bio', category: 'Economy', description: 'Set your anime profile bio', usage: '.bio <text>', role: 'everyone', enabled: true },
+  { name: 'bio', aliases: ['setbio'], category: 'Economy', description: 'Set your anime profile bio', usage: '.setbio <text>', role: 'everyone', enabled: true },
   { name: 'setage', category: 'Economy', description: 'Set display age on your profile', usage: '.setage <number>', role: 'everyone', enabled: true },
   { name: 'inv', aliases: ['inventory'], category: 'Economy', description: 'Inspect items and consumables in your bag', usage: '.inv', role: 'everyone', enabled: true },
   { name: 'shop', category: 'Economy', description: 'Open The new world Gold item shop', usage: '.shop', role: 'everyone', enabled: true },
@@ -339,7 +349,7 @@ export const DEFAULT_COMMANDS: BotCommandDef[] = [
   { name: 'repay', category: 'Economy', description: 'Repay your guild bank Gold loan', usage: '.repay <amount|all>', role: 'everyone', enabled: true },
   { name: 'mycds', category: 'Economy', description: 'Check your live economy cooldowns & active buffs', usage: '.mycds', role: 'everyone', enabled: true },
   { name: 'afk', category: 'Economy', description: 'Set an AFK auto-notice reason', usage: '.afk [reason]', role: 'everyone', enabled: true },
-  { name: 'rename', category: 'Economy', description: 'Change your RPG display name', usage: '.rename <newName>', role: 'everyone', enabled: true },
+  { name: 'rename', aliases: ['setname'], category: 'Economy', description: 'Change your RPG display name', usage: '.rename <newName>', role: 'everyone', enabled: true },
   { name: 'transactions', category: 'Economy', description: 'View your recent wallet & bank Gold ledger', usage: '.transactions', role: 'everyone', enabled: true },
   { name: 'rob', category: 'Economy', description: 'Attempt to pickpocket wallet Gold from a rival', usage: '.rob <@user>', role: 'everyone', enabled: true },
   { name: 'shame', category: 'Economy', description: 'View group hall of shame leaderboard', usage: '.shame', role: 'everyone', enabled: true },
@@ -410,26 +420,26 @@ export const DEFAULT_COMMANDS: BotCommandDef[] = [
   { name: 'triggered', category: 'Fun', description: 'Triggered anime aura meme reaction', usage: '.triggered', role: 'everyone', enabled: true },
   { name: 'couplepp', category: 'Fun', description: 'Suggest matching anime duo profile avatars', usage: '.couplepp', role: 'everyone', enabled: true },
 
-  // Downloaders & Lookups
-  { name: 'anime', category: 'Downloaders', description: 'Live MyAnimeList lookup via Jikan API (episodes, score, synopsis, poster)', usage: '.anime <title>', role: 'everyone', enabled: true },
-  { name: 'manga', category: 'Downloaders', description: 'Live Manga lookup via Jikan API (chapters, volumes, score, cover)', usage: '.manga <title>', role: 'everyone', enabled: true },
-  { name: 'manhwa', category: 'Downloaders', description: 'Live Korean Manhwa lookup via Jikan API', usage: '.manhwa <title>', role: 'everyone', enabled: true },
-  { name: 'novel', category: 'Downloaders', description: 'Live Light Novel lookup via Jikan API', usage: '.novel <title>', role: 'everyone', enabled: true },
-  { name: 'ig', category: 'Downloaders', description: "Download an Instagram reel/post video", usage: '.ig <url>', role: 'everyone', enabled: true },
-  { name: 'ttk', category: 'Downloaders', description: "Download a TikTok video", usage: '.ttk <url>', role: 'everyone', enabled: true },
-  { name: 'yt', category: 'Downloaders', description: "Download a YouTube video, or search by name. Add 'audio' for audio only", usage: '.yt <url|query> [audio]', role: 'everyone', enabled: true },
-  { name: 'x', category: 'Downloaders', description: "Download an X/Twitter video", usage: '.x <url>', role: 'everyone', enabled: true },
-  { name: 'fb', category: 'Downloaders', description: "Download a Facebook video", usage: '.fb <url>', role: 'everyone', enabled: true },
-  { name: 'play', category: 'Downloaders', description: 'Search YouTube for a song/video and get its details, link & audio', usage: '.play <song title>', role: 'everyone', enabled: true },
+  // Downloaders (Under development)
+  { name: 'ig', category: 'Downloaders', description: 'Download an Instagram reel/post video', usage: '.ig <url>', role: 'everyone', enabled: false },
+  { name: 'ttk', category: 'Downloaders', description: 'Download a TikTok video', usage: '.ttk <url>', role: 'everyone', enabled: false },
+  { name: 'yt', category: 'Downloaders', description: "Download a YouTube video, or search by name. Add 'audio' for audio only", usage: '.yt <url|query> [audio]', role: 'everyone', enabled: false },
+  { name: 'x', category: 'Downloaders', description: 'Download an X/Twitter video', usage: '.x <url>', role: 'everyone', enabled: false },
+  { name: 'fb', category: 'Downloaders', description: 'Download a Facebook video', usage: '.fb <url>', role: 'everyone', enabled: false },
+  { name: 'play', category: 'Downloaders', description: 'Search YouTube for a song/video and get its details, link & audio', usage: '.play <song title>', role: 'everyone', enabled: false },
   { name: 'reddit', category: 'Downloaders', description: 'Fetch top SFW post metadata from an anime subreddit', usage: '.reddit <subreddit>', role: 'everyone', enabled: false },
 
   // Search
+  { name: 'anime', category: 'Search', description: 'Live MyAnimeList lookup via Jikan API (episodes, score, synopsis, poster)', usage: '.anime <title>', role: 'everyone', enabled: true },
+  { name: 'manga', category: 'Search', description: 'Live Manga lookup via Jikan API (chapters, volumes, score, cover)', usage: '.manga <title>', role: 'everyone', enabled: true },
+  { name: 'manhwa', category: 'Search', description: 'Live Korean Manhwa lookup via Jikan API', usage: '.manhwa <title>', role: 'everyone', enabled: true },
+  { name: 'novel', category: 'Search', description: 'Live Light Novel lookup via Jikan API', usage: '.novel <title>', role: 'everyone', enabled: true },
   { name: 'pint', aliases: ['pinterest'], category: 'Search', description: 'Search anime aesthetic board ideas & art references', usage: '.pint <query>', role: 'everyone', enabled: true },
-  { name: 'sauce', aliases: ['reverseimg'], category: 'Search', description: 'Trace anime scene source & episode tips', usage: '.sauce <title|scene>', role: 'everyone', enabled: true },
+  { name: 'sauce', aliases: ['reverseimg'], category: 'Search', description: 'Trace anime scene source & episode tips', usage: '.sauce <title|scene>', role: 'everyone', enabled: false },
   { name: 'wallpaper', category: 'Search', description: 'Find HD anime wallpaper artworks via Jikan/Waifu API', usage: '.wallpaper <anime>', role: 'everyone', enabled: true },
   { name: 'lyrics', category: 'Search', description: 'Get anime opening/ending theme lyrics & romaji info', usage: '.lyrics <song>', role: 'everyone', enabled: true },
   { name: 'igstalk', category: 'Search', description: 'Check public creator profile format', usage: '.igstalk <handle>', role: 'everyone', enabled: false },
-  { name: 'shazam', category: 'Search', description: 'Identify an anime soundtrack snippet from description', usage: '.shazam <hummed/lyric>', role: 'everyone', enabled: true },
+  { name: 'shazam', category: 'Search', description: 'Identify an anime soundtrack snippet from description', usage: '.shazam <hummed/lyric>', role: 'everyone', enabled: false },
 
   // AI (Groq powered)
   { name: 'gpt', category: 'AI', description: 'Ask Pieck AI (powered by OpenAI GPT-OSS on Groq)', usage: '.gpt <question>', role: 'everyone', enabled: true },
@@ -491,6 +501,7 @@ export const DEFAULT_COMMANDS: BotCommandDef[] = [
   { name: 'open', category: 'Admin', description: 'Open the group chat for all members', usage: '.open', role: 'admin', enabled: true },
   { name: 'close', category: 'Admin', description: 'Lock the group chat to admins only', usage: '.close', role: 'admin', enabled: true },
   { name: 'news', category: 'Admin', description: 'Fetch & broadcast trending anime news via Jikan', usage: '.news', role: 'moderator', enabled: true },
+  { name: 'setxp', category: 'Admin', description: 'Set XP for yourself or a player', usage: '.setxp <xp> [@user]', role: 'admin', enabled: true },
   { name: 'nsfw', category: 'Admin', description: 'Content filter lock (locked to SFW-only in Pieck)', usage: '.nsfw <status>', role: 'admin', enabled: true },
 ];
 

@@ -18,6 +18,7 @@ import {
 } from './server/botEngine.ts';
 import { hasGroqKey } from './server/groqClient.ts';
 import { ASSET_DIR, getThumbImageUrl, resolveThumbKey } from './server/assets.ts';
+import { renderProfileCardBuffer } from './server/profileRenderer.ts';
 import type { AnimeCard, BotCommandDef, CommandRole } from './src/shared/botSchema.ts';
 
 dotenv.config();
@@ -291,6 +292,7 @@ async function startServer() {
       senderRole?: CommandRole;
       chatMode?: 'group' | 'dm';
       quotedText?: string;
+      quotedImageUrl?: string;
     };
     const text = String(body.text || '').trim();
     if (!text) {
@@ -309,6 +311,9 @@ async function startServer() {
     const quotedText = typeof body.quotedText === 'string' && body.quotedText.trim()
       ? body.quotedText.trim().slice(0, 1000)
       : undefined;
+    const quotedImageUrl = typeof body.quotedImageUrl === 'string' && body.quotedImageUrl.trim()
+      ? body.quotedImageUrl.trim().slice(0, 500)
+      : undefined;
 
     const reply = await handleIncomingMessage({
       senderId: sender.id,
@@ -318,16 +323,35 @@ async function startServer() {
       source: 'simulator',
       text,
       quotedText,
+      quotedImageUrl,
     });
 
+    const { imageBuffer: _imgBuf, ...publicReply } = reply;
     res.json({
-      reply,
+      reply: publicReply,
       players: Object.values(botState.players),
       auctions: botState.auctions,
       groupSettings: botState.groupSettings,
       logs: botState.logs.slice(0, 40),
       stats: botState.stats,
     });
+  });
+
+  app.get('/api/profile-card/:playerId', async (req: Request, res: Response) => {
+    const playerId = decodeURIComponent(String(req.params.playerId || ''));
+    const player = botState.players[playerId];
+    if (!player) {
+      res.status(404).send('Player profile not found.');
+      return;
+    }
+    const buf = await renderProfileCardBuffer(player).catch(() => null);
+    if (!buf) {
+      res.status(500).send('Unable to render profile card.');
+      return;
+    }
+    res.setHeader('Content-Type', 'image/jpeg');
+    res.setHeader('Cache-Control', 'no-store');
+    res.send(buf);
   });
 
   // ── META WHATSAPP CLOUD API WEBHOOK ──

@@ -28,7 +28,7 @@ interface WhatsAppSimulatorProps {
   chatMode: 'group' | 'dm';
   onChangeRole: (role: CommandRole) => void;
   onChangeChatMode: (mode: 'group' | 'dm') => void;
-  onSendMessage: (text: string, quotedText?: string, quotedSender?: string) => void;
+  onSendMessage: (text: string, quotedText?: string, quotedSender?: string, quotedImageUrl?: string) => void;
   onClearChat: () => void;
 }
 
@@ -47,7 +47,7 @@ export const WhatsAppSimulator: React.FC<WhatsAppSimulatorProps> = ({
   onClearChat,
 }) => {
   const [draft, setDraft] = useState('');
-  const [replyingTo, setReplyingTo] = useState<{ text: string; senderLabel: string } | null>(null);
+  const [replyingTo, setReplyingTo] = useState<{ text: string; senderLabel: string; imageUrl?: string } | null>(null);
   const [avatarBroken, setAvatarBroken] = useState(false);
   const [brokenImages, setBrokenImages] = useState<Record<string, boolean>>({});
   const [brokenThumbs, setBrokenThumbs] = useState<Record<string, boolean>>({});
@@ -61,6 +61,7 @@ export const WhatsAppSimulator: React.FC<WhatsAppSimulatorProps> = ({
   const p = config.prefix || '.';
   const quickCommands = [
     `${p}menu`,
+    `${p}p`,
     `${p}card`,
     `${p}daily`,
     `${p}anime Frieren`,
@@ -77,13 +78,14 @@ export const WhatsAppSimulator: React.FC<WhatsAppSimulatorProps> = ({
     const activeReply = replyingTo;
     setDraft('');
     setReplyingTo(null);
-    onSendMessage(trimmed, activeReply?.text, activeReply?.senderLabel);
+    onSendMessage(trimmed, activeReply?.text, activeReply?.senderLabel, activeReply?.imageUrl);
   };
 
   const handleReplyClick = (msg: SimMessage) => {
     setReplyingTo({
       text: msg.text,
       senderLabel: msg.senderLabel,
+      imageUrl: msg.imageUrl,
     });
     inputRef.current?.focus();
   };

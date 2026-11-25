@@ -94,65 +94,104 @@ export function formatDesignERail(opts: {
 
 // ───────────── Menu ─────────────
 
+const MENU_BOX_BOTTOM = '┗━━━━━━━━━━━━━━';
+
+function formatMenuCategorySlug(category: string): string {
+  return category
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase()
+    .split(/[\s&]+/)[0];
+}
+
+function renderMenuBox(heading: string, entries: string[]): string[] {
+  const lines = [
+    `┏━━━「 ${heading} 」`,
+    '┃',
+  ];
+  for (const entry of entries) {
+    lines.push(`┃ ▸ ${entry}`);
+  }
+  lines.push(MENU_BOX_BOTTOM);
+  return lines;
+}
+
 export function buildMenuUi(opts: {
   title: string;
   botName: string;
   prefix: string;
-  groups: Array<{ category: string; commands: string[] }>;
+  groups: Array<{ category: string; commands: string[]; underDevelopment?: boolean }>;
   activeCategory?: string;
+  activeNotice?: { title: string; message: string };
   example: string;
 }): { caption: string; body: string } {
-  const captionLines = [
-    `✦ ${opts.title.toUpperCase()} ✦`,
+  const header = [
+    `✦ *${opts.title.toUpperCase()}* ✦`,
     `${opts.botName} · prefix ${opts.prefix}`,
     '',
-    `${RAIL}✦ 📖 MENU ✦`,
-    `${RAIL}${DOTS}`,
-    `${RAIL}↳ try ${opts.prefix}${opts.example}`,
   ];
-  const caption = captionLines.join('\n');
+
+  const caption = [
+    ...header,
+    ...renderMenuBox('*MENU*', [`try ${opts.prefix}${opts.example}`]),
+  ].join('\n');
+
+  if (opts.activeNotice) {
+    return {
+      caption,
+      body: [
+        ...header,
+        ...renderMenuBox(`*${opts.activeNotice.title.toUpperCase()}*`, [opts.activeNotice.message]),
+      ].join('\n'),
+    };
+  }
 
   if (opts.activeCategory) {
     const group = opts.groups.find(
       (g) => g.category.toLowerCase() === opts.activeCategory?.toLowerCase()
     );
-    const icon = group ? CATEGORY_ICONS[group.category] || '•' : '📖';
-    const cmds = group ? group.commands : [];
-    const lines = [
-      `✦ ${opts.title.toUpperCase()} ✦`,
-      `${opts.botName} · prefix ${opts.prefix}`,
-      '',
-      `${RAIL}✦ ${icon} ${(group?.category || opts.activeCategory).toUpperCase()} MENU ✦`,
-      `${RAIL}${DOTS}`,
-    ];
-    for (let i = 0; i < cmds.length; i += 2) {
-      const left = `${opts.prefix}${cmds[i]}`;
-      const right = cmds[i + 1] ? ` · ${opts.prefix}${cmds[i + 1]}` : '';
-      lines.push(`${RAIL}${icon} ${left}${right}`);
-    }
-    lines.push(RAIL);
-    lines.push(`${RAIL}↳ ${opts.prefix}menu for all categories`);
-    return { caption, body: lines.join('\n') };
+    const titleLabel =
+      group?.category === 'Downloaders'
+        ? 'DOWNLOADER'
+        : (group?.category || opts.activeCategory).toUpperCase();
+    const entries =
+      !group || group.underDevelopment || group.commands.length === 0
+        ? ['Under development']
+        : group.commands.map((cmd) => `${opts.prefix}${cmd}`);
+
+    return {
+      caption,
+      body: [
+        ...header,
+        ...renderMenuBox(`*${titleLabel}*`, entries),
+      ].join('\n'),
+    };
   }
 
-  const lines = [
-    `✦ ${opts.title.toUpperCase()} ✦`,
-    `${opts.botName} · prefix ${opts.prefix}`,
-    '',
-    `${RAIL}✦ 📖 MENU ✦`,
-    `${RAIL}${DOTS}`,
-  ];
+  const workingEntries: string[] = [];
+  const underDevGroups: Array<{ category: string; commands: string[]; underDevelopment?: boolean }> = [];
 
   for (const group of opts.groups) {
+    if (group.underDevelopment) {
+      underDevGroups.push(group);
+      continue;
+    }
     if (group.commands.length === 0) continue;
-    const icon = CATEGORY_ICONS[group.category] || '•';
-    const slug = group.category.toLowerCase().split(/[\s&]+/)[0];
-    lines.push(`${RAIL}${icon} ${opts.prefix}menu ${slug} ❯ ${group.commands.length}`);
+    const slug = formatMenuCategorySlug(group.category);
+    workingEntries.push(`${opts.prefix}menu ${slug} (${group.commands.length})`);
   }
 
-  lines.push(RAIL);
-  lines.push(`${RAIL}↳ ${opts.prefix}menu <category> · ${opts.prefix}${opts.example}`);
-  return { caption, body: lines.join('\n') };
+  const bodyLines = [
+    ...header,
+    ...renderMenuBox('*MENU*', workingEntries),
+  ];
+
+  for (const devGroup of underDevGroups) {
+    const devLabel = devGroup.category === 'Downloaders' ? 'DOWNLOADER' : devGroup.category.toUpperCase();
+    bodyLines.push('', ...renderMenuBox(devLabel, ['Under development']));
+  }
+
+  return { caption, body: bodyLines.join('\n') };
 }
 
 // ───────────── Automatic reply styling (Design E) ─────────────
@@ -233,7 +272,7 @@ function renderBlock(title: string, bodyLines: string[], footerHint?: string): s
  * are preserved unchanged.
  */
 export function applyTextUi(text: string): string {
-  if (!text || text.includes(FENCE) || text.includes(`${RAIL}✦`)) return text;
+  if (!text || text.includes(FENCE) || text.includes(`${RAIL}✦`) || text.includes('┏━━━「') || text.includes('━〔')) return text;
 
   const lines = text.split('\n');
   const result: string[] = [];

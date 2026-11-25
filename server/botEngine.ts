@@ -24,7 +24,16 @@ import {
 } from '../src/shared/botSchema.ts';
 import { askGroqText, hasGroqKey, GROQ_MODEL, type GroqChatMessage } from './groqClient.ts';
 import { applyTextUi, buildMenuUi, formatDesignERail } from './textUi.ts';
-import { getCommandPreviewPath, getThumbImageUrl, MENU_IMAGE_URL, resolveThumbKey } from './assets.ts';
+import { ASSET_DIR, getCommandPreviewPath, getThumbImageUrl, MENU_IMAGE_URL, resolveThumbKey } from './assets.ts';
+import {
+  deletePlayerAvatar,
+  deletePlayerCover,
+  getLevelXpProgress,
+  getPlayerRank,
+  renderProfileCardBuffer,
+  savePlayerAvatar,
+  savePlayerCover,
+} from './profileRenderer.ts';
 
 export interface ActiveDrop {
   card: AnimeCard;
@@ -89,73 +98,77 @@ const STATE_FILE = path.join(DATA_DIR, 'pieck-state.json');
 const SEED_PLAYERS: Record<string, PlayerProfile> = {
   'owner-kuro': {
     id: 'owner-kuro',
-    name: 'kuro',
+    name: 'Owner',
     role: 'owner',
-    wallet: 24500,
-    bank: 82000,
-    orbs: 48,
-    stardust: 3200,
-    xp: 4850,
-    level: 19,
-    age: 22,
-    bio: 'Creator of Pieck and The new world WhatsApp Community.',
-    guild: 'Tempest Federation',
+    wallet: 2500,
+    bank: 0,
+    orbs: 5,
+    stardust: 200,
+    xp: 0,
+    level: 1,
+    age: 18,
+    bio: '',
+    customName: false,
     cards: ['C-100', 'C-101', 'C-103', 'C-104'],
     deck: ['C-101', 'C-102', 'C-103', 'C-104'],
-    inventory: { 'Gacha Ticket': 3, 'XP Charm': 2, 'Luck Potion': 1 },
-    pokemon: ['Pikachu (Lv.24)', 'Gengar (Lv.31)'],
+    inventory: { 'Gacha Ticket': 1 },
+    pokemon: ['Eevee (Lv.5)'],
     warnings: 0,
     shamePoints: 0,
     loan: 0,
-    messagesSent: 142,
-    transactions: [
-      { id: 'TX-1', summary: 'Founder Stipend', amount: 15000, timestamp: '2026-11-23T18:00:00Z' },
-    ],
+    messagesSent: 0,
+    lastChatXpAt: 0,
+    joinedAt: '2026-11-01T00:00:00Z',
+    transactions: [],
   },
   'admin-rem': {
     id: 'admin-rem',
-    name: 'Rem',
+    name: 'Admin',
     role: 'admin',
-    wallet: 8400,
-    bank: 31000,
-    orbs: 22,
-    stardust: 1850,
-    xp: 3120,
-    level: 14,
-    age: 19,
-    bio: 'Moderation lead & Jujutsu collector.',
-    guild: 'Jujutsu High',
+    wallet: 2500,
+    bank: 0,
+    orbs: 5,
+    stardust: 200,
+    xp: 0,
+    level: 1,
+    age: 18,
+    bio: '',
+    customName: false,
     cards: ['C-105', 'C-106', 'C-112'],
     deck: ['C-105', 'C-106', 'C-112'],
     inventory: { 'Gacha Ticket': 1 },
-    pokemon: ['Eevee (Lv.18)'],
+    pokemon: ['Eevee (Lv.5)'],
     warnings: 0,
-    shamePoints: 1,
+    shamePoints: 0,
     loan: 0,
-    messagesSent: 96,
+    messagesSent: 0,
+    lastChatXpAt: 0,
+    joinedAt: '2026-11-01T00:00:00Z',
     transactions: [],
   },
   'member-sora': {
     id: 'member-sora',
-    name: 'Sora',
+    name: 'Member',
     role: 'everyone',
-    wallet: 4200,
-    bank: 6500,
-    orbs: 9,
-    stardust: 640,
-    xp: 1280,
-    level: 7,
-    age: 20,
-    bio: 'Chasing S+ Frieren & Spy x Family drops.',
-    guild: 'Survey Corps',
+    wallet: 2500,
+    bank: 0,
+    orbs: 5,
+    stardust: 200,
+    xp: 0,
+    level: 1,
+    age: 18,
+    bio: '',
+    customName: false,
     cards: ['C-107', 'C-108', 'C-111'],
     deck: ['C-107', 'C-108', 'C-111'],
-    inventory: { 'Luck Potion': 1 },
-    pokemon: ['Lucario (Lv.22)'],
-    warnings: 1,
-    shamePoints: 2,
+    inventory: { 'Gacha Ticket': 1 },
+    pokemon: ['Eevee (Lv.5)'],
+    warnings: 0,
+    shamePoints: 0,
     loan: 0,
-    messagesSent: 58,
+    messagesSent: 0,
+    lastChatXpAt: 0,
+    joinedAt: '2026-11-01T00:00:00Z',
     transactions: [],
   },
 };
@@ -355,8 +368,29 @@ function safeInt(value: unknown, fallback = 0): number {
   return Math.max(0, Math.round(num));
 }
 
+function calculateLevelFromXp(xp: number): number {
+  return Math.max(1, Math.floor(Math.sqrt(Math.max(0, xp) / 25)));
+}
+
+function awardXp(
+  player: PlayerProfile,
+  amount: number
+): { gained: number; leveledUp: boolean; oldLevel: number; newLevel: number } {
+  const gained = Math.max(0, Math.round(amount));
+  const oldLevel = calculateLevelFromXp(player.xp);
+  player.xp = Math.max(0, Math.round((player.xp || 0) + gained));
+  const newLevel = calculateLevelFromXp(player.xp);
+  player.level = newLevel;
+  return {
+    gained,
+    leveledUp: newLevel > oldLevel,
+    oldLevel,
+    newLevel,
+  };
+}
+
 function normalizePlayer(player: PlayerProfile): PlayerProfile {
-  const xp = safeInt(player.xp, 100);
+  const xp = safeInt(player.xp, 0);
   const cleanInventory: Record<string, number> = {};
   if (player.inventory && typeof player.inventory === 'object') {
     for (const [k, v] of Object.entries(player.inventory)) {
@@ -366,17 +400,22 @@ function normalizePlayer(player: PlayerProfile): PlayerProfile {
   }
   return {
     ...player,
+    bio: typeof player.bio === 'string' ? player.bio : '',
     wallet: safeInt(player.wallet, 0),
     bank: safeInt(player.bank, 0),
     orbs: safeInt(player.orbs, 0),
     stardust: safeInt(player.stardust, 0),
     xp,
-    level: Math.max(1, Math.floor(Math.sqrt(xp / 25))),
+    level: calculateLevelFromXp(xp),
     age: Math.min(99, Math.max(13, safeInt(player.age, 18))),
     warnings: safeInt(player.warnings, 0),
     shamePoints: safeInt(player.shamePoints, 0),
     loan: safeInt(player.loan, 0),
     messagesSent: safeInt(player.messagesSent, 0),
+    lastChatXpAt: safeInt(player.lastChatXpAt, 0),
+    coverFile: typeof player.coverFile === 'string' && player.coverFile.trim() ? player.coverFile : undefined,
+    joinedAt: player.joinedAt || '2026-11-01T00:00:00Z',
+    customName: Boolean(player.customName),
     cards: Array.isArray(player.cards) ? player.cards : [],
     deck: Array.isArray(player.deck) ? player.deck : [],
     pokemon: Array.isArray(player.pokemon) ? player.pokemon : [],
@@ -481,16 +520,16 @@ function ensurePlayer(senderId: string, senderName: string, role: CommandRole): 
   if (!botState.players[senderId]) {
     botState.players[senderId] = normalizePlayer({
       id: senderId,
-      name: senderName || 'Traveler',
+      name: senderName || 'Member',
       role,
       wallet: botState.config.starterBalance,
       bank: 0,
       orbs: 5,
       stardust: 200,
-      xp: 100,
+      xp: 0,
       level: 1,
       age: 18,
-      bio: 'New adventurer in The new world.',
+      bio: '',
       cards: ['C-116'],
       deck: ['C-116'],
       inventory: { 'Gacha Ticket': 1 },
@@ -499,12 +538,20 @@ function ensurePlayer(senderId: string, senderName: string, role: CommandRole): 
       shamePoints: 0,
       loan: 0,
       messagesSent: 0,
+      lastChatXpAt: 0,
+      joinedAt: new Date().toISOString(),
+      customName: false,
       transactions: [],
     });
   } else {
     botState.players[senderId] = normalizePlayer(botState.players[senderId]);
     botState.players[senderId].role = role;
-    if (senderName && botState.players[senderId].name !== senderName && senderId !== 'owner-kuro') {
+    if (
+      senderName &&
+      !botState.players[senderId].customName &&
+      botState.players[senderId].name !== senderName &&
+      senderId !== 'owner-kuro'
+    ) {
       botState.players[senderId].name = senderName;
     }
   }
@@ -528,6 +575,82 @@ function roleLevel(role: CommandRole): number {
   if (role === 'admin') return 3;
   if (role === 'moderator') return 2;
   return 1;
+}
+
+function formatRoleAffiliation(role: CommandRole): string {
+  if (role === 'owner') return 'Owner';
+  if (role === 'admin') return 'Admin';
+  if (role === 'moderator') return 'Moderator';
+  return 'Member';
+}
+
+function formatMemberSince(joinedAt?: string): string {
+  const dt = joinedAt ? new Date(joinedAt) : new Date();
+  const valid = Number.isFinite(dt.getTime()) ? dt : new Date();
+  return new Intl.DateTimeFormat('en-US', { month: 'long', year: 'numeric' }).format(valid);
+}
+
+function buildProfileTextUi(player: PlayerProfile): string {
+  const rank = getPlayerRank(player.level);
+  const displayName = player.customName ? player.name.trim() : '';
+  const bio = (player.bio || '').replace(/\s+/g, ' ').trim();
+  const affiliation = formatRoleAffiliation(player.role);
+  const guild = player.guild || 'None';
+  const status = player.afkReason ? `AFK (${player.afkReason})` : 'Active';
+  const restrictions = player.warnings > 0 ? `${player.warnings} Warning${player.warnings === 1 ? '' : 's'}` : 'None';
+  const memberSince = formatMemberSince(player.joinedAt);
+
+  return [
+    '━〔 𝗨𝗦𝗘𝗥 𝗣𝗥𝗢𝗙𝗜𝗟𝗘 〕━',
+    `✠ Username: ${displayName}`,
+    `✠ Rank: ${rank}`,
+    `✠ Bio: ${bio}`,
+    `✠ Affiliation: ${affiliation}`,
+    `✠ Guild: ${guild}`,
+    `✠ Status: ${status}`,
+    `✠ Restrictions: ${restrictions}`,
+    `✠ Member Since: ${memberSince}`,
+    '',
+    '━━━━━━━━━━━━━━━━━━',
+  ].join('\n');
+}
+
+async function resolveCommandMediaBytes(
+  argStr: string,
+  mediaBuffer?: Buffer,
+  quotedImageUrl?: string
+): Promise<Buffer | null> {
+  if (mediaBuffer && mediaBuffer.length > 0) return mediaBuffer;
+  const candidateUrl = /^https?:\/\//i.test(argStr.trim()) ? argStr.trim() : quotedImageUrl;
+  if (!candidateUrl) return null;
+
+  if (candidateUrl.startsWith('/assets/')) {
+    const rel = candidateUrl.split('?')[0].replace(/^\/assets\//, '');
+    const assetFile = path.resolve(ASSET_DIR, rel);
+    const publicFile = path.resolve(process.cwd(), 'public', 'assets', rel);
+    if (assetFile.startsWith(ASSET_DIR + path.sep) && fs.existsSync(assetFile)) {
+      return fs.readFileSync(assetFile);
+    }
+    if (fs.existsSync(publicFile)) {
+      return fs.readFileSync(publicFile);
+    }
+    return null;
+  }
+
+  if (/^https?:\/\//i.test(candidateUrl)) {
+    try {
+      const res = await fetch(candidateUrl, { signal: AbortSignal.timeout(6000) });
+      if (res.ok) {
+        const arr = await res.arrayBuffer();
+        if (arr.byteLength > 0 && arr.byteLength <= 6 * 1024 * 1024) {
+          return Buffer.from(arr);
+        }
+      }
+    } catch {
+      return null;
+    }
+  }
+  return null;
 }
 
 function toFancyText(input: string): string {
@@ -1039,24 +1162,45 @@ const CATEGORY_LABELS: Record<CommandCategory, string> = {
   Admin: '⚙️ ADMIN ⚙️',
 };
 
+function normalizeCategoryToken(value: string): string {
+  return value
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .trim()
+    .toLowerCase();
+}
+
 function buildMenu(categoryFilter?: string): { caption: string; body: string } {
   const c = botState.config;
   const visible = botState.commands.filter((command) => command.enabled);
-  const query = categoryFilter?.trim().toLowerCase();
-  const matchedCategory = query
-    ? COMMAND_CATEGORIES.find(
-        (cat) => cat.toLowerCase() === query || cat.toLowerCase().startsWith(query)
-      )
-    : undefined;
+  const query = categoryFilter ? normalizeCategoryToken(categoryFilter) : '';
+  const activeNotice =
+    query === 'nsfw' || query === 'anime nsfw'
+      ? { title: 'ANIME NSFW', message: 'Locked to SFW mode' }
+      : undefined;
+  const matchedCategory =
+    query && !activeNotice
+      ? COMMAND_CATEGORIES.find((cat) => {
+          const norm = normalizeCategoryToken(cat);
+          return norm === query || norm.startsWith(query);
+        })
+      : undefined;
   return buildMenuUi({
     title: c.bannerTitle,
     botName: c.botName,
     prefix: c.prefix,
-    groups: COMMAND_CATEGORIES.map((category) => ({
-      category,
-      commands: visible.filter((command) => command.category === category).map((command) => command.name),
-    })),
+    groups: COMMAND_CATEGORIES.map((category) => {
+      const underDevelopment = category === 'Downloaders';
+      return {
+        category,
+        underDevelopment,
+        commands: underDevelopment
+          ? []
+          : visible.filter((command) => command.category === category).map((command) => command.name),
+      };
+    }),
     activeCategory: matchedCategory,
+    activeNotice,
     example: 'anime Frieren',
   });
 }
@@ -1203,13 +1347,14 @@ export async function handleIncomingMessage(params: {
   source: 'simulator' | 'meta-webhook' | 'baileys';
   text: string;
   quotedText?: string;
+  quotedImageUrl?: string;
+  mediaBuffer?: Buffer;
 }): Promise<BotReplyPayload> {
   const started = Date.now();
   const input = params.text.trim();
   const player = ensurePlayer(params.senderId, params.senderName, params.senderRole);
+  const levelBefore = player.level;
   player.messagesSent += 1;
-  player.xp += 10;
-  player.level = Math.max(1, Math.floor(Math.sqrt(player.xp / 25)));
 
   const prefix = botState.config.prefix || '.';
   let reply: BotReplyPayload;
@@ -1283,6 +1428,16 @@ export async function handleIncomingMessage(params: {
           handler: `Groq AI (${GROQ_MODEL})`,
         };
       }
+      if (Date.now() - (player.lastChatXpAt || 0) >= 15_000) {
+        awardXp(player, 8);
+        player.lastChatXpAt = Date.now();
+      }
+      if (player.level > levelBefore) {
+        reply = {
+          ...reply,
+          text: `${reply.text}\n\n⬆️ *LEVEL UP!* Lv.${levelBefore} → *Lv.${player.level}* (${getPlayerRank(player.level)})`,
+        };
+      }
       recordLog(params, input, reply, Date.now() - started);
       persistState();
       return reply;
@@ -1350,10 +1505,54 @@ export async function handleIncomingMessage(params: {
       return reply;
     }
 
-    reply = await executeBuiltInCommand(cmdDef.name, restTokens, argStr, player, params.chatMode, params.quotedText, params.source);
+    const DEDICATED_XP_COMMANDS = new Set([
+      'work', 'fish', 'daily', 'card', 'rc', 'sc', 'claim', 'vs', 'use', 'rob', 'heist',
+      'slots', 'cf', 'dice', 'db', 'dp', 'roulette', 'horse', 'rr', 'gamble', 'bj',
+      'aquiz', 'startbattle', 'c4', 'wcg', 'chess', 'enter', 'pmenu',
+    ]);
+    const PASSIVE_EXEMPT_COMMANDS = new Set([
+      'menu', 'help', 'p', 'profile', 'xp', 'level', 'rank', 'setpp', 'setcover',
+      'edit', 'bio', 'setage', 'rename', 'setxp', 'bal', 'balance', 'inv', 'inventory',
+      'rich', 'richg', 'lb', 'leaderboard', 'stlb', 'myshame', 'mycds', 'transactions',
+      'rules', 'support', 'community', 'addbot', 'ping', 'stats', 'bots', 'url', 'otp',
+    ]);
+
+    reply = await executeBuiltInCommand(
+      cmdDef.name,
+      restTokens,
+      argStr,
+      player,
+      params.chatMode,
+      params.quotedText,
+      params.source,
+      params.mediaBuffer,
+      params.quotedImageUrl
+    );
+    if (
+      reply.status !== 'blocked' &&
+      reply.status !== 'error' &&
+      !DEDICATED_XP_COMMANDS.has(cmdDef.name) &&
+      !PASSIVE_EXEMPT_COMMANDS.has(cmdDef.name)
+    ) {
+      awardXp(player, 10);
+    }
+
+    let finalText = applyTextUi(reply.text);
+    let finalCaption = reply.imageCaption;
+    if (player.level > levelBefore && cmdDef.name !== 'setxp') {
+      const levelUpBanner = `\n\n⬆️ *LEVEL UP!* Lv.${levelBefore} → *Lv.${player.level}* (${getPlayerRank(player.level)})`;
+      if (!finalText.includes('━〔')) {
+        finalText += levelUpBanner;
+      }
+      if (finalCaption && !finalCaption.includes('━〔')) {
+        finalCaption += levelUpBanner;
+      }
+    }
+
     reply = {
       ...reply,
-      text: applyTextUi(reply.text),
+      text: finalText,
+      imageCaption: finalCaption,
       thumbnail: reply.thumbnail || buildCommandThumbnail(cmdDef, prefix),
     };
     recordLog(params, input, reply, Date.now() - started);
@@ -1402,7 +1601,9 @@ async function executeBuiltInCommand(
   player: PlayerProfile,
   chatMode: 'group' | 'dm',
   quotedText?: string,
-  source?: string
+  source?: string,
+  mediaBuffer?: Buffer,
+  quotedImageUrl?: string
 ): Promise<BotReplyPayload> {
   const p = botState.config.prefix;
 
@@ -1664,13 +1865,14 @@ async function executeBuiltInCommand(
 
     if (cmd === 'rc') {
       player.cards.push(picked.id);
+      awardXp(player, 15);
       return {
         text: [
           `*🎴 Gacha Pack Opened!* (${useOrbsForRc ? '-2 Orbs' : '-🪙 500'})`,
           `┣ Card: *[${picked.tier}] ${picked.name}* (\`${picked.id}\`)`,
           `┣ Series: _${picked.series}_`,
           `┣ Stats: ATK *${picked.atk}* / DEF *${picked.def}*`,
-          `┣ Stardust: *${picked.stardustValue}* ✨`,
+          `┣ Stardust: *${picked.stardustValue}* ✨ (+15 XP)`,
           `┗━━━━━━━━━━━`,
         ].join('\n'),
         imageUrl: picked.imageUrl,
@@ -1682,6 +1884,8 @@ async function executeBuiltInCommand(
         ],
       };
     }
+
+    awardXp(player, 15);
 
     const claimCode = String(Math.floor(1000 + Math.random() * 9000));
     botState.activeDrop = { card: picked, claimCode };
@@ -1720,8 +1924,10 @@ async function executeBuiltInCommand(
     botState.activeDrop.claimedBy = player.name;
     player.cards.push(dropCard.id);
     player.stardust += 50;
+    const claimXp = dropCard.tier === 'S+' || dropCard.tier === 'S' ? 60 : 40;
+    awardXp(player, claimXp);
     return {
-      text: `✅ *Card Claimed!*\n*${player.name}* claimed *[${dropCard.tier}] ${dropCard.name}* (\`${dropCard.id}\`)!\n+50 bonus Stardust added.`,
+      text: `✅ *Card Claimed!*\n*${player.name}* claimed *[${dropCard.tier}] ${dropCard.name}* (\`${dropCard.id}\`)!\n+50 Stardust & +${claimXp} XP added.`,
       handler: 'Card Claim',
       buttons: [
         { id: 'deck', label: 'My .deck', command: `${p}deck` },
@@ -1766,8 +1972,9 @@ async function executeBuiltInCommand(
     const opponentScore = scoreDeck(opponent.deck) + Math.floor(Math.random() * 40);
     const won = playerScore >= opponentScore;
     const reward = won ? 500 : 100;
+    const battleXp = won ? 80 : 25;
     player.wallet += reward;
-    player.xp += won ? 80 : 25;
+    awardXp(player, battleXp);
     addTransaction(player, `Card battle vs ${opponent.name}`, reward);
     const leadCard = botState.cards.find((card) => card.id === player.deck[0]);
     return {
@@ -1775,7 +1982,7 @@ async function executeBuiltInCommand(
         '*Card battle*',
         `${player.name}  ${playerScore} — ${opponentScore}  ${opponent.name}`,
         won ? '*Victory*' : '*Defeat*',
-        `Reward  •  ${formatGold(reward)}`,
+        `Reward  •  ${formatGold(reward)} (+${battleXp} XP)`,
       ].join('\n'),
       imageUrl: leadCard?.imageUrl,
       imageCaption: `${player.name} vs ${opponent.name}`,
@@ -2333,14 +2540,14 @@ async function executeBuiltInCommand(
     const earned = 200 + Math.floor(Math.random() * 151) + levelBonus;
     player.lastWork = Date.now();
     player.wallet += earned;
-    player.xp += 25;
+    awardXp(player, 35);
     addTransaction(player, `Work (${job})`, earned);
     return {
       text: [
         '*Guild shift complete*',
         `Role  •  ${job}`,
         `Earned  •  +${formatGold(earned)}`,
-        `XP  •  +25`,
+        `XP  •  +35`,
         `Wallet  •  ${formatGold(player.wallet)}`,
       ].join('\n'),
       handler: 'Economy',
@@ -2371,8 +2578,10 @@ async function executeBuiltInCommand(
     const roll = Math.min(0.999, Math.random() + luckEdge);
     const catchIndex = roll > 0.97 ? 3 : roll > 0.82 ? 2 : roll > 0.45 ? 1 : 0;
     const caught = catches[catchIndex];
+    const fishXp = catchIndex >= 2 ? 45 : 25;
     player.lastFish = Date.now();
     player.wallet += caught.gold;
+    awardXp(player, fishXp);
     player.inventory[caught.item] = (player.inventory[caught.item] || 0) + 1;
     addTransaction(player, `Fishing reward: ${caught.name}`, caught.gold);
     return {
@@ -2381,6 +2590,7 @@ async function executeBuiltInCommand(
         `Catch  •  ${caught.name}`,
         `Reward  •  +${formatGold(caught.gold)}`,
         `Item  •  ${caught.item}`,
+        `XP  •  +${fishXp}`,
         `Wallet  •  ${formatGold(player.wallet)}`,
       ].join('\n'),
       imageUrl: await fetchSfwAnimeImage(catchIndex >= 2 ? 'happy' : 'smile'),
@@ -2406,6 +2616,7 @@ async function executeBuiltInCommand(
     player.wallet += reward;
     player.orbs += 3;
     player.stardust += 120;
+    awardXp(player, 60);
     player.lastDaily = Date.now();
     addTransaction(player, 'Daily reward', reward);
     return {
@@ -2414,6 +2625,7 @@ async function executeBuiltInCommand(
         `Gold  •  +${formatGold(reward)}`,
         'Orbs  •  +3',
         'Stardust  •  +120',
+        'XP  •  +60',
         `Wallet  •  ${formatGold(player.wallet)}`,
       ].join('\n'),
       imageUrl: await fetchSfwAnimeImage('maid'),
@@ -2485,37 +2697,210 @@ async function executeBuiltInCommand(
     };
   }
 
-  if (cmd === 'p' || cmd === 'profile' || cmd === 'edit' || cmd === 'bio' || cmd === 'setage' || cmd === 'rename') {
-    if (cmd === 'bio' && argStr) {
-      player.bio = argStr.slice(0, 120);
-      return { text: `✏️ Bio updated to: _${player.bio}_`, handler: 'Profile' };
+  if (cmd === 'setpp' || cmd === 'setpfp' || cmd === 'setavatar') {
+    const sub = argStr.trim().toLowerCase();
+    if (sub === 'clear' || sub === 'reset' || sub === 'remove') {
+      deletePlayerAvatar(player);
+      const cardBuf = await renderProfileCardBuffer(player).catch(() => null);
+      const caption = buildProfileTextUi(player);
+      return {
+        text: caption,
+        imageUrl: cardBuf ? `/api/profile-card/${encodeURIComponent(player.id)}?v=${Date.now()}` : undefined,
+        imageBuffer: cardBuf ?? undefined,
+        imageCaption: caption,
+        hideText: Boolean(cardBuf),
+        handler: 'Profile',
+      };
     }
-    if (cmd === 'setage' && argStr) {
+
+    const imgBytes = await resolveCommandMediaBytes(argStr, mediaBuffer, quotedImageUrl);
+    if (!imgBytes) {
+      return {
+        text: formatDesignERail({
+          title: '🖼 SET PROFILE PICTURE',
+          rows: [
+            { text: `Reply to an image message and send ${p}setpp` },
+            { text: `Or send an image with ${p}setpp as caption` },
+          ],
+          footer: `${p}setpp clear to reset`,
+        }),
+        handler: 'Profile',
+        status: 'error',
+      };
+    }
+
+    try {
+      player.avatarFile = await savePlayerAvatar(player.id, imgBytes);
+    } catch (err) {
+      return {
+        text: `⚠️ Could not read that image (${err instanceof Error ? err.message : 'invalid image'}). Reply to a JPG, PNG, or WEBP photo with *${p}setpp*.`,
+        handler: 'Profile',
+        status: 'error',
+      };
+    }
+
+    const cardBuf = await renderProfileCardBuffer(player).catch(() => null);
+    const caption = buildProfileTextUi(player);
+    return {
+      text: caption,
+      imageUrl: cardBuf ? `/api/profile-card/${encodeURIComponent(player.id)}?v=${Date.now()}` : undefined,
+      imageBuffer: cardBuf ?? undefined,
+      imageCaption: caption,
+      hideText: Boolean(cardBuf),
+      handler: 'Profile',
+    };
+  }
+
+  if (cmd === 'setcover' || cmd === 'setbanner' || cmd === 'setbg') {
+    const sub = argStr.trim().toLowerCase();
+    if (sub === 'clear' || sub === 'reset' || sub === 'remove') {
+      deletePlayerCover(player);
+      const cardBuf = await renderProfileCardBuffer(player).catch(() => null);
+      const caption = buildProfileTextUi(player);
+      return {
+        text: caption,
+        imageUrl: cardBuf ? `/api/profile-card/${encodeURIComponent(player.id)}?v=${Date.now()}` : undefined,
+        imageBuffer: cardBuf ?? undefined,
+        imageCaption: caption,
+        hideText: Boolean(cardBuf),
+        handler: 'Profile',
+      };
+    }
+
+    const imgBytes = await resolveCommandMediaBytes(argStr, mediaBuffer, quotedImageUrl);
+    if (!imgBytes) {
+      return {
+        text: formatDesignERail({
+          title: '🖼 SET COVER IMAGE',
+          rows: [
+            { text: `Reply to an image message and send ${p}setcover` },
+            { text: `Or send an image with ${p}setcover as caption` },
+          ],
+          footer: `${p}setcover clear to reset`,
+        }),
+        handler: 'Profile',
+        status: 'error',
+      };
+    }
+
+    try {
+      player.coverFile = await savePlayerCover(player.id, imgBytes);
+    } catch (err) {
+      return {
+        text: `⚠️ Could not read that cover image (${err instanceof Error ? err.message : 'invalid image'}). Reply to a JPG, PNG, or WEBP image with *${p}setcover*.`,
+        handler: 'Profile',
+        status: 'error',
+      };
+    }
+
+    const cardBuf = await renderProfileCardBuffer(player).catch(() => null);
+    const caption = buildProfileTextUi(player);
+    return {
+      text: caption,
+      imageUrl: cardBuf ? `/api/profile-card/${encodeURIComponent(player.id)}?v=${Date.now()}` : undefined,
+      imageBuffer: cardBuf ?? undefined,
+      imageCaption: caption,
+      hideText: Boolean(cardBuf),
+      handler: 'Profile',
+    };
+  }
+
+  if (cmd === 'xp' || cmd === 'level' || cmd === 'rank') {
+    const xpInfo = getLevelXpProgress(player.xp, player.level);
+    const filledBlocks = Math.round(xpInfo.ratio * 10);
+    const bar = `${'█'.repeat(filledBlocks)}${'░'.repeat(10 - filledBlocks)}`;
+    const pct = Math.round(xpInfo.ratio * 100);
+    const rank = getPlayerRank(player.level);
+    const remainingToNext = Math.max(0, xpInfo.needed - xpInfo.current);
+    return {
+      text: formatDesignERail({
+        title: '⚡ LEVEL & XP PROGRESS',
+        rows: [
+          { label: 'Player', value: player.customName ? player.name : 'Unset' },
+          { label: 'Level', value: `Lv. ${player.level} (${rank})` },
+          { label: 'Progress', value: `[${bar}] ${xpInfo.current}/${xpInfo.needed} XP (${pct}%)` },
+          { label: 'Total XP', value: `${player.xp.toLocaleString()} XP` },
+          { label: 'Next Level', value: `${remainingToNext.toLocaleString()} XP needed` },
+        ],
+        footer: `Earn XP by playing: ${p}work · ${p}daily · ${p}fish · ${p}claim · ${p}startbattle · ${p}aquiz`,
+      }),
+      handler: 'Profile',
+    };
+  }
+
+  if (
+    cmd === 'p' ||
+    cmd === 'profile' ||
+    cmd === 'edit' ||
+    cmd === 'bio' ||
+    cmd === 'setbio' ||
+    cmd === 'setage' ||
+    cmd === 'rename' ||
+    cmd === 'setname'
+  ) {
+    if (cmd === 'bio' || cmd === 'setbio') {
+      if (!argStr.trim()) {
+        return { text: `Usage: *${p}${cmd} <your bio text>*`, handler: 'Profile', status: 'error' };
+      }
+      player.bio = argStr.trim().replace(/\s+/g, ' ').slice(0, 120);
+      const cardBuf = await renderProfileCardBuffer(player).catch(() => null);
+      const caption = buildProfileTextUi(player);
+      return {
+        text: caption,
+        imageUrl: cardBuf ? `/api/profile-card/${encodeURIComponent(player.id)}?v=${Date.now()}` : undefined,
+        imageBuffer: cardBuf ?? undefined,
+        imageCaption: caption,
+        hideText: Boolean(cardBuf),
+        handler: 'Profile',
+      };
+    }
+    if (cmd === 'setage') {
+      if (!argStr.trim()) {
+        return { text: `Usage: *${p}setage <age>*`, handler: 'Profile', status: 'error' };
+      }
       const age = Math.min(99, Math.max(13, parseInt(argStr, 10) || player.age));
       player.age = age;
       return { text: `🎂 Profile age updated to *${age}*.`, handler: 'Profile' };
     }
-    if (cmd === 'rename' && argStr) {
-      player.name = argStr.slice(0, 24);
-      return { text: `🏷️ Display name updated to *${player.name}*.`, handler: 'Profile' };
+    if (cmd === 'rename' || cmd === 'setname') {
+      if (!argStr.trim()) {
+        return { text: `Usage: *${p}${cmd} <new display name>*`, handler: 'Profile', status: 'error' };
+      }
+      player.name = argStr.trim().replace(/\s+/g, ' ').slice(0, 24);
+      player.customName = true;
+      const cardBuf = await renderProfileCardBuffer(player).catch(() => null);
+      const caption = buildProfileTextUi(player);
+      return {
+        text: caption,
+        imageUrl: cardBuf ? `/api/profile-card/${encodeURIComponent(player.id)}?v=${Date.now()}` : undefined,
+        imageBuffer: cardBuf ?? undefined,
+        imageCaption: caption,
+        hideText: Boolean(cardBuf),
+        handler: 'Profile',
+      };
     }
     if (cmd === 'edit') {
-      return { text: `Edit your profile using:\n• *${p}rename <name>*\n• *${p}bio <text>*\n• *${p}setage <age>*`, handler: 'Profile' };
+      return {
+        text: [
+          'Edit your profile using:',
+          `• *${p}setpp* (reply to an image or send image with caption)`,
+          `• *${p}setcover* (reply to an image or send image with caption)`,
+          `• *${p}setname <name>* (or *${p}rename <name>*)`,
+          `• *${p}setbio <text>* (or *${p}bio <text>*)`,
+          `• *${p}setage <age>*`,
+        ].join('\n'),
+        handler: 'Profile',
+      };
     }
+
+    const profileText = buildProfileTextUi(player);
+    const cardBuf = await renderProfileCardBuffer(player).catch(() => null);
     return {
-      text: [
-        `*🪪 ${botState.config.bannerTitle} Profile — ${player.name}*`,
-        `┣ Role: *${player.role.toUpperCase()}*`,
-        `┣ Level: *${player.level}* (${player.xp} XP)`,
-        `┣ Guild: *${player.guild || 'Unaffiliated'}*`,
-        `┣ Age: *${player.age}*`,
-        `┣ Net Worth: *${formatGold(netWorthOf(player))}*`,
-        player.loan > 0 ? `┣ Loan Debt: *${formatGold(player.loan)}*` : '',
-        `┣ Cards: *${player.cards.length}*`,
-        `┣ Pokémon: *${player.pokemon.length}*`,
-        `┣ Bio: _${player.bio}_`,
-        `┗━━━━━━━━━━━`,
-      ].filter(Boolean).join('\n'),
+      text: profileText,
+      imageUrl: cardBuf ? `/api/profile-card/${encodeURIComponent(player.id)}?v=${Date.now()}` : undefined,
+      imageBuffer: cardBuf ?? undefined,
+      imageCaption: profileText,
+      hideText: Boolean(cardBuf) && profileText.length <= 1000,
       handler: 'Profile',
     };
   }
@@ -2650,8 +3035,9 @@ async function executeBuiltInCommand(
       const picked = botState.cards[Math.floor(Math.random() * botState.cards.length)];
       if (!picked.imageUrl) picked.imageUrl = await fetchCharacterImage(picked.name);
       player.cards.push(picked.id);
+      awardXp(player, 25);
       return {
-        text: `🎟️ Used *Gacha Ticket*!\nPulled *[${picked.tier}] ${picked.name}* (\`${picked.id}\`) from _${picked.series}_!`,
+        text: `🎟️ Used *Gacha Ticket*!\nPulled *[${picked.tier}] ${picked.name}* (\`${picked.id}\`) from _${picked.series}_! (+25 XP)`,
         imageUrl: picked.imageUrl,
         imageCaption: `${picked.name} (${picked.tier})`,
         handler: 'Economy',
@@ -2659,7 +3045,7 @@ async function executeBuiltInCommand(
     }
     if (key === 'Luck Potion') {
       player.luckBoostUntil = Date.now() + 15 * 60_000;
-      player.xp += 50;
+      awardXp(player, 50);
       return {
         text: `🍀 Activated *Luck Potion*! (+4% gamble, fishing & rob odds for *15 min*, plus *+50 XP*).`,
         handler: 'Economy',
@@ -2673,15 +3059,13 @@ async function executeBuiltInCommand(
       };
     }
     if (key === 'XP Charm') {
-      player.xp += 300;
-      player.level = Math.max(1, Math.floor(Math.sqrt(player.xp / 25)));
+      awardXp(player, 300);
       return {
         text: `✨ Activated *XP Charm*! Gained *+300 XP* (Now Lv.*${player.level}*).`,
         handler: 'Economy',
       };
     }
-    player.xp += 150;
-    player.level = Math.max(1, Math.floor(Math.sqrt(player.xp / 25)));
+    awardXp(player, 150);
     return { text: `✨ Activated *${key}*! Gained +150 XP.`, handler: 'Economy' };
   }
 
@@ -2897,10 +3281,11 @@ async function executeBuiltInCommand(
       const stolen = Math.min(1200, Math.max(50, Math.round(target.wallet * pct)));
       target.wallet -= stolen;
       player.wallet += stolen;
+      awardXp(player, 35);
       addTransaction(player, `Robbed ${target.name}`, stolen);
       addTransaction(target, `Robbed by ${player.name}`, -stolen);
       return {
-        text: `🕶️ *Pickpocket Succeeded!*\n*${player.name}* stole *${formatGold(stolen)}* from *@${target.name}*'s wallet!`,
+        text: `🕶️ *Pickpocket Succeeded!*\n*${player.name}* stole *${formatGold(stolen)}* from *@${target.name}*'s wallet! (+35 XP)`,
         handler: 'Economy',
       };
     }
@@ -2908,12 +3293,13 @@ async function executeBuiltInCommand(
     player.wallet -= fine;
     target.wallet += fine;
     player.shamePoints += 1;
+    awardXp(player, 10);
     if (fine > 0) {
       addTransaction(player, `Caught robbing ${target.name}`, -fine);
       addTransaction(target, `Robbery fine from ${player.name}`, fine);
     }
     return {
-      text: `🚨 Caught red-handed trying to rob *${target.name}*! Paid *${formatGold(fine)}* fine and gained +1 Shame Point.`,
+      text: `🚨 Caught red-handed trying to rob *${target.name}*! Paid *${formatGold(fine)}* fine and gained +1 Shame Point. (+10 XP)`,
       handler: 'Economy',
     };
   }
@@ -2928,18 +3314,20 @@ async function executeBuiltInCommand(
     if (Math.random() < successChance) {
       const loot = 900 + Math.floor(Math.random() * 601);
       player.wallet += loot;
+      awardXp(player, 55);
       addTransaction(player, 'Dungeon Vault Heist', loot);
       return {
-        text: `🕶️ *Dungeon Vault Heist Succeeded!*\n*${player.name}* escaped with *+${formatGold(loot)}*!`,
+        text: `🕶️ *Dungeon Vault Heist Succeeded!*\n*${player.name}* escaped with *+${formatGold(loot)}*! (+55 XP)`,
         handler: 'Economy',
       };
     }
     const fine = Math.min(player.wallet, 400);
     player.wallet -= fine;
     player.shamePoints += 1;
+    awardXp(player, 15);
     if (fine > 0) addTransaction(player, 'Failed Heist Fine', -fine);
     return {
-      text: `🚨 Caught by the guild guards! Lost *${formatGold(fine)}* and gained +1 Shame Point.`,
+      text: `🚨 Caught by the guild guards! Lost *${formatGold(fine)}* and gained +1 Shame Point. (+15 XP)`,
       handler: 'Economy',
     };
   }
@@ -2983,9 +3371,11 @@ async function executeBuiltInCommand(
       const landed = won ? side : side === 'heads' ? 'tails' : 'heads';
       const delta = won ? bet : -bet;
       player.wallet += delta;
+      const xpGain = won ? 20 : 8;
+      awardXp(player, xpGain);
       addTransaction(player, `Coinflip (${side})`, delta);
       return {
-        text: `*🪙 Coinflip Result*\nCall: *${side.toUpperCase()}* · Landed: *${landed.toUpperCase()}*\n${won ? `✅ Won *+${formatGold(bet)}*!` : `❌ Lost *${formatGold(bet)}*.`}\nWallet: *${formatGold(player.wallet)}*`,
+        text: `*🪙 Coinflip Result*\nCall: *${side.toUpperCase()}* · Landed: *${landed.toUpperCase()}*\n${won ? `✅ Won *+${formatGold(bet)}*!` : `❌ Lost *${formatGold(bet)}*.`} (+${xpGain} XP)\nWallet: *${formatGold(player.wallet)}*`,
         handler: 'Gamble',
       };
     }
@@ -3007,10 +3397,12 @@ async function executeBuiltInCommand(
       const won = landedColor === color;
       const delta = won ? (color === 'green' ? bet * 35 : bet) : -bet;
       player.wallet += delta;
+      const xpGain = won ? 20 : 8;
+      awardXp(player, xpGain);
       addTransaction(player, `Roulette (${color})`, delta);
       const badge = landedColor === 'green' ? '🟢' : landedColor === 'red' ? '🔴' : '⚫';
       return {
-        text: `*🎡 Roulette Spin*\nBall landed on: ${badge} *${landedColor.toUpperCase()} (${pocket})*\n${won ? `🎉 Won *+${formatGold(delta)}*!` : `💸 Lost *${formatGold(bet)}*.`}\nWallet: *${formatGold(player.wallet)}*`,
+        text: `*🎡 Roulette Spin*\nBall landed on: ${badge} *${landedColor.toUpperCase()} (${pocket})*\n${won ? `🎉 Won *+${formatGold(delta)}*!` : `💸 Lost *${formatGold(bet)}*.`} (+${xpGain} XP)\nWallet: *${formatGold(player.wallet)}*`,
         handler: 'Gamble',
       };
     }
@@ -3031,9 +3423,11 @@ async function executeBuiltInCommand(
       const won = lane === winnerLane;
       const delta = won ? Math.round(bet * 2.8) : -bet;
       player.wallet += delta;
+      const xpGain = won ? 20 : 8;
+      awardXp(player, xpGain);
       addTransaction(player, `Horse Derby (Lane ${lane})`, delta);
       return {
-        text: `*🐎 Chocobo & Horse Derby*\nYour Pick: Lane *#${lane}* · Winner: Lane *#${winnerLane}*\n${won ? `🏆 Won *+${formatGold(delta)}*!` : `💸 Lost *${formatGold(bet)}*.`}\nWallet: *${formatGold(player.wallet)}*`,
+        text: `*🐎 Chocobo & Horse Derby*\nYour Pick: Lane *#${lane}* · Winner: Lane *#${winnerLane}*\n${won ? `🏆 Won *+${formatGold(delta)}*!` : `💸 Lost *${formatGold(bet)}*.`} (+${xpGain} XP)\nWallet: *${formatGold(player.wallet)}*`,
         handler: 'Gamble',
       };
     }
@@ -3059,9 +3453,11 @@ async function executeBuiltInCommand(
       const pair = r1 === r2 || r2 === r3 || r1 === r3;
       const delta = jackpot ? bet * 4 : pair ? Math.round(bet * 0.6) : -bet;
       player.wallet += delta;
+      const xpGain = delta >= 0 ? 20 : 8;
+      awardXp(player, xpGain);
       addTransaction(player, 'Slots Spin', delta);
       return {
-        text: `*🎰 ${botState.config.bannerTitle} Slots*\n[ ${r1} | ${r2} | ${r3} ]\n\n${delta >= 0 ? `🎉 Won *+${formatGold(delta)}*!` : `💸 Lost *${formatGold(bet)}*.`}\nWallet: *${formatGold(player.wallet)}*`,
+        text: `*🎰 ${botState.config.bannerTitle} Slots*\n[ ${r1} | ${r2} | ${r3} ]\n\n${delta >= 0 ? `🎉 Won *+${formatGold(delta)}*!` : `💸 Lost *${formatGold(bet)}*.`} (+${xpGain} XP)\nWallet: *${formatGold(player.wallet)}*`,
         handler: 'Gamble',
         buttons: [{ id: 'slots_again', label: `Spin 🪙 ${bet}`, command: `${p}slots ${bet}` }],
       };
@@ -3074,9 +3470,11 @@ async function executeBuiltInCommand(
       const won = pRoll > bRoll;
       const delta = tie ? 0 : won ? bet : -bet;
       player.wallet += delta;
+      const xpGain = won ? 20 : 8;
+      awardXp(player, xpGain);
       if (delta !== 0) addTransaction(player, 'Dice Roll', delta);
       return {
-        text: `*🎲 Dice Showdown*\nYou rolled: *${pRoll}* · ${botState.config.botName} rolled: *${bRoll}*\n${tie ? '🤝 Tie — wager returned.' : won ? `✅ Won *+${formatGold(bet)}*!` : `❌ Lost *${formatGold(bet)}*.`}\nWallet: *${formatGold(player.wallet)}*`,
+        text: `*🎲 Dice Showdown*\nYou rolled: *${pRoll}* · ${botState.config.botName} rolled: *${bRoll}*\n${tie ? '🤝 Tie — wager returned.' : won ? `✅ Won *+${formatGold(bet)}*!` : `❌ Lost *${formatGold(bet)}*.`} (+${xpGain} XP)\nWallet: *${formatGold(player.wallet)}*`,
         handler: 'Gamble',
       };
     }
@@ -3086,9 +3484,11 @@ async function executeBuiltInCommand(
       const mult = spin >= 0.96 ? 3 : spin >= 0.83 ? 1.5 : spin >= 0.58 ? 1 : -1;
       const delta = Math.round(bet * mult);
       player.wallet += delta;
+      const xpGain = delta > 0 ? 20 : 8;
+      awardXp(player, xpGain);
       addTransaction(player, 'Lucky Wheel (.rr)', delta);
       return {
-        text: `*🎡 Lucky Wheel (.rr)*\nWager: *${formatGold(bet)}*\nOutcome: ${delta > 0 ? `🎉 Hit *${mult + 1}x* (*+${formatGold(delta)}*)!` : `❌ Bust (*-${formatGold(bet)}*).`}\nWallet: *${formatGold(player.wallet)}*`,
+        text: `*🎡 Lucky Wheel (.rr)*\nWager: *${formatGold(bet)}*\nOutcome: ${delta > 0 ? `🎉 Hit *${mult + 1}x* (*+${formatGold(delta)}*)!` : `❌ Bust (*-${formatGold(bet)}*).`} (+${xpGain} XP)\nWallet: *${formatGold(player.wallet)}*`,
         handler: 'Gamble',
       };
     }
@@ -3098,9 +3498,11 @@ async function executeBuiltInCommand(
     const multiplier = cmd === 'dp' ? 2 : 1;
     const delta = win ? bet * multiplier : -bet;
     player.wallet += delta;
+    const xpGain = win ? 20 : 8;
+    awardXp(player, xpGain);
     addTransaction(player, `Gamble (${cmd})`, delta);
     return {
-      text: `*🎲 ${cmd.toUpperCase()} Result*\nWager: *${formatGold(bet)}*\nOutcome: ${win ? `✅ Won *+${formatGold(delta)}*!` : `❌ Lost *${formatGold(bet)}*.`}\nWallet: *${formatGold(player.wallet)}*`,
+      text: `*🎲 ${cmd.toUpperCase()} Result*\nWager: *${formatGold(bet)}*\nOutcome: ${win ? `✅ Won *+${formatGold(delta)}*!` : `❌ Lost *${formatGold(bet)}*.`} (+${xpGain} XP)\nWallet: *${formatGold(player.wallet)}*`,
       handler: 'Gamble',
     };
   }
@@ -3137,9 +3539,10 @@ async function executeBuiltInCommand(
       if (pSum === 21) {
         const payout = Math.round(bet * 2.5);
         player.wallet += payout;
+        awardXp(player, 30);
         addTransaction(player, 'Blackjack Natural 21', payout - bet);
         return {
-          text: `*🃏 Natural 21!*\nHand: [${pCards.join(', ')}]\nWon *+${formatGold(payout - bet)}*! Wallet: *${formatGold(player.wallet)}*`,
+          text: `*🃏 Natural 21!*\nHand: [${pCards.join(', ')}]\nWon *+${formatGold(payout - bet)}*! (+30 XP)\nWallet: *${formatGold(player.wallet)}*`,
           handler: 'Blackjack',
         };
       }
@@ -3160,8 +3563,9 @@ async function executeBuiltInCommand(
       if (total > 21) {
         addTransaction(player, 'Blackjack Bust', -session.bet);
         delete botState.activeBlackjack[player.id];
+        awardXp(player, 10);
         return {
-          text: `*🃏 Bust! (${total})*\nHand: [${session.playerCards.join(', ')}]\nLost *${formatGold(session.bet)}*. Wallet: *${formatGold(player.wallet)}*`,
+          text: `*🃏 Bust! (${total})*\nHand: [${session.playerCards.join(', ')}]\nLost *${formatGold(session.bet)}*. (+10 XP)\nWallet: *${formatGold(player.wallet)}*`,
           handler: 'Blackjack',
         };
       }
@@ -3190,8 +3594,10 @@ async function executeBuiltInCommand(
       addTransaction(player, 'Blackjack Loss', -session.bet);
     }
     delete botState.activeBlackjack[player.id];
+    const bjXp = won ? 25 : 10;
+    awardXp(player, bjXp);
     return {
-      text: `*🃏 Blackjack Showdown*\nYou: *${pTotal}* [${session.playerCards.join(', ')}]\n${botState.config.botName}: *${dTotal}* [${session.dealerCards.join(', ')}]\n\n${tie ? '🤝 Push (Tie — bet returned).' : won ? `🎉 You win *+${formatGold(session.bet)}*!` : `💸 ${botState.config.botName} wins *${formatGold(session.bet)}*.`}\nWallet: *${formatGold(player.wallet)}*`,
+      text: `*🃏 Blackjack Showdown*\nYou: *${pTotal}* [${session.playerCards.join(', ')}]\n${botState.config.botName}: *${dTotal}* [${session.dealerCards.join(', ')}]\n\n${tie ? '🤝 Push (Tie — bet returned).' : won ? `🎉 You win *+${formatGold(session.bet)}*!` : `💸 ${botState.config.botName} wins *${formatGold(session.bet)}*.`} (+${bjXp} XP)\nWallet: *${formatGold(player.wallet)}*`,
       handler: 'Blackjack',
     };
   }
@@ -3205,16 +3611,18 @@ async function executeBuiltInCommand(
       if (idx === q.answerIndex) {
         player.wallet += q.reward;
         player.orbs += 1;
+        awardXp(player, 55);
         addTransaction(player, `Anime Quiz (${q.anime})`, q.reward);
         botState.eventScores[player.id] = (botState.eventScores[player.id] || 0) + 50;
         return {
-          text: `🎉 *Correct!* (${q.options[q.answerIndex]})\n*${player.name}* won *${formatGold(q.reward)}* + *1 Orb*!`,
+          text: `🎉 *Correct!* (${q.options[q.answerIndex]})\n*${player.name}* won *${formatGold(q.reward)}*, *1 Orb* & *+55 XP*!`,
           handler: 'Anime Quiz',
           buttons: [{ id: 'next_quiz', label: 'Next Question', command: `${p}aquiz` }],
         };
       }
+      awardXp(player, 10);
       return {
-        text: `❌ Wrong! The right answer was *${['A', 'B', 'C', 'D'][q.answerIndex]}. ${q.options[q.answerIndex]}*.`,
+        text: `❌ Wrong! The right answer was *${['A', 'B', 'C', 'D'][q.answerIndex]}. ${q.options[q.answerIndex]}*. (+10 XP)`,
         handler: 'Anime Quiz',
         buttons: [{ id: 'next_quiz', label: 'Try Another', command: `${p}aquiz` }],
       };
@@ -3270,14 +3678,15 @@ async function executeBuiltInCommand(
     }, 0);
     const bossPower = 240 + Math.floor(Math.random() * 140);
     const won = deckPower >= bossPower;
+    const bossXp = won ? 120 : 30;
     if (won) {
       player.wallet += 900;
       player.orbs += 2;
-      player.xp += 120;
       addTransaction(player, 'Floor Boss Victory', 900);
     }
+    awardXp(player, bossXp);
     return {
-      text: `*⚔️ ${botState.config.bannerTitle} Floor Boss Battle*\nYour Deck Power: *${deckPower}*\nBoss (Veldora Shadow): *${bossPower}*\n\n${won ? `🏆 *Victory!* Earned *+${formatGold(900)}*, +2 Orbs, +120 XP!` : '🛡️ *Defeated!* Upgrade your *.deck* with stronger cards!'}`,
+      text: `*⚔️ ${botState.config.bannerTitle} Floor Boss Battle*\nYour Deck Power: *${deckPower}*\nBoss (Veldora Shadow): *${bossPower}*\n\n${won ? `🏆 *Victory!* Earned *+${formatGold(900)}*, +2 Orbs, +120 XP!` : `🛡️ *Defeated!* Gained +${bossXp} combat XP — upgrade your *.deck* with stronger cards!`}`,
       handler: 'Battle Arena',
     };
   }
@@ -3305,12 +3714,13 @@ async function executeBuiltInCommand(
           break;
         }
       }
+      awardXp(player, 15);
     }
     const grid = game.board
       .map((row) => row.map((cell) => (cell === 1 ? '🔴' : cell === 2 ? '🟡' : '⚪')).join(''))
       .join('\n');
     return {
-      text: `*🔴 Connect-4 vs ${botState.config.botName}*\n${grid}\n1️⃣2️⃣3️⃣4️⃣5️⃣6️⃣7️⃣\nDrop a disc with *${p}c4 <1-7>*`,
+      text: `*🔴 Connect-4 vs ${botState.config.botName}*\n${grid}\n1️⃣2️⃣3️⃣4️⃣5️⃣6️⃣7️⃣\nDrop a disc with *${p}c4 <1-7>*${col >= 0 && col < 7 ? ' (+15 XP)' : ''}`,
       handler: 'Mini-Game',
       buttons: [
         { id: 'c4_3', label: 'Drop Col 3', command: `${p}c4 3` },
@@ -3341,17 +3751,19 @@ async function executeBuiltInCommand(
     const botPick = words.find((w) => w.startsWith(replyStart) && !wc.used.includes(w)) || `${replyStart}ren`;
     wc.lastWord = botPick;
     player.wallet += 120;
+    awardXp(player, 20);
     addTransaction(player, `Word Chain (${next})`, 120);
     return {
-      text: `✅ Nice! *${next}* (+${formatGold(120)})\n${botState.config.botName} plays: *${botPick.toUpperCase()}*\nNext letter: *${botPick.slice(-1).toUpperCase()}* (Streak: ${wc.score})`,
+      text: `✅ Nice! *${next}* (+${formatGold(120)}, +20 XP)\n${botState.config.botName} plays: *${botPick.toUpperCase()}*\nNext letter: *${botPick.slice(-1).toUpperCase()}* (Streak: ${wc.score})`,
       handler: 'Word Chain',
     };
   }
 
   if (cmd === 'chess') {
+    if (argStr) awardXp(player, 15);
     return {
       text: argStr
-        ? `*♟️ Chess Move Recorded:* \`${argStr}\`\n${botState.config.botName} responds: \`Nf6\`\nSend next SAN move via *${p}chess <move>*.`
+        ? `*♟️ Chess Move Recorded:* \`${argStr}\` (+15 XP)\n${botState.config.botName} responds: \`Nf6\`\nSend next SAN move via *${p}chess <move>*.`
         : `*♟️ ${botState.config.bannerTitle} Chess Board*\nNew match ready! Open with *${p}chess e4* or *${p}chess d4*.`,
       handler: 'Chess',
     };
@@ -3361,8 +3773,9 @@ async function executeBuiltInCommand(
   if (cmd === 'enter' || cmd === 'estats' || cmd === 'elb') {
     if (cmd === 'enter') {
       botState.eventScores[player.id] = (botState.eventScores[player.id] || 0) + 100;
+      awardXp(player, 30);
       return {
-        text: `🎉 *${player.name}* entered the *Walpurgis Anime Grand Prix*! (+100 Event Points)`,
+        text: `🎉 *${player.name}* entered the *Walpurgis Anime Grand Prix*! (+100 Event Points, +30 XP)`,
         handler: 'Events',
       };
     }
@@ -3394,7 +3807,8 @@ async function executeBuiltInCommand(
       const pool = ['Umbreon (Lv.19)', 'Gardevoir (Lv.27)', 'Greninja (Lv.32)', 'Sylveon (Lv.21)', 'Charizard (Lv.36)'];
       const caught = pool[Math.floor(Math.random() * pool.length)];
       player.pokemon.push(caught);
-      return { text: `⚡ *Gotcha!* Caught wild *${caught}*!`, handler: 'Pokémon RPG' };
+      awardXp(player, 40);
+      return { text: `⚡ *Gotcha!* Caught wild *${caught}*! (+40 XP)`, handler: 'Pokémon RPG' };
     }
     return {
       text: `*🐉 Pokémon RPG Menu*\nParty (${player.pokemon.length}): ${player.pokemon.join(', ')}\n\nCommands:\n• *${p}pmenu catch* — Catch a wild Pokémon\n• *${p}pmenu* — View your party`,
@@ -3696,18 +4110,26 @@ async function executeBuiltInCommand(
     };
   }
 
-  if (['reddit', 'sauce', 'reverseimg', 'lyrics', 'igstalk', 'shazam'].includes(cmd)) {
-    if ((cmd === 'lyrics' || cmd === 'sauce' || cmd === 'shazam') && argStr && hasGroqKey()) {
-      botState.stats.totalAiCalls += 1;
-      const ans = await askGroqText(
-        `Command .${cmd} query: "${argStr}". Provide concise anime music/scene info formatted for WhatsApp.`,
-        buildSystemInstruction()
-      );
-      return { text: ans, handler: 'Groq AI (Search)' };
+  if (cmd === 'lyrics') {
+    if (!argStr) {
+      return { text: `Usage: *${p}lyrics <song title or anime opening>*`, handler: 'Search' };
     }
+    if (!hasGroqKey()) {
+      return { text: `Groq AI is not configured yet for *${p}lyrics*.`, handler: 'Search', status: 'error' };
+    }
+    botState.stats.totalAiCalls += 1;
+    const ans = await askGroqText(
+      `Command .lyrics query: "${argStr}". Provide concise anime theme song info, artist, and key lyrics/romaji formatted for WhatsApp.`,
+      buildSystemInstruction()
+    );
+    return { text: ans, handler: 'Groq AI (Lyrics)' };
+  }
+
+  if (['reddit', 'sauce', 'reverseimg', 'igstalk', 'shazam'].includes(cmd)) {
     return {
-      text: `*📲 Media Bridge (.${cmd})*\nTarget: \`${argStr || 'No URL/query provided'}\`\n\nIn the WhatsApp Simulator & Cloud API mode, direct binary video scraping is queued via the exported Baileys + yt-dlp runner in *Deploy & Webhook*.`,
-      handler: 'Media Bridge',
+      text: `Command *${p}${cmd}* is currently under development.`,
+      handler: 'Search',
+      status: 'blocked',
     };
   }
 
@@ -3908,6 +4330,46 @@ async function executeBuiltInCommand(
       handler: 'Jikan MAL API',
     };
   }
+  if (cmd === 'setxp') {
+    const xpIndex = args.findIndex((tok) => /^\d+(?:,\d+)*$/.test(tok));
+    const xpToken = xpIndex >= 0 ? args[xpIndex] : undefined;
+    const targetToken = args.filter((_, idx) => idx !== xpIndex).join(' ').trim();
+    if (!xpToken) {
+      return {
+        text: `Usage: *${p}setxp <xp> [@user]*`,
+        handler: 'Admin',
+        status: 'error',
+      };
+    }
+    const rawXp = Number.parseInt(xpToken.replace(/,/g, ''), 10);
+    if (!Number.isFinite(rawXp) || rawXp < 0 || rawXp > 10_000_000) {
+      return {
+        text: `Provide an XP value between *0* and *10,000,000*.`,
+        handler: 'Admin',
+        status: 'error',
+      };
+    }
+    const target = targetToken ? findPlayerTarget(targetToken) : player;
+    if (!target) {
+      return {
+        text: `Player *${targetToken}* was not found. Usage: *${p}setxp <xp> [@user]*`,
+        handler: 'Admin',
+        status: 'error',
+      };
+    }
+    target.xp = Math.round(rawXp);
+    target.level = Math.max(1, Math.floor(Math.sqrt(target.xp / 25)));
+    const cardBuf = await renderProfileCardBuffer(target).catch(() => null);
+    const caption = buildProfileTextUi(target);
+    return {
+      text: caption,
+      imageUrl: cardBuf ? `/api/profile-card/${encodeURIComponent(target.id)}?v=${Date.now()}` : undefined,
+      imageBuffer: cardBuf ?? undefined,
+      imageCaption: caption,
+      hideText: Boolean(cardBuf),
+      handler: 'Admin',
+    };
+  }
   if (cmd === 'purge') {
     const warned = Object.values(botState.players).filter((user) => user.warnings > 0);
     warned.forEach((user) => { user.warnings = 0; });
@@ -3982,21 +4444,24 @@ async function askGroq(prompt, quotedText) {
 }
 
 function renderMenu() {
-  const dots = '┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈';
   return [
-    '✦ ' + ${JSON.stringify(c.bannerTitle.toUpperCase())} + ' ✦',
+    '✦ *' + ${JSON.stringify(c.bannerTitle.toUpperCase())} + '* ✦',
     BOT_NAME + ' · prefix ' + PREFIX,
     '',
-    '▎✦ 📖 MENU ✦',
-    '▎' + dots,
-    '▎🎴 ' + PREFIX + 'card ❯ Wild card drop',
-    '▎💰 ' + PREFIX + 'bal ❯ Gold balance',
-    '▎🎮 ' + PREFIX + 'daily ❯ Daily reward',
-    '▎🌸 ' + PREFIX + 'anime <title> ❯ Lookup',
-    '▎🧠 ' + PREFIX + 'mem ❯ AI memories',
-    '▎🤖 ' + PREFIX + 'gpt <question> ❯ AI chat',
-    '▎',
-    '▎↳ send ' + PREFIX + 'menu <category> for more',
+    '┏━━━「 *MENU* 」',
+    '┃',
+    '┃ ▸ ' + PREFIX + 'card',
+    '┃ ▸ ' + PREFIX + 'bal',
+    '┃ ▸ ' + PREFIX + 'daily',
+    '┃ ▸ ' + PREFIX + 'anime <title>',
+    '┃ ▸ ' + PREFIX + 'mem',
+    '┃ ▸ ' + PREFIX + 'gpt <question>',
+    '┗━━━━━━━━━━━━━━',
+    '',
+    '┏━━━「 DOWNLOADER 」',
+    '┃',
+    '┃ ▸ Under development',
+    '┗━━━━━━━━━━━━━━',
   ].join('\\n');
 }
 
