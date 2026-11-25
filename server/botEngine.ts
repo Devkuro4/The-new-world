@@ -23,7 +23,7 @@ import {
   type PlayerProfile,
 } from '../src/shared/botSchema.ts';
 import { askGroqText, hasGroqKey, GROQ_MODEL, type GroqChatMessage } from './groqClient.ts';
-import { applyTextUi, buildMenuUi } from './textUi.ts';
+import { applyTextUi, buildMenuUi, formatDesignERail } from './textUi.ts';
 import { getCommandPreviewPath, getThumbImageUrl, MENU_IMAGE_URL, resolveThumbKey } from './assets.ts';
 
 export interface ActiveDrop {
@@ -1039,9 +1039,15 @@ const CATEGORY_LABELS: Record<CommandCategory, string> = {
   Admin: '⚙️ ADMIN ⚙️',
 };
 
-function buildMenu(): { caption: string; body: string } {
+function buildMenu(categoryFilter?: string): { caption: string; body: string } {
   const c = botState.config;
   const visible = botState.commands.filter((command) => command.enabled);
+  const query = categoryFilter?.trim().toLowerCase();
+  const matchedCategory = query
+    ? COMMAND_CATEGORIES.find(
+        (cat) => cat.toLowerCase() === query || cat.toLowerCase().startsWith(query)
+      )
+    : undefined;
   return buildMenuUi({
     title: c.bannerTitle,
     botName: c.botName,
@@ -1050,6 +1056,7 @@ function buildMenu(): { caption: string; body: string } {
       category,
       commands: visible.filter((command) => command.category === category).map((command) => command.name),
     })),
+    activeCategory: matchedCategory,
     example: 'anime Frieren',
   });
 }
@@ -1310,8 +1317,16 @@ export async function handleIncomingMessage(params: {
     }
 
     if (roleLevel(params.senderRole) < roleLevel(cmdDef.role)) {
+      const roleDisplay = params.senderRole === 'everyone' ? 'MEMBER' : params.senderRole.toUpperCase();
       reply = {
-        text: `⛔ *Permission Denied*\n*${prefix}${cmdDef.name}* requires *${cmdDef.role.toUpperCase()}* role. Switch your simulator role above to test it.`,
+        text: formatDesignERail({
+          title: '⛔ PERMISSION DENIED',
+          rows: [
+            { text: `🔒 ${prefix}${cmdDef.name} needs the ${cmdDef.role.toUpperCase()} role` },
+            { label: 'You are', value: roleDisplay },
+          ],
+          footer: `send ${prefix}menu for commands`,
+        }),
         handler: 'RBAC Guard',
         status: 'blocked',
       };
@@ -1393,7 +1408,7 @@ async function executeBuiltInCommand(
 
   // ── GENERAL ──
   if (cmd === 'menu' || cmd === 'help') {
-    const menu = buildMenu();
+    const menu = buildMenu(argStr);
     return {
       text: menu.body,
       imageUrl: MENU_IMAGE_URL,
@@ -1558,13 +1573,23 @@ async function executeBuiltInCommand(
     const personal = botState.aiMemories[player.id] || [];
     if (personal.length === 0) {
       return {
-        text: `*🧠 Memories for ${player.name}*\n_I don't have any memories saved for you yet._\n\nTell me something in chat (e.g. "remember that...") or save one with *${p}mem add <note>*.`,
+        text: formatDesignERail({
+          title: `🧠 MEMORIES (${player.name})`,
+          rows: [
+            { text: `I don't have any memories saved for you yet.` },
+            { text: `Say "remember that..." in chat to save one.` },
+          ],
+          footer: `${p}mem add <note> · ${p}mem clear`,
+        }),
         handler: 'AI Memory',
       };
     }
-    const lines = personal.map((m, i) => `${i + 1}. ${m}`).join('\n');
     return {
-      text: `*🧠 What ${botState.config.botName} Remembers About ${player.name}* (${personal.length})\n${lines}\n\nManage: *${p}mem add <note>* · *${p}mem del <num>* · *${p}mem clear*`,
+      text: formatDesignERail({
+        title: `🧠 MEMORIES (${player.name})`,
+        rows: personal.map((m, i) => ({ label: `#${i + 1}`, value: m })),
+        footer: `${p}mem add <note> · ${p}mem del <num> · ${p}mem clear`,
+      }),
       handler: 'AI Memory',
     };
   }
@@ -1661,15 +1686,17 @@ async function executeBuiltInCommand(
     botState.stats.totalCardDrops += 1;
     player.lastCardDrop = Date.now();
     return {
-      text: [
-        `*🎴 Wild Anime Card Appeared!*`,
-        `┣ Name: *[${picked.tier}] ${picked.name}*`,
-        `┣ Series: _${picked.series}_`,
-        `┣ Stats: ATK *${picked.atk}* / DEF *${picked.def}*`,
-        `┣ Value: *${formatGold(picked.price)}*`,
-        `┗━━━━━━━━━━━`,
-        `Claim with: *${p}claim ${claimCode}*`,
-      ].join('\n'),
+      text: formatDesignERail({
+        title: '🎴 WILD CARD APPEARED',
+        rows: [
+          { label: 'Name', value: picked.name },
+          { label: 'Series', value: picked.series },
+          { label: 'Tier', value: picked.tier },
+          { text: `⚔️ ${picked.atk} · 🛡 ${picked.def} · ❤️ ${picked.stardustValue}`, dividerAfter: true },
+          { label: 'Value', value: `${picked.price.toLocaleString()} gold` },
+        ],
+        footer: `${p}claim ${claimCode} to catch it`,
+      }),
       imageUrl: picked.imageUrl,
       imageCaption: `[${picked.tier}] ${picked.name} — Code: ${claimCode}`,
       handler: 'Card Spawn',
@@ -2222,19 +2249,22 @@ async function executeBuiltInCommand(
   // ── ECONOMY ──
   if (cmd === 'bal' || cmd === 'balance') {
     const net = netWorthOf(player);
-    const lines = [
-      `*${player.name}'s Gold balance*`,
-      `Wallet  •  ${formatGold(player.wallet)}`,
-      `Bank  •  ${formatGold(player.bank)}`,
-      `Net Worth  •  ${formatGold(net)}`,
+    const rows: Array<{ label?: string; value?: string; dividerAfter?: boolean }> = [
+      { label: 'Player', value: player.name },
+      { label: 'Wallet', value: formatGold(player.wallet) },
+      { label: 'Bank', value: formatGold(player.bank) },
+      { label: 'Orbs', value: String(player.orbs), dividerAfter: true },
+      { label: 'Net worth', value: formatGold(net) },
     ];
     if (player.loan > 0) {
-      lines.push(`Loan Debt  •  ${formatGold(player.loan)}`);
+      rows.push({ label: 'Loan Debt', value: formatGold(player.loan) });
     }
     return {
-      text: lines.join('\n'),
-      imageUrl: await fetchSfwAnimeImage('smile'),
-      imageCaption: 'Gold Balance',
+      text: formatDesignERail({
+        title: '💰 BALANCE',
+        rows,
+        footer: `${p}deposit · ${p}withdraw · ${p}daily`,
+      }),
       handler: 'Economy',
       buttons: [
         { id: 'daily', label: 'Daily', command: `${p}daily` },
@@ -3950,22 +3980,21 @@ async function askGroq(prompt, quotedText) {
 }
 
 function renderMenu() {
-  const line = '━'.repeat(26);
+  const dots = '┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈';
   return [
-    '\`\`\`',
     '✦ ' + ${JSON.stringify(c.bannerTitle.toUpperCase())} + ' ✦',
-    BOT_NAME + '  ·  prefix ' + PREFIX,
-    line,
+    BOT_NAME + ' · prefix ' + PREFIX,
     '',
-    '  ' + PREFIX + 'anime <title>',
-    '  ' + PREFIX + 'card',
-    '  ' + PREFIX + 'bal',
-    '  ' + PREFIX + 'daily',
-    '  ' + PREFIX + 'mem',
-    '  ' + PREFIX + 'gpt <question>',
-    '',
-    line,
-    '\`\`\`',
+    '▎✦ 📖 MENU ✦',
+    '▎' + dots,
+    '▎🎴 ' + PREFIX + 'card ❯ Wild card drop',
+    '▎💰 ' + PREFIX + 'bal ❯ Gold balance',
+    '▎🎮 ' + PREFIX + 'daily ❯ Daily reward',
+    '▎🌸 ' + PREFIX + 'anime <title> ❯ Lookup',
+    '▎🧠 ' + PREFIX + 'mem ❯ AI memories',
+    '▎🤖 ' + PREFIX + 'gpt <question> ❯ AI chat',
+    '▎',
+    '▎↳ send ' + PREFIX + 'menu <category> for more',
   ].join('\\n');
 }
 

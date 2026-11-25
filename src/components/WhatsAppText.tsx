@@ -71,11 +71,11 @@ export const WhatsAppText: React.FC<WhatsAppTextProps> = ({ text }) => {
               if (!line.trim()) {
                 return <div key={lIdx} className="h-2" />;
               }
-              const isBoxLine = /^[╭┃╰┣┗ꕥ↳]/.test(line.trimStart());
+              const isBoxLine = /^[╭┃╰┣┗ꕥ↳▎✦]/.test(line.trimStart());
               return (
                 <div
                   key={lIdx}
-                  className={isBoxLine ? 'whitespace-pre-wrap leading-[1.42]' : 'leading-[1.5]'}
+                  className={isBoxLine ? 'whitespace-pre-wrap leading-[1.46]' : 'leading-[1.5]'}
                 >
                   {renderInlineFormatting(line, lIdx)}
                 </div>

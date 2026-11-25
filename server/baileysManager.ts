@@ -12,7 +12,7 @@ import makeWASocket, {
 } from '@whiskeysockets/baileys';
 import pino from 'pino';
 import { botState, handleIncomingMessage } from './botEngine.ts';
-import { getPreviewLink, getThumbBufferByKey, getThumbImageUrl, resolveLocalAsset } from './assets.ts';
+import { getPreviewLink, getThumbBufferByKey, resolveLocalAsset } from './assets.ts';
 import type { BotReplyPayload, CommandRole } from '../src/shared/botSchema.ts';
 
 export type BaileysConnectionStatus = 'disconnected' | 'connecting' | 'pairing' | 'connected' | 'error';
@@ -270,9 +270,9 @@ async function sendBotReply(
   mentions?: string[]
 ): Promise<void> {
   let finalText = reply.text;
-  if (reply.buttons && reply.buttons.length > 0) {
-    const quickLines = reply.buttons.map((b) => `↳ *${b.command}* — ${b.label}`).join('\n');
-    finalText = `${finalText}\n\n*Quick Actions*\n${quickLines}`;
+  if (reply.buttons && reply.buttons.length > 0 && !finalText.includes('▎↳')) {
+    const quickLines = reply.buttons.map((b) => `${b.command} (${b.label})`).join(' · ');
+    finalText = `${finalText}\n▎\n▎↳ ${quickLines}`;
   }
 
   let imageSent = false;
@@ -341,41 +341,9 @@ async function sendBotReply(
     }
   }
 
-  // Reliable thumbnail mode (LINK_THUMBNAILS=image): send the command artwork as a real image with the
-  // reply as its caption, the same way .menu works. Falls back to plain text if the image can't be sent.
-  let thumbImageSent = false;
-  if (
-    !imageSent &&
-    !reply.imageUrl &&
-    reply.thumbnail &&
-    process.env.LINK_THUMBNAILS?.trim().toLowerCase() === 'image' &&
-    finalText.length <= 1024
-  ) {
-    try {
-      const file = resolveLocalAsset(getThumbImageUrl(reply.thumbnail.thumbKey));
-      if (file) {
-        const imageMessage = await sock.sendMessage(
-          remoteJid,
-          {
-            image: fs.readFileSync(file),
-            caption: finalText,
-            ...(mentions && mentions.length > 0 ? { mentions } : {}),
-          },
-          { quoted }
-        );
-        trackSentId(imageMessage?.key?.id);
-        thumbImageSent = true;
-      }
-    } catch {
-      // Fall through to plain text below.
-    }
-  }
-
-  if (!thumbImageSent && !(reply.hideText && (imageSent || !reply.imageUrl))) {
-    // Link-preview cards (externalAdReply) are OFF by default: WhatsApp can accept them without an error
-    // and then never display the message, which made every command except .menu / AI chat look dead.
-    // Set LINK_THUMBNAILS=on to opt back in.
-    const cardsEnabled = process.env.LINK_THUMBNAILS?.trim().toLowerCase() === 'on';
+  if (!(reply.hideText && (imageSent || !reply.imageUrl))) {
+    // Replies without their own image get a compact command link-preview card (disable with LINK_THUMBNAILS=off).
+    const cardsEnabled = process.env.LINK_THUMBNAILS?.trim().toLowerCase() !== 'off';
     const thumb =
       cardsEnabled && Boolean(reply.thumbnail) && !reply.imageUrl && !(mentions && mentions.length > 1)
         ? getThumbBufferByKey(reply.thumbnail?.thumbKey)
@@ -796,17 +764,7 @@ async function startSocket(): Promise<WASocket> {
               : `📢 *TAG ALL*${note ? `  ·  ${note}` : ''}\n━━━━━━━━━━━━━━━━━━━━━━━━━━\n${effect.tagList}`,
           };
         }
-        try {
-          await sendBotReply(sock, remoteJid, msg, outgoing, effect.mentions);
-        } catch (sendErr) {
-          console.error('[Baileys] sendBotReply failed, retrying as plain text:', sendErr);
-          const fallback = await sock.sendMessage(
-            remoteJid,
-            { text: (outgoing.text || 'Done.').slice(0, 4096) },
-            { quoted: msg }
-          );
-          trackSentId(fallback?.key?.id);
-        }
+        await sendBotReply(sock, remoteJid, msg, outgoing, effect.mentions);
       } catch (err) {
         lastError = err instanceof Error ? err.message : 'Message handler error';
         console.error('[Baileys] incoming message error:', err);
