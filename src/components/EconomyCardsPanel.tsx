@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Plus } from 'lucide-react';
 import type { AnimeCard, AuctionItem, BotConfig, PlayerProfile } from '../shared/botSchema';
 
@@ -43,6 +43,12 @@ export const EconomyCardsPanel: React.FC<EconomyCardsPanelProps> = ({
   const [starterBalance, setStarterBalance] = useState(config.starterBalance);
   const [cooldown, setCooldown] = useState(config.cardSpawnCooldownSec);
   const [savingRates, setSavingRates] = useState(false);
+
+  useEffect(() => {
+    setDailyReward(config.dailyReward);
+    setStarterBalance(config.starterBalance);
+    setCooldown(config.cardSpawnCooldownSec);
+  }, [config.dailyReward, config.starterBalance, config.cardSpawnCooldownSec]);
 
   const handleCreateCard = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -182,7 +188,7 @@ export const EconomyCardsPanel: React.FC<EconomyCardsPanelProps> = ({
                   />
                 </label>
                 <label className="text-xs text-slate-600">
-                  Price (Yen)
+                  Price (🪙 Gold)
                   <input
                     type="number"
                     value={cardPrice}
@@ -249,7 +255,7 @@ export const EconomyCardsPanel: React.FC<EconomyCardsPanelProps> = ({
                       {card.atk} / {card.def}
                     </td>
                     <td className="px-4 py-2.5 text-right font-mono text-xs text-slate-900">
-                      ¥{card.price.toLocaleString()}
+                      🪙 {card.price.toLocaleString()}
                     </td>
                   </tr>
                 ))}
@@ -269,6 +275,7 @@ export const EconomyCardsPanel: React.FC<EconomyCardsPanelProps> = ({
                 <th className="px-4 py-2.5 text-right">Level</th>
                 <th className="px-4 py-2.5 text-right">Wallet</th>
                 <th className="px-4 py-2.5 text-right">Bank</th>
+                <th className="px-4 py-2.5 text-right">Debt</th>
                 <th className="px-4 py-2.5 text-right">Stardust</th>
                 <th className="px-4 py-2.5 text-right">Cards</th>
               </tr>
@@ -283,10 +290,13 @@ export const EconomyCardsPanel: React.FC<EconomyCardsPanelProps> = ({
                   <td className="px-4 py-2.5 text-xs text-slate-600">{pl.guild || 'None'}</td>
                   <td className="px-4 py-2.5 text-right font-mono text-xs text-slate-700">Lv.{pl.level}</td>
                   <td className="px-4 py-2.5 text-right font-mono text-xs text-slate-900">
-                    ¥{pl.wallet.toLocaleString()}
+                    🪙 {pl.wallet.toLocaleString()}
                   </td>
                   <td className="px-4 py-2.5 text-right font-mono text-xs text-slate-700">
-                    ¥{pl.bank.toLocaleString()}
+                    🪙 {pl.bank.toLocaleString()}
+                  </td>
+                  <td className="px-4 py-2.5 text-right font-mono text-xs text-amber-700">
+                    {(pl.loan || 0) > 0 ? `🪙 ${pl.loan.toLocaleString()}` : '—'}
                   </td>
                   <td className="px-4 py-2.5 text-right font-mono text-xs text-slate-700">
                     {pl.stardust.toLocaleString()}
@@ -331,7 +341,7 @@ export const EconomyCardsPanel: React.FC<EconomyCardsPanelProps> = ({
                   </div>
                   <div className="text-right">
                     <div className="font-mono font-semibold text-emerald-700">
-                      ¥{auc.highestBid.toLocaleString()}
+                      🪙 {auc.highestBid.toLocaleString()}
                     </div>
                     <div className="text-xs text-slate-500">
                       {auc.highestBidderName ? `Top bid: ${auc.highestBidderName}` : 'No bids yet'}
@@ -351,7 +361,7 @@ export const EconomyCardsPanel: React.FC<EconomyCardsPanelProps> = ({
           </h2>
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
             <label className="text-xs font-medium text-slate-700">
-              Daily Reward (.daily Yen)
+              Daily Reward (.daily 🪙 Gold)
               <input
                 type="number"
                 value={dailyReward}

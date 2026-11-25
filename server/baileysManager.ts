@@ -12,8 +12,8 @@ import makeWASocket, {
 } from '@whiskeysockets/baileys';
 import pino from 'pino';
 import { botState, handleIncomingMessage } from './botEngine.ts';
-import { getPreviewLink, getThumbBuffer, resolveLocalAsset } from './assets.ts';
-import type { CommandRole } from '../src/shared/botSchema.ts';
+import { getPreviewLink, getThumbBufferByKey, resolveLocalAsset } from './assets.ts';
+import type { BotReplyPayload, CommandRole } from '../src/shared/botSchema.ts';
 
 export type BaileysConnectionStatus = 'disconnected' | 'connecting' | 'pairing' | 'connected' | 'error';
 
@@ -260,7 +260,7 @@ async function sendBotReply(
   sock: WASocket,
   remoteJid: string,
   quoted: WAMessage,
-  reply: { text: string; imageUrl?: string; imageCaption?: string; audioUrl?: string; audioPath?: string; videoPath?: string; hideText?: boolean; cardLink?: string; pendingMedia?: Promise<{ path?: string; reason?: string }>; pendingKind?: 'audio' | 'video'; pendingLink?: string; buttons?: Array<{ label: string; command: string }> },
+  reply: BotReplyPayload,
   mentions?: string[]
 ): Promise<void> {
   let finalText = reply.text;
@@ -336,20 +336,23 @@ async function sendBotReply(
   }
 
   if (!(reply.hideText && (imageSent || !reply.imageUrl))) {
-    // Replies without their own image get a small link-preview card with the Pieck thumbnail.
-    // Off by default: only enabled with LINK_THUMBNAILS=on, so a card problem can never block replies.
-    const cardsEnabled = process.env.LINK_THUMBNAILS?.trim().toLowerCase() === 'on';
-    const thumb = cardsEnabled && !reply.imageUrl && !(mentions && mentions.length > 1) ? getThumbBuffer() : null;
+    // Replies without their own image get a compact command link-preview card (disable with LINK_THUMBNAILS=off).
+    const cardsEnabled = process.env.LINK_THUMBNAILS?.trim().toLowerCase() !== 'off';
+    const thumb =
+      cardsEnabled && !reply.imageUrl && !(mentions && mentions.length > 1)
+        ? getThumbBufferByKey(reply.thumbnail?.thumbKey)
+        : null;
+    const cmdNameMatch = reply.thumbnail?.title?.slice(botState.config.prefix.length).split(/\s+/)[0];
     const linkCard = thumb
       ? {
           externalAdReply: {
-            title: botState.config.bannerTitle,
-            body: `${botState.config.botName} · ${botState.config.prefix}menu`,
+            title: reply.thumbnail?.title || botState.config.bannerTitle,
+            body: reply.thumbnail?.body || `${botState.config.botName} · ${botState.config.prefix}menu`,
             thumbnail: thumb,
             mediaType: 1,
             renderLargerThumbnail: false,
             showAdAttribution: false,
-            sourceUrl: getPreviewLink(botState.config.ownerNumber),
+            sourceUrl: getPreviewLink(botState.config.ownerNumber, cmdNameMatch),
           },
         }
       : undefined;
@@ -701,6 +704,7 @@ async function startSocket(): Promise<WASocket> {
           if (times.length > 6) {
             await sendBotReply(sock, remoteJid, msg, {
               text: `Slow down, @${senderNumber}. Anti-spam is active.`,
+              handler: 'Anti-Spam',
             }, [senderJid]);
             continue;
           }
@@ -720,6 +724,7 @@ async function startSocket(): Promise<WASocket> {
         if (effect.error) {
           await sendBotReply(sock, remoteJid, msg, {
             text: `*Command failed*\n${effect.error}`,
+            handler: 'Group Admin',
           });
           continue;
         }

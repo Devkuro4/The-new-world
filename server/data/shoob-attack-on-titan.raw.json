@@ -1,0 +1,176 @@
+{
+  "series": "Attack on Titan",
+  "source": "https://shoob.gg/cards",
+  "scrapedAt": "2026-11-24",
+  "targetCount": 50,
+  "cards": [
+    {
+      "id": "688c0380ecef460072e28777",
+      "name": "Mikasa Ackerman",
+      "sourceTier": "1",
+      "sourceUrl": "https://shoob.gg/cards/info/688c0380ecef460072e28777",
+      "imageUrl": "https://api.shoob.gg/site/api/cardr/688c0380ecef460072e28777?size=400"
+    },
+    {
+      "id": "65696850a7f891630355b28f",
+      "name": "Sasha Blouse",
+      "sourceTier": "1",
+      "sourceUrl": "https://shoob.gg/cards/info/65696850a7f891630355b28f",
+      "imageUrl": "https://api.shoob.gg/site/api/cardr/65696850a7f891630355b28f?size=400"
+    },
+    {
+      "id": "65696850a7f891630355b0d9",
+      "name": "Mikasa Ackerman",
+      "sourceTier": "1",
+      "sourceUrl": "https://shoob.gg/cards/info/65696850a7f891630355b0d9",
+      "imageUrl": "https://api.shoob.gg/site/api/cardr/65696850a7f891630355b0d9?size=400"
+    },
+    {
+      "id": "606545417aebb6d450e21d81",
+      "name": "Kenny Ackerman",
+      "sourceTier": "1",
+      "sourceUrl": "https://shoob.gg/cards/info/606545417aebb6d450e21d81",
+      "imageUrl": "https://api.shoob.gg/site/api/cardr/606545417aebb6d450e21d81?size=400"
+    },
+    {
+      "id": "606545407aebb6d450e21b6b",
+      "name": "Beane",
+      "sourceTier": "1",
+      "sourceUrl": "https://shoob.gg/cards/info/606545407aebb6d450e21b6b",
+      "imageUrl": "https://api.shoob.gg/site/api/cardr/606545407aebb6d450e21b6b?size=400"
+    },
+    {
+      "id": "606545407aebb6d450e21b55",
+      "name": "Sawney",
+      "sourceTier": "1",
+      "sourceUrl": "https://shoob.gg/cards/info/606545407aebb6d450e21b55",
+      "imageUrl": "https://api.shoob.gg/site/api/cardr/606545407aebb6d450e21b55?size=400"
+    },
+    {
+      "id": "600468778c84a63ded182638",
+      "name": "Hange Zoe",
+      "sourceTier": "1",
+      "sourceUrl": "https://shoob.gg/cards/info/600468778c84a63ded182638",
+      "imageUrl": "https://api.shoob.gg/site/api/cardr/600468778c84a63ded182638?size=400"
+    },
+    {
+      "id": "60178ad0663aa03a2e444459",
+      "name": "Jean Kirstein",
+      "sourceTier": "1",
+      "sourceUrl": "https://shoob.gg/cards/info/60178ad0663aa03a2e444459",
+      "imageUrl": "https://api.shoob.gg/site/api/cardr/60178ad0663aa03a2e444459?size=400"
+    },
+    {
+      "id": "69a38180068f310078d1cbe6",
+      "name": "Levi Ackerman",
+      "sourceTier": "2",
+      "sourceUrl": "https://shoob.gg/cards/info/69a38180068f310078d1cbe6",
+      "imageUrl": "https://api.shoob.gg/site/api/cardr/69a38180068f310078d1cbe6?size=400"
+    },
+    {
+      "id": "683b98002fbf060012d3949e",
+      "name": "Mikasa Ackerman",
+      "sourceTier": "2",
+      "sourceUrl": "https://shoob.gg/cards/info/683b98002fbf060012d3949e",
+      "imageUrl": "https://api.shoob.gg/site/api/cardr/683b98002fbf060012d3949e?size=400"
+    },
+    {
+      "id": "67eb2c802dbcec0012c46169",
+      "name": "Eren Yeager",
+      "sourceTier": "2",
+      "sourceUrl": "https://shoob.gg/cards/info/67eb2c802dbcec0012c46169",
+      "imageUrl": "https://api.shoob.gg/site/api/cardr/67eb2c802dbcec0012c46169?size=400"
+    },
+    {
+      "id": "649fa4c0f170f3e6a71d4b9e",
+      "name": "Jean Kirstein",
+      "sourceTier": "2",
+      "sourceUrl": "https://shoob.gg/cards/info/649fa4c0f170f3e6a71d4b9e",
+      "imageUrl": "https://api.shoob.gg/site/api/cardr/649fa4c0f170f3e6a71d4b9e?size=400"
+    },
+    {
+      "id": "649fa4c0f170f3e6a71d4b9b",
+      "name": "Erwin Smith",
+      "sourceTier": "2",
+      "sourceUrl": "https://shoob.gg/cards/info/649fa4c0f170f3e6a71d4b9b",
+      "imageUrl": "https://api.shoob.gg/site/api/cardr/649fa4c0f170f3e6a71d4b9b?size=400"
+    },
+    {
+      "id": "644f394005890e52fd36c421",
+      "name": "Eren Yeager",
+      "sourceTier": "2",
+      "sourceUrl": "https://shoob.gg/cards/info/644f394005890e52fd36c421",
+      "imageUrl": "https://api.shoob.gg/site/api/cardr/644f394005890e52fd36c421?size=400"
+    },
+    {
+      "id": "603c74d0f482137fc732ac58",
+      "name": "Yelena",
+      "sourceTier": "2",
+      "sourceUrl": "https://shoob.gg/cards/info/603c74d0f482137fc732ac58",
+      "imageUrl": "https://api.shoob.gg/site/api/cardr/603c74d0f482137fc732ac58?size=400"
+    },
+    {
+      "id": "60178ad1663aa03a2e444db7",
+      "name": "Sasha Blouse",
+      "sourceTier": "2",
+      "sourceUrl": "https://shoob.gg/cards/info/60178ad1663aa03a2e444db7",
+      "imageUrl": "https://api.shoob.gg/site/api/cardr/60178ad1663aa03a2e444db7?size=400"
+    },
+    {
+      "id": "68632500cb092100129da5c4",
+      "name": "Levi Ackerman",
+      "sourceTier": "3",
+      "sourceUrl": "https://shoob.gg/cards/info/68632500cb092100129da5c4",
+      "imageUrl": "https://api.shoob.gg/site/api/cardr/68632500cb092100129da5c4?size=400"
+    },
+    {
+      "id": "68632500cb092100129da5be",
+      "name": "Annie, Mikasa & Historia",
+      "sourceTier": "3",
+      "sourceUrl": "https://shoob.gg/cards/info/68632500cb092100129da5be",
+      "imageUrl": "https://api.shoob.gg/site/api/cardr/68632500cb092100129da5be?size=400"
+    },
+    {
+      "id": "68632500cb092100129da5bb",
+      "name": "Erwin Smith",
+      "sourceTier": "3",
+      "sourceUrl": "https://shoob.gg/cards/info/68632500cb092100129da5bb",
+      "imageUrl": "https://api.shoob.gg/site/api/cardr/68632500cb092100129da5bb?size=400"
+    },
+    {
+      "id": "68632500cb092100129da5b5",
+      "name": "Mikasa Ackerman",
+      "sourceTier": "3",
+      "sourceUrl": "https://shoob.gg/cards/info/68632500cb092100129da5b5",
+      "imageUrl": "https://api.shoob.gg/site/api/cardr/68632500cb092100129da5b5?size=400"
+    },
+    {
+      "id": "66ab0840f244ebe9a8ac1489",
+      "name": "Yelena",
+      "sourceTier": "3",
+      "sourceUrl": "https://shoob.gg/cards/info/66ab0840f244ebe9a8ac1489",
+      "imageUrl": "https://api.shoob.gg/site/api/cardr/66ab0840f244ebe9a8ac1489?size=400"
+    },
+    {
+      "id": "66ab0840f244ebe9a8ac13f6",
+      "name": "Pieck Finger",
+      "sourceTier": "3",
+      "sourceUrl": "https://shoob.gg/cards/info/66ab0840f244ebe9a8ac13f6",
+      "imageUrl": "https://api.shoob.gg/site/api/cardr/66ab0840f244ebe9a8ac13f6?size=400"
+    },
+    {
+      "id": "659246d0f244ebe9a8b7353c",
+      "name": "Erwin Smith",
+      "sourceTier": "3",
+      "sourceUrl": "https://shoob.gg/cards/info/659246d0f244ebe9a8b7353c",
+      "imageUrl": "https://api.shoob.gg/site/api/cardr/659246d0f244ebe9a8b7353c?size=400"
+    },
+    {
+      "id": "6541cd40a7f8916303d8e972",
+      "name": "Card preview",
+      "sourceTier": "3",
+      "sourceUrl": "https://shoob.gg/cards/info/6541cd40a7f8916303d8e972",
+      "imageUrl": "https://api.shoob.gg/site/api/cardr/6541cd40a7f8916303d8e972?size=400"
+    }
+  ]
+}

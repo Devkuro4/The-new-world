@@ -17,7 +17,7 @@ import {
   warmUpYtDlp,
 } from './server/botEngine.ts';
 import { hasGroqKey } from './server/groqClient.ts';
-import { ASSET_DIR } from './server/assets.ts';
+import { ASSET_DIR, getThumbImageUrl, resolveThumbKey } from './server/assets.ts';
 import type { AnimeCard, BotCommandDef, CommandRole } from './src/shared/botSchema.ts';
 
 dotenv.config();
@@ -446,20 +446,41 @@ async function startServer() {
   });
 
   // ── BOT ARTWORK & LINK-PREVIEW PAGE ──
-  app.use('/assets', express.static(ASSET_DIR, { maxAge: '1d' }));
+  app.use('/assets', express.static(ASSET_DIR, { maxAge: 0 }));
   app.get('/pieck', (req: Request, res: Response) => {
     const appUrl = process.env.APP_URL?.trim().replace(/\/+$/, '');
     const base = appUrl && /^https?:\/\//i.test(appUrl) ? appUrl : `${req.protocol}://${req.get('host')}`;
-    const title = botState.config.bannerTitle;
+    const escapeHtml = (val: string) =>
+      val.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+    const rawCmd = typeof req.query.cmd === 'string' ? req.query.cmd.trim().toLowerCase() : '';
+    const cmdDef = rawCmd
+      ? botState.commands.find(
+          (c) => c.name.toLowerCase() === rawCmd || (c.aliases && c.aliases.some((a) => a.toLowerCase() === rawCmd))
+        )
+      : undefined;
+    const prefix = botState.config.prefix || '.';
+    const thumbKey = cmdDef ? resolveThumbKey(cmdDef.name, cmdDef.category) : 'pieck';
+    const imagePath = cmdDef ? getThumbImageUrl(thumbKey) : '/assets/pieck.jpg';
+    const pageTitle = cmdDef
+      ? `${prefix}${cmdDef.name} · ${cmdDef.category} | ${botState.config.botName}`
+      : `${botState.config.bannerTitle} · ${botState.config.botName}`;
+    const ogTitle = cmdDef ? `${prefix}${cmdDef.name} — ${cmdDef.category}` : botState.config.bannerTitle;
+    const ogDescription = cmdDef
+      ? `${cmdDef.description} (Usage: ${cmdDef.usage})`
+      : `${botState.config.botName} — anime companion bot`;
+    const usageLine = cmdDef ? `<p class="usage"><code>${escapeHtml(cmdDef.usage)}</code></p>` : '';
+    const categoryBadge = cmdDef ? `<span class="badge">${escapeHtml(cmdDef.category)}</span>` : '';
     res.type('html').send(`<!doctype html><html><head><meta charset="utf-8">
-<title>${title} · ${botState.config.botName}</title>
-<meta property="og:title" content="${title}">
-<meta property="og:description" content="${botState.config.botName} — anime companion bot">
-<meta property="og:image" content="${base}/assets/pieck.jpg">
+<title>${escapeHtml(pageTitle)}</title>
+<meta name="description" content="${escapeHtml(ogDescription)}">
+<meta property="og:title" content="${escapeHtml(ogTitle)}">
+<meta property="og:description" content="${escapeHtml(ogDescription)}">
+<meta property="og:image" content="${escapeHtml(base + imagePath)}">
 <meta property="og:type" content="website">
+<meta name="twitter:card" content="summary_large_image">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<style>body{margin:0;min-height:100vh;display:grid;place-items:center;background:#111;color:#eee;font-family:system-ui,sans-serif;text-align:center}img{width:220px;border-radius:50%}</style>
-</head><body><main><img src="/assets/pieck.jpg" alt="${botState.config.botName}"><h1>${title}</h1><p>${botState.config.botName}</p></main></body></html>`);
+<style>body{margin:0;min-height:100vh;display:grid;place-items:center;background:#0f172a;color:#f1f5f9;font-family:system-ui,-apple-system,sans-serif;padding:24px}main{max-width:420px;width:100%;background:#1e293b;border:1px solid #334155;border-radius:18px;padding:28px;text-align:center;box-shadow:0 20px 50px rgba(0,0,0,.4)}img{width:196px;height:196px;object-fit:cover;border-radius:16px;border:2px solid rgba(16,185,129,.45)}.badge{display:inline-block;margin-top:14px;padding:4px 10px;border-radius:999px;background:rgba(16,185,129,.16);color:#6ee7b7;font-size:12px;font-weight:600}h1{margin:10px 0 8px;font-size:22px}p{margin:0 0 12px;color:#cbd5e1;font-size:14px;line-height:1.5}.usage code{display:inline-block;background:#0f172a;color:#a7f3d0;padding:6px 12px;border-radius:8px;font-size:13px;border:1px solid #334155}.foot{margin-top:14px;font-size:12px;color:#94a3b8}</style>
+</head><body><main><img src="${escapeHtml(imagePath)}" alt="${escapeHtml(ogTitle)}"><div>${categoryBadge}</div><h1>${escapeHtml(ogTitle)}</h1><p>${escapeHtml(ogDescription)}</p>${usageLine}<div class="foot">${escapeHtml(botState.config.bannerTitle)} · ${escapeHtml(botState.config.botName)}</div></main></body></html>`);
   });
 
   // ── VITE / STATIC SERVING ──

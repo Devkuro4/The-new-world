@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { CheckCheck, RotateCcw, Send, Sparkles } from 'lucide-react';
-import type { BotConfig, CommandRole, GroupSettings, WhatsAppSimButton } from '../shared/botSchema';
+import type { BotConfig, CommandRole, CommandThumbnail, GroupSettings, WhatsAppSimButton } from '../shared/botSchema';
 import { WhatsAppText } from './WhatsAppText';
 
 export interface SimMessage {
@@ -11,6 +11,7 @@ export interface SimMessage {
   imageUrl?: string;
   imageCaption?: string;
   audioUrl?: string;
+  thumbnail?: CommandThumbnail;
   buttons?: WhatsAppSimButton[];
   handler?: string;
   timestamp: string;
@@ -46,6 +47,7 @@ export const WhatsAppSimulator: React.FC<WhatsAppSimulatorProps> = ({
   const [draft, setDraft] = useState('');
   const [avatarBroken, setAvatarBroken] = useState(false);
   const [brokenImages, setBrokenImages] = useState<Record<string, boolean>>({});
+  const [brokenThumbs, setBrokenThumbs] = useState<Record<string, boolean>>({});
   const endRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
@@ -159,16 +161,16 @@ export const WhatsAppSimulator: React.FC<WhatsAppSimulatorProps> = ({
                 )}
 
                 {msg.imageUrl && !brokenImages[msg.id] && (
-                  <div className="mb-2 w-52 max-w-full overflow-hidden rounded-md border border-slate-200 bg-slate-950">
+                  <div className="mb-2 w-full max-w-[260px] overflow-hidden rounded-md bg-slate-100">
                     <img
                       src={msg.imageUrl}
                       alt={msg.imageCaption || 'Anime media preview'}
                       referrerPolicy="no-referrer"
                       onError={() => setBrokenImages((prev) => ({ ...prev, [msg.id]: true }))}
-                      className="h-72 w-full object-contain"
+                      className="max-h-60 w-full object-cover"
                     />
                     {msg.imageCaption && (
-                      <div className="bg-slate-900/85 px-2.5 py-1 text-[11px] text-slate-100">
+                      <div className="bg-slate-900/80 px-2.5 py-1 text-[11px] text-slate-100">
                         {msg.imageCaption}
                       </div>
                     )}
@@ -180,10 +182,33 @@ export const WhatsAppSimulator: React.FC<WhatsAppSimulatorProps> = ({
                 )}
 
                 {msg.imageUrl && brokenImages[msg.id] && (
-                  <div className="mb-2 flex items-center gap-2 rounded-md border border-slate-200 bg-slate-50 px-3 py-2 text-xs text-slate-600">
+                  <div className="mb-2 flex items-center gap-2 rounded-md bg-slate-50 px-3 py-2 text-xs text-slate-600">
                     <Sparkles className="h-4 w-4 text-emerald-600 shrink-0" />
                     <span className="truncate">{msg.imageCaption || 'Anime media preview unavailable'}</span>
                   </div>
+                )}
+
+                {!isUser && msg.thumbnail && !msg.imageUrl && (
+                  <a
+                    href={msg.thumbnail.sourceUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    title={msg.thumbnail.title}
+                    className="mb-2 block w-full min-w-[200px] max-w-[260px] overflow-hidden rounded-md transition-opacity hover:opacity-95"
+                  >
+                    {!brokenThumbs[msg.id] ? (
+                      <img
+                        src={msg.thumbnail.imageUrl}
+                        alt={msg.thumbnail.title}
+                        onError={() => setBrokenThumbs((prev) => ({ ...prev, [msg.id]: true }))}
+                        className="h-28 w-full object-cover"
+                      />
+                    ) : (
+                      <div className="flex h-28 w-full items-center justify-center bg-emerald-50 text-emerald-700">
+                        <Sparkles className="h-5 w-5" />
+                      </div>
+                    )}
+                  </a>
                 )}
 
                 <WhatsAppText text={msg.text} />

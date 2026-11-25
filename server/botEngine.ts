@@ -1,3 +1,4 @@
+import crypto from 'node:crypto';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
@@ -17,12 +18,13 @@ import {
   type BotReplyPayload,
   type CommandCategory,
   type CommandRole,
+  type CommandThumbnail,
   type GroupSettings,
   type PlayerProfile,
 } from '../src/shared/botSchema.ts';
 import { askGroqText, hasGroqKey, GROQ_MODEL } from './groqClient.ts';
 import { applyTextUi, buildMenuUi } from './textUi.ts';
-import { MENU_IMAGE_URL } from './assets.ts';
+import { getCommandPreviewPath, getThumbImageUrl, MENU_IMAGE_URL, resolveThumbKey } from './assets.ts';
 
 export interface ActiveDrop {
   card: AnimeCard;
@@ -56,7 +58,11 @@ export interface BotState {
   activeBlackjack: Record<string, BlackjackSession>;
   activeConnect4: Record<string, { board: number[][]; turn: number }>;
   activeWordChain: Record<string, { lastWord: string; used: string[]; score: number }>;
-  lotteryPool: { jackpot: number; tickets: Array<{ playerId: string; playerName: string }> };
+  lotteryPool: {
+    jackpot: number;
+    tickets: Array<{ playerId: string; playerName: string }>;
+    lastWinner?: { playerName: string; amount: number; drawnAt: string };
+  };
   eventScores: Record<string, number>;
   logs: ActivityLogEntry[];
   stats: {
@@ -221,10 +227,17 @@ function loadState(): BotState {
           const customCards = saved.filter((card) => !base.cards.some((defaultCard) => defaultCard.id === card.id));
           return [...currentDefaults, ...customCards];
         })(),
-        players: parsed.players && Object.keys(parsed.players).length > 0 ? parsed.players : base.players,
-        stats: { ...base.stats, ...(parsed.stats || {}) },
-      };
-    }
+      players: (() => {
+        const rawPlayers = parsed.players && Object.keys(parsed.players).length > 0 ? parsed.players : base.players;
+        const normalized: Record<string, PlayerProfile> = {};
+        for (const [id, pl] of Object.entries(rawPlayers)) {
+          normalized[id] = normalizePlayer(pl);
+        }
+        return normalized;
+      })(),
+      stats: { ...base.stats, ...(parsed.stats || {}) },
+    };
+  }
   } catch {
     // Fall back to fresh initial state if state file is unreadable
   }
@@ -251,9 +264,209 @@ export function persistState(): void {
   }
 }
 
+const MIN_WAGER = 50;
+const MAX_WAGER = 50_000;
+const LOTTERY_TICKET_PRICE = 250;
+const LOTTERY_DRAW_THRESHOLD = 5;
+const LOTTERY_BASE_SEED = 1000;
+const WORK_COOLDOWN_MS = 3 * 60_000;
+const FISH_COOLDOWN_MS = 5 * 60_000;
+const DAILY_COOLDOWN_MS = 20 * 60 * 60_000;
+const ROB_COOLDOWN_MS = 10 * 60_000;
+const HEIST_COOLDOWN_MS = 15 * 60_000;
+const LOAN_INTEREST_RATE = 0.1;
+
+interface ShopItemDef {
+  id: string;
+  name: string;
+  buyPrice: number;
+  sellPrice: number;
+  summary: string;
+}
+
+const SHOP_ITEMS: ShopItemDef[] = [
+  {
+    id: 'ticket',
+    name: 'Gacha Ticket',
+    buyPrice: 400,
+    sellPrice: 250,
+    summary: 'Open a free random card pack (.use ticket)',
+  },
+  {
+    id: 'luck',
+    name: 'Luck Potion',
+    buyPrice: 800,
+    sellPrice: 450,
+    summary: '+4% gamble, fishing & rob luck for 15 min + 50 XP (.use luck)',
+  },
+  {
+    id: 'charm',
+    name: 'XP Charm',
+    buyPrice: 1000,
+    sellPrice: 550,
+    summary: 'Grants +300 XP immediately (.use charm)',
+  },
+  {
+    id: 'shield',
+    name: 'Rob Shield',
+    buyPrice: 1200,
+    sellPrice: 650,
+    summary: 'Protects your wallet from .rob for 12 hours (.use shield)',
+  },
+];
+
+const LOOT_SELL_PRICES: Record<string, number> = {
+  'Fish Scale': 120,
+  'Koi Charm': 280,
+  'Dragon Scale': 520,
+  'Abyss Pearl': 950,
+};
+
+function formatGold(amount: number): string {
+  return `🪙 ${Math.round(amount).toLocaleString()}`;
+}
+
+function formatDuration(ms: number): string {
+  const totalSec = Math.max(1, Math.ceil(ms / 1000));
+  const hours = Math.floor(totalSec / 3600);
+  const mins = Math.floor((totalSec % 3600) / 60);
+  const secs = totalSec % 60;
+  if (hours > 0) return `${hours}h ${mins}m`;
+  if (mins > 0) return `${mins}m ${secs}s`;
+  return `${secs}s`;
+}
+
+function safeInt(value: unknown, fallback = 0): number {
+  const num = Number(value);
+  if (!Number.isFinite(num)) return fallback;
+  return Math.max(0, Math.round(num));
+}
+
+function normalizePlayer(player: PlayerProfile): PlayerProfile {
+  const xp = safeInt(player.xp, 100);
+  const cleanInventory: Record<string, number> = {};
+  if (player.inventory && typeof player.inventory === 'object') {
+    for (const [k, v] of Object.entries(player.inventory)) {
+      const qty = safeInt(v, 0);
+      if (qty > 0) cleanInventory[k] = qty;
+    }
+  }
+  return {
+    ...player,
+    wallet: safeInt(player.wallet, 0),
+    bank: safeInt(player.bank, 0),
+    orbs: safeInt(player.orbs, 0),
+    stardust: safeInt(player.stardust, 0),
+    xp,
+    level: Math.max(1, Math.floor(Math.sqrt(xp / 25))),
+    age: Math.min(99, Math.max(13, safeInt(player.age, 18))),
+    warnings: safeInt(player.warnings, 0),
+    shamePoints: safeInt(player.shamePoints, 0),
+    loan: safeInt(player.loan, 0),
+    messagesSent: safeInt(player.messagesSent, 0),
+    cards: Array.isArray(player.cards) ? player.cards : [],
+    deck: Array.isArray(player.deck) ? player.deck : [],
+    pokemon: Array.isArray(player.pokemon) ? player.pokemon : [],
+    inventory: cleanInventory,
+    transactions: Array.isArray(player.transactions) ? player.transactions : [],
+  };
+}
+
+function netWorthOf(player: PlayerProfile): number {
+  return player.wallet + player.bank - (player.loan || 0);
+}
+
+function maxLoanCap(player: PlayerProfile): number {
+  return Math.min(10_000, 5_000 + Math.max(0, player.level - 1) * 250);
+}
+
+function hasLuckBoost(player: PlayerProfile): boolean {
+  return (player.luckBoostUntil || 0) > Date.now();
+}
+
+function hasRobShield(player: PlayerProfile): boolean {
+  return (player.robShieldUntil || 0) > Date.now();
+}
+
+function parseAmountToken(raw: string | undefined, maxAvailable: number): number | null {
+  if (!raw) return null;
+  const cleaned = raw.trim().toLowerCase().replace(/,/g, '');
+  if (!cleaned) return null;
+  if (cleaned === 'all' || cleaned === 'max') {
+    return maxAvailable > 0 ? Math.floor(maxAvailable) : 0;
+  }
+  if (cleaned === 'half') {
+    return maxAvailable > 0 ? Math.floor(maxAvailable / 2) : 0;
+  }
+  const match = cleaned.match(/^(\d+(?:\.\d+)?)([km])?$/);
+  if (!match) return null;
+  const base = Number(match[1]);
+  if (!Number.isFinite(base) || base <= 0) return null;
+  const mult = match[2] === 'm' ? 1_000_000 : match[2] === 'k' ? 1_000 : 1;
+  const val = Math.floor(base * mult);
+  return val > 0 ? val : null;
+}
+
+function findPlayerTarget(raw: string): PlayerProfile | undefined {
+  const cleaned = raw.replace(/^@/, '').trim();
+  if (!cleaned) return undefined;
+  const lower = cleaned.toLowerCase();
+  const digits = cleaned.replace(/[^\d]/g, '');
+  const players = Object.values(botState.players);
+  return (
+    players.find((u) => u.name.toLowerCase() === lower) ||
+    (digits.length >= 4
+      ? players.find((u) => u.id.replace(/[^\d]/g, '').endsWith(digits))
+      : undefined) ||
+    players.find((u) => u.name.toLowerCase().startsWith(lower))
+  );
+}
+
+function findShopItem(query: string): ShopItemDef | undefined {
+  const q = query.trim().toLowerCase();
+  if (!q) return undefined;
+  return (
+    SHOP_ITEMS.find((item) => item.id === q || item.name.toLowerCase() === q) ||
+    SHOP_ITEMS.find((item) => item.name.toLowerCase().includes(q) || item.id.includes(q))
+  );
+}
+
+function getItemSellPrice(itemName: string): number {
+  const shopItem = SHOP_ITEMS.find((s) => s.name.toLowerCase() === itemName.toLowerCase());
+  if (shopItem) return shopItem.sellPrice;
+  const lootEntry = Object.entries(LOOT_SELL_PRICES).find(([k]) => k.toLowerCase() === itemName.toLowerCase());
+  if (lootEntry) return lootEntry[1];
+  return 150;
+}
+
+function settleExpiredAuctions(): void {
+  const now = Date.now();
+  const remaining: AuctionItem[] = [];
+  for (const auc of botState.auctions) {
+    const endsAtMs = Date.parse(auc.endsAt);
+    if (!Number.isFinite(endsAtMs) || endsAtMs > now) {
+      remaining.push(auc);
+      continue;
+    }
+    const seller = botState.players[auc.sellerId];
+    if (auc.highestBidderId && botState.players[auc.highestBidderId]) {
+      const winner = botState.players[auc.highestBidderId];
+      winner.cards.push(auc.cardId);
+      const payout = Math.round(auc.highestBid * 0.95);
+      if (seller) {
+        seller.wallet += payout;
+        addTransaction(seller, `Auction settled (${auc.cardName})`, payout);
+      }
+    } else if (seller) {
+      seller.cards.push(auc.cardId);
+    }
+  }
+  botState.auctions = remaining;
+}
+
 function ensurePlayer(senderId: string, senderName: string, role: CommandRole): PlayerProfile {
   if (!botState.players[senderId]) {
-    botState.players[senderId] = {
+    botState.players[senderId] = normalizePlayer({
       id: senderId,
       name: senderName || 'Traveler',
       role,
@@ -274,8 +487,9 @@ function ensurePlayer(senderId: string, senderName: string, role: CommandRole): 
       loan: 0,
       messagesSent: 0,
       transactions: [],
-    };
+    });
   } else {
+    botState.players[senderId] = normalizePlayer(botState.players[senderId]);
     botState.players[senderId].role = role;
     if (senderName && botState.players[senderId].name !== senderName && senderId !== 'owner-kuro') {
       botState.players[senderId].name = senderName;
@@ -288,7 +502,7 @@ function addTransaction(player: PlayerProfile, summary: string, amount: number):
   player.transactions.unshift({
     id: `TX-${Math.floor(1000 + Math.random() * 9000)}`,
     summary,
-    amount,
+    amount: Math.round(amount),
     timestamp: new Date().toISOString(),
   });
   if (player.transactions.length > 20) {
@@ -841,6 +1055,21 @@ function buildSystemInstruction(): string {
   return `${botState.config.aiPersonaPrompt}\nBot Name: ${botState.config.botName}. Creator: ${botState.config.creatorName}. Command Prefix: ${botState.config.prefix}.\n${guard}`;
 }
 
+function buildCommandThumbnail(cmdDef: BotCommandDef, prefix: string): CommandThumbnail {
+  const thumbKey = resolveThumbKey(cmdDef.name, cmdDef.category);
+  const rawBody = (cmdDef.description || `${botState.config.botName} · ${cmdDef.category}`).trim();
+  const body = rawBody.length > 96 ? `${rawBody.slice(0, 93)}...` : rawBody;
+  return {
+    title: `${prefix}${cmdDef.name} · ${cmdDef.category}`,
+    body,
+    imageUrl: getThumbImageUrl(thumbKey),
+    sourceUrl: getCommandPreviewPath(cmdDef.name),
+    thumbKey,
+    usage: cmdDef.usage,
+    category: cmdDef.category,
+  };
+}
+
 export async function handleIncomingMessage(params: {
   senderId: string;
   senderName: string;
@@ -967,6 +1196,7 @@ export async function handleIncomingMessage(params: {
           .replace(/\{user\}/g, player.name)
           .replace(/\{bot\}/g, botState.config.botName)
           .replace(/\{arg\}/g, argStr || ''),
+        thumbnail: buildCommandThumbnail(cmdDef, prefix),
         handler: `Custom Rule (${prefix}${cmdDef.name})`,
       };
       recordLog(params, input, reply, Date.now() - started);
@@ -975,7 +1205,11 @@ export async function handleIncomingMessage(params: {
     }
 
     reply = await executeBuiltInCommand(cmdDef.name, restTokens, argStr, player, params.chatMode, params.quotedText, params.source);
-    reply = { ...reply, text: applyTextUi(reply.text) };
+    reply = {
+      ...reply,
+      text: applyTextUi(reply.text),
+      thumbnail: reply.thumbnail || buildCommandThumbnail(cmdDef, prefix),
+    };
     recordLog(params, input, reply, Date.now() - started);
     persistState();
     return reply;
@@ -1168,12 +1402,26 @@ async function executeBuiltInCommand(
 
   // ── CARDS ──
   if (cmd === 'card' || cmd === 'sc' || cmd === 'rc') {
+    const useOrbsForRc = cmd === 'rc' && ['orb', 'orbs'].includes(argStr.trim().toLowerCase());
     if (cmd === 'rc') {
-      if (player.wallet < 500) {
-        return { text: `You need *500 Yen* in your wallet to roll *${p}rc*. Current wallet: *¥${player.wallet.toLocaleString()}*.`, handler: 'Card Gacha' };
+      if (useOrbsForRc) {
+        if (player.orbs < 2) {
+          return {
+            text: `You need *2 Spirit Orbs* to roll *${p}rc orb* (or *🪙 500* for *${p}rc*). Current Orbs: *${player.orbs}*.`,
+            handler: 'Card Gacha',
+          };
+        }
+        player.orbs -= 2;
+      } else {
+        if (player.wallet < 500) {
+          return {
+            text: `You need *🪙 500* (or *2 Orbs* via *${p}rc orb*) to roll *${p}rc*. Current wallet: *${formatGold(player.wallet)}*.`,
+            handler: 'Card Gacha',
+          };
+        }
+        player.wallet -= 500;
+        addTransaction(player, 'Random Card Roll (.rc)', -500);
       }
-      player.wallet -= 500;
-      addTransaction(player, 'Random Card Roll (.rc)', -500);
     }
 
     let picked: AnimeCard | undefined;
@@ -1191,7 +1439,7 @@ async function executeBuiltInCommand(
       player.cards.push(picked.id);
       return {
         text: [
-          `*🎴 Gacha Pack Opened!*`,
+          `*🎴 Gacha Pack Opened!* (${useOrbsForRc ? '-2 Orbs' : '-🪙 500'})`,
           `┣ Card: *[${picked.tier}] ${picked.name}* (\`${picked.id}\`)`,
           `┣ Series: _${picked.series}_`,
           `┣ Stats: ATK *${picked.atk}* / DEF *${picked.def}*`,
@@ -1211,13 +1459,14 @@ async function executeBuiltInCommand(
     const claimCode = String(Math.floor(1000 + Math.random() * 9000));
     botState.activeDrop = { card: picked, claimCode };
     botState.stats.totalCardDrops += 1;
+    player.lastCardDrop = Date.now();
     return {
       text: [
         `*🎴 Wild Anime Card Appeared!*`,
         `┣ Name: *[${picked.tier}] ${picked.name}*`,
         `┣ Series: _${picked.series}_`,
         `┣ Stats: ATK *${picked.atk}* / DEF *${picked.def}*`,
-        `┣ Value: *¥${picked.price.toLocaleString()}*`,
+        `┣ Value: *${formatGold(picked.price)}*`,
         `┗━━━━━━━━━━━`,
         `Claim with: *${p}claim ${claimCode}*`,
       ].join('\n'),
@@ -1297,7 +1546,7 @@ async function executeBuiltInCommand(
         '*Card battle*',
         `${player.name}  ${playerScore} — ${opponentScore}  ${opponent.name}`,
         won ? '*Victory*' : '*Defeat*',
-        `Reward  •  ¥${reward}`,
+        `Reward  •  ${formatGold(reward)}`,
       ].join('\n'),
       imageUrl: leadCard?.imageUrl,
       imageCaption: `${player.name} vs ${opponent.name}`,
@@ -1478,7 +1727,7 @@ async function executeBuiltInCommand(
           `┣ Series: _${top.series}_`,
           `┣ Power: ATK *${top.atk}* / DEF *${top.def}*`,
           `┣ Stardust: *${top.stardustValue}* ✨`,
-          `┣ Price: *¥${top.price.toLocaleString()}*`,
+          `┣ Price: *${formatGold(top.price)}*`,
           `┗━━━━━━━━━━━`,
         ].join('\n'),
         imageUrl: top.imageUrl,
@@ -1490,7 +1739,7 @@ async function executeBuiltInCommand(
         `*🔍 Card Catalog (${matches.length} matches)*`,
         ...matches
           .slice(0, 8)
-          .map((c) => `┣ \`${c.id}\` *[${c.tier}] ${c.name}*\n┃   _${c.series}_ — ¥${c.price.toLocaleString()}`),
+          .map((c) => `┣ \`${c.id}\` *[${c.tier}] ${c.name}*\n┃   _${c.series}_ — ${formatGold(c.price)}`),
         `┗━━━━━━━━━━━`,
       ].join('\n'),
       handler: 'Card Search',
@@ -1502,10 +1751,34 @@ async function executeBuiltInCommand(
     return {
       text: [
         `*🏪 ${botState.config.bannerTitle} Card Shop*`,
-        ...featured.map((c) => `┣ \`${c.id}\` *[${c.tier}] ${c.name}* — ¥${c.price.toLocaleString()}`),
+        ...featured.map((c) => `┣ \`${c.id}\` *[${c.tier}] ${c.name}* — ${formatGold(c.price)}`),
         `┗━━━━━━━━━━━`,
-        `Roll a mystery card anytime with *${p}rc* (¥500).`,
+        `Buy directly with *${p}buycard <cardId>* or roll a mystery card with *${p}rc* (🪙 500 / 2 Orbs).`,
       ].join('\n'),
+      handler: 'Card Shop',
+    };
+  }
+
+  if (cmd === 'buycard') {
+    const query = argStr.trim().toLowerCase();
+    if (!query) {
+      return { text: `Usage: *${p}buycard <cardId>* (browse with *${p}cardshop*).`, handler: 'Card Shop' };
+    }
+    const card = botState.cards.find((c) => c.id.toLowerCase() === query || c.name.toLowerCase() === query);
+    if (!card) {
+      return { text: `Card \`${argStr}\` not found in the catalog. Check *${p}cardshop* or *${p}cs <name>*.`, handler: 'Card Shop' };
+    }
+    if (player.wallet < card.price) {
+      return {
+        text: `Insufficient Gold! *[${card.tier}] ${card.name}* costs *${formatGold(card.price)}*, and you have *${formatGold(player.wallet)}*.`,
+        handler: 'Card Shop',
+      };
+    }
+    player.wallet -= card.price;
+    player.cards.push(card.id);
+    addTransaction(player, `Bought card ${card.name}`, -card.price);
+    return {
+      text: `🎴 Purchased *[${card.tier}] ${card.name}* (\`${card.id}\`) for *${formatGold(card.price)}*!\nWallet: *${formatGold(player.wallet)}*`,
       handler: 'Card Shop',
     };
   }
@@ -1520,12 +1793,14 @@ async function executeBuiltInCommand(
     const payout = Math.round((card?.price || 1000) * 0.7);
     const dust = Math.round((card?.stardustValue || 100) * 0.4);
     player.cards.splice(idx, 1);
-    player.deck = player.deck.filter((d) => d !== cardId);
+    if (!player.cards.includes(cardId)) {
+      player.deck = player.deck.filter((d) => d !== cardId);
+    }
     player.wallet += payout;
     player.stardust += dust;
     addTransaction(player, `Sold Card ${card?.name || cardId}`, payout);
     return {
-      text: `💰 Sold *${card?.name || cardId}* for *¥${payout.toLocaleString()}* and *${dust} Stardust*.`,
+      text: `💰 Sold *${card?.name || cardId}* for *${formatGold(payout)}* and *${dust} Stardust*.`,
       handler: 'Cards',
     };
   }
@@ -1536,17 +1811,23 @@ async function executeBuiltInCommand(
     if (!cardId || idx === -1) {
       return { text: `Specify a valid card ID from your collection: *${p}${cmd} C-104 @Rem*`, handler: 'Card Transfer' };
     }
-    const targetName = target.replace(/^@/, '') || 'Rem';
-    const recipient = Object.values(botState.players).find((u) => u.name.toLowerCase() === targetName.toLowerCase());
+    const targetName = target.replace(/^@/, '');
+    const recipient = targetName ? findPlayerTarget(targetName) : undefined;
+    if (!recipient || recipient.id === player.id) {
+      return { text: `Specify a valid member to receive the card: *${p}${cmd} ${cardId} @Rem*`, handler: 'Card Transfer' };
+    }
     if (cmd !== 'lc') {
-      player.cards.splice(idx, 1);
-      if (recipient) recipient.cards.push(cardId);
+      const movedId = player.cards.splice(idx, 1)[0];
+      if (!player.cards.includes(movedId)) {
+        player.deck = player.deck.filter((d) => d !== movedId);
+      }
+      recipient.cards.push(movedId);
     }
     return {
       text:
         cmd === 'lc'
-          ? `🤝 Lent card \`${cardId}\` to *@${targetName}* for 24h.`
-          : `🎁 Transferred card \`${cardId}\` from *${player.name}* to *@${targetName}*.`,
+          ? `🤝 Lent card \`${cardId}\` to *@${recipient.name}* for 24h.`
+          : `🎁 Transferred card \`${cardId}\` from *${player.name}* to *@${recipient.name}*.`,
       handler: 'Card Transfer',
     };
   }
@@ -1569,13 +1850,18 @@ async function executeBuiltInCommand(
   }
 
   if (cmd === 'auction' || cmd === 'resell') {
+    settleExpiredAuctions();
     const [cardId = '', minBidRaw = '2000'] = args;
-    const minBid = Math.max(500, parseInt(minBidRaw, 10) || 2000);
-    const hasCard = player.cards.find((id) => id.toLowerCase() === cardId.toLowerCase());
-    if (!hasCard) {
+    const cardIndex = player.cards.findIndex((id) => id.toLowerCase() === cardId.toLowerCase());
+    if (cardIndex === -1) {
       return { text: `Usage: *${p}${cmd} <cardId> <minBid>* using a card you own.`, handler: 'Auctions' };
     }
-    const card = botState.cards.find((c) => c.id === hasCard)!;
+    const minBid = Math.max(100, parseAmountToken(minBidRaw, 100_000) || 2000);
+    const ownedCardId = player.cards.splice(cardIndex, 1)[0];
+    if (!player.cards.includes(ownedCardId)) {
+      player.deck = player.deck.filter((d) => d !== ownedCardId);
+    }
+    const card = botState.cards.find((c) => c.id === ownedCardId)!;
     const aucId = `AUC-${Math.floor(400 + Math.random() * 599)}`;
     botState.auctions.unshift({
       id: aucId,
@@ -1589,12 +1875,13 @@ async function executeBuiltInCommand(
       endsAt: new Date(Date.now() + 86400000).toISOString(),
     });
     return {
-      text: `🔨 *Auction Listed (${aucId})*\nCard: *[${card.tier}] ${card.name}*\nStarting Bid: *¥${minBid.toLocaleString()}*\nPlace bids with *${p}bid ${aucId} <amount>*`,
+      text: `🔨 *Auction Listed (${aucId})*\nCard: *[${card.tier}] ${card.name}* (moved to escrow)\nStarting Bid: *${formatGold(minBid)}*\nPlace bids with *${p}bid ${aucId} <amount>*`,
       handler: 'Auctions',
     };
   }
 
   if (cmd === 'listauc' || cmd === 'myauc') {
+    settleExpiredAuctions();
     const list = cmd === 'myauc' ? botState.auctions.filter((a) => a.sellerId === player.id) : botState.auctions;
     if (list.length === 0) {
       return { text: `No active auctions found. Start one with *${p}auction <cardId> <minBid>*.`, handler: 'Auctions' };
@@ -1603,7 +1890,7 @@ async function executeBuiltInCommand(
       text: `*🔨 Live Card Auctions (${list.length})*\n${list
         .map(
           (a) =>
-            `• \`${a.id}\` *[${a.tier}] ${a.cardName}* — Top Bid: *¥${a.highestBid.toLocaleString()}* (${a.highestBidderName || 'No bids'})`
+            `• \`${a.id}\` *[${a.tier}] ${a.cardName}* — Top Bid: *${formatGold(a.highestBid)}* (${a.highestBidderName || 'No bids'})`
         )
         .join('\n')}`,
       handler: 'Auctions',
@@ -1611,37 +1898,93 @@ async function executeBuiltInCommand(
   }
 
   if (cmd === 'bid') {
+    settleExpiredAuctions();
     const [aucId = '', bidRaw = '0'] = args;
-    const bidAmt = parseInt(bidRaw, 10) || 0;
     const auc = botState.auctions.find((a) => a.id.toLowerCase() === aucId.toLowerCase());
     if (!auc) return { text: `Auction \`${aucId}\` not found. Check *${p}listauc*.`, handler: 'Auctions' };
-    if (bidAmt <= auc.highestBid) return { text: `Bid must exceed current top bid of *¥${auc.highestBid.toLocaleString()}*.`, handler: 'Auctions' };
-    if (player.wallet < bidAmt) return { text: `Insufficient wallet Yen (*¥${player.wallet.toLocaleString()}*).`, handler: 'Auctions' };
+    if (auc.sellerId === player.id) {
+      return { text: `You cannot bid on your own auction.`, handler: 'Auctions' };
+    }
+    const bidAmt = parseAmountToken(bidRaw, player.wallet) || 0;
+    const minRequired = auc.highestBidderId ? auc.highestBid + 1 : auc.highestBid;
+    if (bidAmt < minRequired) {
+      return {
+        text: `Bid must be at least *${formatGold(minRequired)}* (current: ${formatGold(auc.highestBid)}).`,
+        handler: 'Auctions',
+      };
+    }
+    if (player.wallet < bidAmt) {
+      return { text: `Insufficient wallet Gold (*${formatGold(player.wallet)}*).`, handler: 'Auctions' };
+    }
+    // Refund previous top bidder if outbid
+    if (auc.highestBidderId && auc.highestBidderId !== player.id) {
+      const prevBidder = botState.players[auc.highestBidderId];
+      if (prevBidder) {
+        prevBidder.wallet += auc.highestBid;
+        addTransaction(prevBidder, `Outbid refund (${auc.id})`, auc.highestBid);
+      }
+      player.wallet -= bidAmt;
+      addTransaction(player, `Auction bid (${auc.id})`, -bidAmt);
+    } else if (auc.highestBidderId === player.id) {
+      const diff = bidAmt - auc.highestBid;
+      if (player.wallet < diff) {
+        return { text: `Insufficient wallet Gold to raise your bid by *${formatGold(diff)}*.`, handler: 'Auctions' };
+      }
+      player.wallet -= diff;
+      addTransaction(player, `Raised auction bid (${auc.id})`, -diff);
+    } else {
+      player.wallet -= bidAmt;
+      addTransaction(player, `Auction bid (${auc.id})`, -bidAmt);
+    }
     auc.highestBid = bidAmt;
     auc.highestBidderId = player.id;
     auc.highestBidderName = player.name;
     return {
-      text: `✅ *New Highest Bid!*\n*${player.name}* bid *¥${bidAmt.toLocaleString()}* on *[${auc.tier}] ${auc.cardName}* (\`${auc.id}\`).`,
+      text: `✅ *New Highest Bid!*\n*${player.name}* bid *${formatGold(bidAmt)}* on *[${auc.tier}] ${auc.cardName}* (\`${auc.id}\`).`,
       handler: 'Auctions',
     };
   }
 
   if (cmd === 'remauc') {
-    const before = botState.auctions.length;
-    botState.auctions = botState.auctions.filter((a) => !(a.id.toLowerCase() === argStr.toLowerCase() && a.sellerId === player.id));
+    settleExpiredAuctions();
+    const idx = botState.auctions.findIndex(
+      (a) => a.id.toLowerCase() === argStr.trim().toLowerCase() && a.sellerId === player.id
+    );
+    if (idx === -1) {
+      return { text: `No matching auction owned by you found.`, handler: 'Auctions' };
+    }
+    const [removed] = botState.auctions.splice(idx, 1);
+    player.cards.push(removed.cardId);
+    if (removed.highestBidderId && botState.players[removed.highestBidderId]) {
+      const bidder = botState.players[removed.highestBidderId];
+      bidder.wallet += removed.highestBid;
+      addTransaction(bidder, `Auction canceled refund (${removed.id})`, removed.highestBid);
+    }
     return {
-      text: botState.auctions.length < before ? `Removed auction \`${argStr}\`.` : `No matching auction owned by you found.`,
+      text: `Canceled auction \`${removed.id}\`. Returned *${removed.cardName}* to your collection${removed.highestBidderName ? ` and refunded *${removed.highestBidderName}*` : ''}.`,
       handler: 'Auctions',
     };
   }
 
   if (cmd === 'slb' || cmd === 'clb' || cmd === 'stlb') {
     const sorted = Object.values(botState.players).sort((a, b) =>
-      cmd === 'clb' ? b.cards.length - a.cards.length : b.stardust - a.stardust
+      cmd === 'clb'
+        ? b.cards.length - a.cards.length
+        : cmd === 'stlb'
+        ? b.stardust + b.orbs * 100 - (a.stardust + a.orbs * 100)
+        : b.stardust - a.stardust
     );
     return {
-      text: `*🏆 ${cmd === 'clb' ? 'Card Collector' : 'Stardust'} Leaderboard*\n${sorted
-        .map((u, idx) => `${idx + 1}. *${u.name}* — ${cmd === 'clb' ? `${u.cards.length} cards` : `${u.stardust.toLocaleString()} ✨`}`)
+      text: `*🏆 ${cmd === 'clb' ? 'Card Collector' : cmd === 'stlb' ? 'Stardust & Orbs' : 'Stardust'} Leaderboard*\n${sorted
+        .map((u, idx) => {
+          const val =
+            cmd === 'clb'
+              ? `${u.cards.length} cards`
+              : cmd === 'stlb'
+              ? `${u.stardust.toLocaleString()} ✨ · ${u.orbs} Orbs`
+              : `${u.stardust.toLocaleString()} ✨`;
+          return `${idx + 1}. *${u.name}* — ${val}`;
+        })
         .join('\n')}`,
       handler: 'Leaderboards',
     };
@@ -1677,70 +2020,155 @@ async function executeBuiltInCommand(
   }
 
   // ── ECONOMY ──
-  if (cmd === 'bal' || cmd === 'balance' || cmd === 'orbs' || cmd === 'ebal') {
+  if (cmd === 'bal' || cmd === 'balance') {
+    const net = netWorthOf(player);
+    const lines = [
+      `*${player.name}'s Gold balance*`,
+      `Wallet  •  ${formatGold(player.wallet)}`,
+      `Bank  •  ${formatGold(player.bank)}`,
+      `Net Worth  •  ${formatGold(net)}`,
+    ];
+    if (player.loan > 0) {
+      lines.push(`Loan Debt  •  ${formatGold(player.loan)}`);
+    }
     return {
-      text: [
-        `*${player.name}'s balance*`,
-        `Wallet  •  ¥${player.wallet.toLocaleString()}`,
-        `Bank  •  ¥${player.bank.toLocaleString()}`,
-        `Orbs  •  ${player.orbs}`,
-        `Stardust  •  ${player.stardust.toLocaleString()}`,
-      ].join('\n'),
+      text: lines.join('\n'),
       imageUrl: await fetchSfwAnimeImage('smile'),
-      imageCaption: 'Economy balance',
+      imageCaption: 'Gold Balance',
       handler: 'Economy',
       buttons: [
         { id: 'daily', label: 'Daily', command: `${p}daily` },
+        { id: 'work', label: 'Work', command: `${p}work` },
         { id: 'fish', label: 'Fish', command: `${p}fish` },
       ],
     };
   }
 
-  if (cmd === 'fish') {
-    const cooldownMs = 5 * 60_000;
-    const remaining = cooldownMs - (Date.now() - (player.lastFish || 0));
+  if (cmd === 'orbs') {
+    return {
+      text: [
+        `*${player.name}'s Spirit Orbs*`,
+        `Orbs  •  ${player.orbs}`,
+        `Stardust  •  ${player.stardust.toLocaleString()}`,
+        `Use *${p}rc orb* to open a gacha card pack for *2 Orbs*.`,
+      ].join('\n'),
+      handler: 'Economy',
+      buttons: [{ id: 'rc_orb', label: 'Roll (2 Orbs)', command: `${p}rc orb` }],
+    };
+  }
+
+  if (cmd === 'ebal') {
+    const buffs: string[] = [];
+    if (hasLuckBoost(player)) buffs.push(`Luck Potion (${formatDuration((player.luckBoostUntil || 0) - Date.now())})`);
+    if (hasRobShield(player)) buffs.push(`Rob Shield (${formatDuration((player.robShieldUntil || 0) - Date.now())})`);
+    return {
+      text: [
+        `*${player.name}'s economy summary*`,
+        `Wallet  •  ${formatGold(player.wallet)}`,
+        `Bank  •  ${formatGold(player.bank)}`,
+        `Loan Debt  •  ${formatGold(player.loan)}`,
+        `Net Worth  •  ${formatGold(netWorthOf(player))}`,
+        `Orbs  •  ${player.orbs}`,
+        `Stardust  •  ${player.stardust.toLocaleString()}`,
+        `Buffs  •  ${buffs.length > 0 ? buffs.join(', ') : 'None'}`,
+      ].join('\n'),
+      handler: 'Economy',
+      buttons: [
+        { id: 'daily', label: 'Daily', command: `${p}daily` },
+        { id: 'shop', label: 'Shop', command: `${p}shop` },
+      ],
+    };
+  }
+
+  if (cmd === 'work') {
+    const remaining = WORK_COOLDOWN_MS - (Date.now() - (player.lastWork || 0));
     if (remaining > 0) {
       return {
-        text: `The water is still. Try again in *${Math.ceil(remaining / 60_000)} min*.`,
-        imageUrl: await fetchSfwAnimeImage('sleep'),
+        text: `You already completed a guild shift. Rest for *${formatDuration(remaining)}*.`,
+        handler: 'Economy',
+        status: 'blocked',
+      };
+    }
+    const jobs = [
+      'Tempest Guild Courier',
+      'Manga Archive Clerk',
+      'Ramen Stand Assistant',
+      'Dungeon Supply Porter',
+      'Scout Regiment Messenger',
+    ];
+    const job = jobs[Math.floor(Math.random() * jobs.length)];
+    const levelBonus = Math.min(150, player.level * 5);
+    const earned = 200 + Math.floor(Math.random() * 151) + levelBonus;
+    player.lastWork = Date.now();
+    player.wallet += earned;
+    player.xp += 25;
+    addTransaction(player, `Work (${job})`, earned);
+    return {
+      text: [
+        '*Guild shift complete*',
+        `Role  •  ${job}`,
+        `Earned  •  +${formatGold(earned)}`,
+        `XP  •  +25`,
+        `Wallet  •  ${formatGold(player.wallet)}`,
+      ].join('\n'),
+      handler: 'Economy',
+      buttons: [
+        { id: 'dep_all', label: 'Deposit All', command: `${p}dep all` },
+        { id: 'balance', label: 'Balance', command: `${p}bal` },
+      ],
+    };
+  }
+
+  if (cmd === 'fish') {
+    const remaining = FISH_COOLDOWN_MS - (Date.now() - (player.lastFish || 0));
+    if (remaining > 0) {
+      return {
+        text: `The water is still. Try again in *${formatDuration(remaining)}*.`,
+        imageUrl: await fetchSfwAnimeImage('smile'),
         handler: 'Fishing',
         status: 'blocked',
       };
     }
     const catches = [
-      { name: 'Tiny Magikarp', yen: 180, item: 'Fish Scale' },
-      { name: 'Moonlit Koi', yen: 420, item: 'Koi Charm' },
-      { name: 'Water Dragon Fry', yen: 760, item: 'Dragon Scale' },
-      { name: 'Leviathan Relic', yen: 1400, item: 'Abyss Pearl' },
+      { name: 'Tiny Magikarp', gold: 180, item: 'Fish Scale' },
+      { name: 'Moonlit Koi', gold: 420, item: 'Koi Charm' },
+      { name: 'Water Dragon Fry', gold: 760, item: 'Dragon Scale' },
+      { name: 'Leviathan Relic', gold: 1400, item: 'Abyss Pearl' },
     ];
-    const roll = Math.random();
+    const luckEdge = hasLuckBoost(player) ? 0.04 : 0;
+    const roll = Math.min(0.999, Math.random() + luckEdge);
     const catchIndex = roll > 0.97 ? 3 : roll > 0.82 ? 2 : roll > 0.45 ? 1 : 0;
     const caught = catches[catchIndex];
     player.lastFish = Date.now();
-    player.wallet += caught.yen;
+    player.wallet += caught.gold;
     player.inventory[caught.item] = (player.inventory[caught.item] || 0) + 1;
-    addTransaction(player, `Fishing reward: ${caught.name}`, caught.yen);
+    addTransaction(player, `Fishing reward: ${caught.name}`, caught.gold);
     return {
       text: [
         '*Catch landed*',
-        `${caught.name}`,
-        `Reward  •  ¥${caught.yen.toLocaleString()}`,
+        `Catch  •  ${caught.name}`,
+        `Reward  •  +${formatGold(caught.gold)}`,
         `Item  •  ${caught.item}`,
-        `Wallet  •  ¥${player.wallet.toLocaleString()}`,
+        `Wallet  •  ${formatGold(player.wallet)}`,
       ].join('\n'),
       imageUrl: await fetchSfwAnimeImage(catchIndex >= 2 ? 'happy' : 'smile'),
       imageCaption: caught.name,
       handler: 'Fishing',
-      buttons: [{ id: 'balance', label: 'Balance', command: `${p}bal` }],
+      buttons: [
+        { id: 'balance', label: 'Balance', command: `${p}bal` },
+        { id: 'sell_loot', label: `Sell ${caught.item}`, command: `${p}sell ${caught.item}` },
+      ],
     };
   }
 
   if (cmd === 'daily') {
-    const cooldownMs = 20 * 60 * 60_000;
-    const remaining = cooldownMs - (Date.now() - (player.lastDaily || 0));
+    const remaining = DAILY_COOLDOWN_MS - (Date.now() - (player.lastDaily || 0));
     if (remaining > 0) {
-      const hours = Math.ceil(remaining / 3_600_000);
-      return { text: `Daily reward already claimed. Return in about *${hours}h*.`, handler: 'Economy', status: 'blocked' };
+      return {
+        text: `Daily reward already claimed. Return in *${formatDuration(remaining)}*.`,
+        handler: 'Economy',
+        status: 'blocked',
+      };
     }
     const reward = botState.config.dailyReward;
     player.wallet += reward;
@@ -1751,10 +2179,10 @@ async function executeBuiltInCommand(
     return {
       text: [
         '*Daily reward*',
-        `Yen  •  +¥${reward.toLocaleString()}`,
+        `Gold  •  +${formatGold(reward)}`,
         'Orbs  •  +3',
         'Stardust  •  +120',
-        `Wallet  •  ¥${player.wallet.toLocaleString()}`,
+        `Wallet  •  ${formatGold(player.wallet)}`,
       ].join('\n'),
       imageUrl: await fetchSfwAnimeImage('maid'),
       imageCaption: 'Daily reward',
@@ -1763,39 +2191,66 @@ async function executeBuiltInCommand(
   }
 
   if (cmd === 'dep' || cmd === 'deposit') {
-    const amt = argStr.toLowerCase() === 'all' ? player.wallet : Math.max(0, parseInt(argStr, 10) || 0);
-    if (amt <= 0 || amt > player.wallet) {
-      return { text: `Specify a valid deposit amount up to *¥${player.wallet.toLocaleString()}* (or *${p}dep all*).`, handler: 'Economy' };
+    const amt = parseAmountToken(argStr, player.wallet);
+    if (amt === null || amt <= 0 || amt > player.wallet) {
+      return {
+        text: `Specify a valid deposit amount up to *${formatGold(player.wallet)}* (or *${p}dep all*).`,
+        handler: 'Economy',
+      };
     }
     player.wallet -= amt;
     player.bank += amt;
     addTransaction(player, 'Bank Deposit', -amt);
-    return { text: `🏦 Deposited *¥${amt.toLocaleString()}* into your bank.\nWallet: ¥${player.wallet.toLocaleString()} · Bank: ¥${player.bank.toLocaleString()}`, handler: 'Economy' };
+    return {
+      text: `🏦 Deposited *${formatGold(amt)}* into your bank.\nWallet: ${formatGold(player.wallet)} · Bank: ${formatGold(player.bank)}`,
+      handler: 'Economy',
+    };
   }
 
   if (cmd === 'wd' || cmd === 'withdraw') {
-    const amt = argStr.toLowerCase() === 'all' ? player.bank : Math.max(0, parseInt(argStr, 10) || 0);
-    if (amt <= 0 || amt > player.bank) {
-      return { text: `Specify a valid withdrawal amount up to *¥${player.bank.toLocaleString()}* (or *${p}wd all*).`, handler: 'Economy' };
+    const amt = parseAmountToken(argStr, player.bank);
+    if (amt === null || amt <= 0 || amt > player.bank) {
+      return {
+        text: `Specify a valid withdrawal amount up to *${formatGold(player.bank)}* (or *${p}wd all*).`,
+        handler: 'Economy',
+      };
     }
     player.bank -= amt;
     player.wallet += amt;
     addTransaction(player, 'Bank Withdrawal', amt);
-    return { text: `💵 Withdrew *¥${amt.toLocaleString()}* to your wallet.\nWallet: ¥${player.wallet.toLocaleString()} · Bank: ¥${player.bank.toLocaleString()}`, handler: 'Economy' };
+    return {
+      text: `💵 Withdrew *${formatGold(amt)}* to your wallet.\nWallet: ${formatGold(player.wallet)} · Bank: ${formatGold(player.bank)}`,
+      handler: 'Economy',
+    };
   }
 
-  if (cmd === 'donate') {
-    const [targetRaw = '', amtRaw = '0'] = args;
-    const amt = parseInt(amtRaw, 10) || 0;
-    if (!targetRaw || amt <= 0 || amt > player.wallet) {
-      return { text: `Usage: *${p}donate @user <amount>* (max ¥${player.wallet.toLocaleString()}).`, handler: 'Economy' };
+  if (cmd === 'donate' || cmd === 'pay') {
+    const [targetRaw = '', amtRaw = ''] = args;
+    const recipient = findPlayerTarget(targetRaw);
+    if (!recipient) {
+      return {
+        text: `Recipient not found. Usage: *${p}${cmd} @user <amount>* (max ${formatGold(player.wallet)}).`,
+        handler: 'Economy',
+      };
     }
-    const targetName = targetRaw.replace(/^@/, '');
-    const recipient = Object.values(botState.players).find((u) => u.name.toLowerCase() === targetName.toLowerCase());
+    if (recipient.id === player.id) {
+      return { text: `You cannot send Gold to yourself.`, handler: 'Economy' };
+    }
+    const amt = parseAmountToken(amtRaw, player.wallet);
+    if (amt === null || amt <= 0 || amt > player.wallet) {
+      return {
+        text: `Specify a valid Gold amount up to *${formatGold(player.wallet)}*. Usage: *${p}${cmd} @${recipient.name} <amount>*`,
+        handler: 'Economy',
+      };
+    }
     player.wallet -= amt;
-    if (recipient) recipient.wallet += amt;
-    addTransaction(player, `Donated to ${targetName}`, -amt);
-    return { text: `🤝 *${player.name}* sent *¥${amt.toLocaleString()}* to *@${targetName}*.`, handler: 'Economy' };
+    recipient.wallet += amt;
+    addTransaction(player, `Sent to ${recipient.name}`, -amt);
+    addTransaction(recipient, `Received from ${player.name}`, amt);
+    return {
+      text: `🤝 *${player.name}* sent *${formatGold(amt)}* to *@${recipient.name}*.\nYour Wallet: *${formatGold(player.wallet)}*`,
+      handler: 'Economy',
+    };
   }
 
   if (cmd === 'p' || cmd === 'profile' || cmd === 'edit' || cmd === 'bio' || cmd === 'setage' || cmd === 'rename') {
@@ -1822,23 +2277,33 @@ async function executeBuiltInCommand(
         `┣ Level: *${player.level}* (${player.xp} XP)`,
         `┣ Guild: *${player.guild || 'Unaffiliated'}*`,
         `┣ Age: *${player.age}*`,
-        `┣ Net Worth: *¥${(player.wallet + player.bank).toLocaleString()}*`,
+        `┣ Net Worth: *${formatGold(netWorthOf(player))}*`,
+        player.loan > 0 ? `┣ Loan Debt: *${formatGold(player.loan)}*` : '',
         `┣ Cards: *${player.cards.length}*`,
         `┣ Pokémon: *${player.pokemon.length}*`,
         `┣ Bio: _${player.bio}_`,
         `┗━━━━━━━━━━━`,
-      ].join('\n'),
+      ].filter(Boolean).join('\n'),
       handler: 'Profile',
     };
   }
 
   if (cmd === 'rich' || cmd === 'richg' || cmd === 'lb' || cmd === 'leaderboard' || cmd === 'shame') {
-    const sorted = Object.values(botState.players).sort((a, b) => {
+    const allPlayers = Object.values(botState.players);
+    const list = cmd === 'richg' ? allPlayers.filter((u) => u.messagesSent > 0 || u.wallet + u.bank > 0) : allPlayers;
+    const sorted = list.sort((a, b) => {
       if (cmd === 'shame') return b.shamePoints - a.shamePoints;
       if (cmd === 'lb' || cmd === 'leaderboard') return b.xp - a.xp;
-      return b.wallet + b.bank - (a.wallet + a.bank);
+      return netWorthOf(b) - netWorthOf(a);
     });
-    const title = cmd === 'shame' ? 'Hall of Shame' : cmd === 'lb' || cmd === 'leaderboard' ? 'XP Leaderboard' : 'Richest Players';
+    const title =
+      cmd === 'shame'
+        ? 'Hall of Shame'
+        : cmd === 'lb' || cmd === 'leaderboard'
+        ? 'XP Leaderboard'
+        : cmd === 'richg'
+        ? 'Group Richest Players'
+        : 'Global Richest Players';
     return {
       text: `*🏆 ${title}*\n${sorted
         .map((u, i) => {
@@ -1847,7 +2312,7 @@ async function executeBuiltInCommand(
               ? `${u.shamePoints} shame`
               : cmd === 'lb' || cmd === 'leaderboard'
               ? `Lv.${u.level} (${u.xp} XP)`
-              : `¥${(u.wallet + u.bank).toLocaleString()}`;
+              : formatGold(netWorthOf(u));
           return `${i + 1}. *${u.name}* — ${metric}`;
         })
         .join('\n')}`,
@@ -1859,50 +2324,227 @@ async function executeBuiltInCommand(
     const entries = Object.entries(player.inventory).filter(([, q]) => q > 0);
     return {
       text: entries.length
-        ? `*🎒 ${player.name}'s Inventory*\n${entries.map(([k, v]) => `• *${k}* ×${v}`).join('\n')}`
-        : `*🎒 Inventory Empty*\nBuy gear in *${p}shop*.`,
+        ? `*🎒 ${player.name}'s Inventory*\n${entries
+            .map(([k, v]) => `• *${k}* ×${v} (Sell: ${formatGold(getItemSellPrice(k))})`)
+            .join('\n')}\n\nUse *${p}use <item>* or *${p}sell <item> [qty|all]*.`
+        : `*🎒 Inventory Empty*\nBuy gear in *${p}shop* or cast a line with *${p}fish*.`,
       handler: 'Economy',
     };
   }
 
   if (cmd === 'shop') {
+    if (argStr.trim()) {
+      const maybeItem = findShopItem(args[0] || argStr);
+      if (maybeItem) {
+        const qty = Math.min(20, Math.max(1, parseInt(args[1] || '1', 10) || 1));
+        const totalCost = maybeItem.buyPrice * qty;
+        if (player.wallet < totalCost) {
+          return {
+            text: `You need *${formatGold(totalCost)}* to buy ${qty}× *${maybeItem.name}*. Wallet: *${formatGold(player.wallet)}*.`,
+            handler: 'Economy',
+          };
+        }
+        player.wallet -= totalCost;
+        player.inventory[maybeItem.name] = (player.inventory[maybeItem.name] || 0) + qty;
+        addTransaction(player, `Bought ${qty}x ${maybeItem.name}`, -totalCost);
+        return {
+          text: `🛍️ Bought *${qty}× ${maybeItem.name}* for *${formatGold(totalCost)}*!\nWallet: *${formatGold(player.wallet)}*`,
+          handler: 'Economy',
+        };
+      }
+    }
     return {
-      text: `*🛒 ${botState.config.bannerTitle} Item Shop*\n• *Gacha Ticket* — ¥500 (Use with ${p}use ticket)\n• *Luck Potion* — ¥900 (+XP & gamble boost)\n• *XP Charm* — ¥1,200 (+250 XP)\n\nUse *${p}use <item>* to activate owned items.`,
+      text: [
+        `*🛒 ${botState.config.bannerTitle} Gold Shop*`,
+        ...SHOP_ITEMS.map(
+          (item) => `• *${item.name}* — *${formatGold(item.buyPrice)}* (\`${p}buy ${item.id}\`)\n  _${item.summary}_`
+        ),
+        `\nBuy items with *${p}buy <item> [qty]* or sell loot with *${p}sell <item> [qty|all]*.`,
+      ].join('\n'),
+      handler: 'Economy',
+      buttons: [
+        { id: 'buy_ticket', label: 'Buy Ticket (🪙 400)', command: `${p}buy ticket` },
+        { id: 'buy_luck', label: 'Buy Luck (🪙 800)', command: `${p}buy luck` },
+      ],
+    };
+  }
+
+  if (cmd === 'buy') {
+    const lastToken = args[args.length - 1];
+    const hasQty = args.length > 1 && /^\d+$/.test(lastToken || '');
+    const qty = hasQty ? Math.min(20, Math.max(1, parseInt(lastToken!, 10))) : 1;
+    const itemQuery = (hasQty ? args.slice(0, -1).join(' ') : argStr).trim();
+    const item = findShopItem(itemQuery);
+    if (!item) {
+      return {
+        text: `Item "${argStr || '?'}" not found. Check *${p}shop* (available: \`ticket\`, \`luck\`, \`charm\`, \`shield\`).`,
+        handler: 'Economy',
+      };
+    }
+    const totalCost = item.buyPrice * qty;
+    if (player.wallet < totalCost) {
+      return {
+        text: `Insufficient Gold! *${qty}× ${item.name}* costs *${formatGold(totalCost)}*, and your wallet has *${formatGold(player.wallet)}*.`,
+        handler: 'Economy',
+      };
+    }
+    player.wallet -= totalCost;
+    player.inventory[item.name] = (player.inventory[item.name] || 0) + qty;
+    addTransaction(player, `Bought ${qty}x ${item.name}`, -totalCost);
+    return {
+      text: `🛍️ Purchased *${qty}× ${item.name}* for *${formatGold(totalCost)}*!\nWallet: *${formatGold(player.wallet)}*\nUse it anytime with *${p}use ${item.id}*.`,
       handler: 'Economy',
     };
   }
 
   if (cmd === 'use') {
-    const key = Object.keys(player.inventory).find((k) => k.toLowerCase().includes(argStr.toLowerCase() || 'ticket'));
-    if (!key || !player.inventory[key]) {
+    const query = (argStr || 'ticket').trim().toLowerCase();
+    const key = Object.keys(player.inventory).find(
+      (k) => player.inventory[k] > 0 && k.toLowerCase().includes(query)
+    );
+    if (!key) {
       return { text: `You don't have "${argStr || 'that item'}" in *${p}inv*.`, handler: 'Economy' };
     }
+    if (key in LOOT_SELL_PRICES) {
+      return {
+        text: `*${key}* is a fishing treasure worth *${formatGold(LOOT_SELL_PRICES[key])}*. Sell it with *${p}sell ${key}*!`,
+        handler: 'Economy',
+      };
+    }
     player.inventory[key] -= 1;
+    if (player.inventory[key] <= 0) delete player.inventory[key];
+
+    if (key === 'Gacha Ticket') {
+      const picked = botState.cards[Math.floor(Math.random() * botState.cards.length)];
+      if (!picked.imageUrl) picked.imageUrl = await fetchCharacterImage(picked.name);
+      player.cards.push(picked.id);
+      return {
+        text: `🎟️ Used *Gacha Ticket*!\nPulled *[${picked.tier}] ${picked.name}* (\`${picked.id}\`) from _${picked.series}_!`,
+        imageUrl: picked.imageUrl,
+        imageCaption: `${picked.name} (${picked.tier})`,
+        handler: 'Economy',
+      };
+    }
+    if (key === 'Luck Potion') {
+      player.luckBoostUntil = Date.now() + 15 * 60_000;
+      player.xp += 50;
+      return {
+        text: `🍀 Activated *Luck Potion*! (+4% gamble, fishing & rob odds for *15 min*, plus *+50 XP*).`,
+        handler: 'Economy',
+      };
+    }
+    if (key === 'Rob Shield') {
+      player.robShieldUntil = Date.now() + 12 * 60 * 60_000;
+      return {
+        text: `🛡️ Activated *Rob Shield*! Your wallet is protected from *.rob* attempts for *12 hours*.`,
+        handler: 'Economy',
+      };
+    }
+    if (key === 'XP Charm') {
+      player.xp += 300;
+      player.level = Math.max(1, Math.floor(Math.sqrt(player.xp / 25)));
+      return {
+        text: `✨ Activated *XP Charm*! Gained *+300 XP* (Now Lv.*${player.level}*).`,
+        handler: 'Economy',
+      };
+    }
     player.xp += 150;
+    player.level = Math.max(1, Math.floor(Math.sqrt(player.xp / 25)));
     return { text: `✨ Activated *${key}*! Gained +150 XP.`, handler: 'Economy' };
   }
 
   if (cmd === 'sell') {
-    const key = Object.keys(player.inventory).find((k) => k.toLowerCase().includes(argStr.toLowerCase()));
-    if (!key || !player.inventory[key]) return { text: `Item not found in inventory.`, handler: 'Economy' };
-    player.inventory[key] -= 1;
-    player.wallet += 350;
-    return { text: `Sold *${key}* for *¥350*.`, handler: 'Economy' };
+    const lastToken = args[args.length - 1]?.toLowerCase();
+    const isAll = args.length > 1 && lastToken === 'all';
+    const hasQty = args.length > 1 && /^\d+$/.test(lastToken || '');
+    const itemQuery = (isAll || hasQty ? args.slice(0, -1).join(' ') : argStr).trim().toLowerCase();
+    if (!itemQuery) {
+      return { text: `Usage: *${p}sell <item> [qty|all]* (check *${p}inv*).`, handler: 'Economy' };
+    }
+    const key = Object.keys(player.inventory).find(
+      (k) => player.inventory[k] > 0 && k.toLowerCase().includes(itemQuery)
+    );
+    if (!key) return { text: `Item "${itemQuery}" not found in your inventory.`, handler: 'Economy' };
+    const owned = player.inventory[key];
+    const qty = isAll ? owned : hasQty ? Math.min(owned, Math.max(1, parseInt(lastToken!, 10))) : 1;
+    const unitPrice = getItemSellPrice(key);
+    const totalPayout = unitPrice * qty;
+    player.inventory[key] -= qty;
+    if (player.inventory[key] <= 0) delete player.inventory[key];
+    player.wallet += totalPayout;
+    addTransaction(player, `Sold ${qty}x ${key}`, totalPayout);
+    return {
+      text: `💰 Sold *${qty}× ${key}* for *${formatGold(totalPayout)}*.\nWallet: *${formatGold(player.wallet)}*`,
+      handler: 'Economy',
+    };
   }
 
   if (cmd === 'lottery' || cmd === 'lotterylist') {
     if (cmd === 'lotterylist') {
+      const counts = new Map<string, number>();
+      for (const t of botState.lotteryPool.tickets) {
+        counts.set(t.playerName, (counts.get(t.playerName) || 0) + 1);
+      }
+      const holders = [...counts.entries()].map(([name, c]) => `• *${name}*: ${c} ticket${c > 1 ? 's' : ''}`).join('\n');
       return {
-        text: `*🎟️ ${botState.config.bannerTitle} Lottery Pool*\nJackpot: *¥${botState.lotteryPool.jackpot.toLocaleString()}*\nTickets Sold: *${botState.lotteryPool.tickets.length}*`,
+        text: [
+          `*🎟️ ${botState.config.bannerTitle} Lottery Pool*`,
+          `Jackpot: *${formatGold(botState.lotteryPool.jackpot)}*`,
+          `Tickets Sold: *${botState.lotteryPool.tickets.length}/${LOTTERY_DRAW_THRESHOLD}* (auto-draws at ${LOTTERY_DRAW_THRESHOLD})`,
+          holders || '_No tickets in this round yet._',
+          botState.lotteryPool.lastWinner
+            ? `\nLast Winner: *${botState.lotteryPool.lastWinner.playerName}* (${formatGold(botState.lotteryPool.lastWinner.amount)})`
+            : '',
+        ].filter(Boolean).join('\n'),
         handler: 'Economy',
       };
     }
-    if (player.wallet < 250) return { text: `Lottery tickets cost *¥250*.`, handler: 'Economy' };
-    player.wallet -= 250;
-    botState.lotteryPool.jackpot += 250;
-    botState.lotteryPool.tickets.push({ playerId: player.id, playerName: player.name });
+    const count = Math.min(5, Math.max(1, parseInt(args[0] || '1', 10) || 1));
+    const cost = count * LOTTERY_TICKET_PRICE;
+    if (player.wallet < cost) {
+      return {
+        text: `Lottery tickets cost *${formatGold(LOTTERY_TICKET_PRICE)}* each (${count} = *${formatGold(cost)}*). Wallet: *${formatGold(player.wallet)}*.`,
+        handler: 'Economy',
+      };
+    }
+    player.wallet -= cost;
+    botState.lotteryPool.jackpot += cost;
+    for (let i = 0; i < count; i += 1) {
+      botState.lotteryPool.tickets.push({ playerId: player.id, playerName: player.name });
+    }
+    addTransaction(player, `Bought ${count}x Lottery Ticket`, -cost);
+
+    if (botState.lotteryPool.tickets.length >= LOTTERY_DRAW_THRESHOLD) {
+      const winningTicket =
+        botState.lotteryPool.tickets[Math.floor(Math.random() * botState.lotteryPool.tickets.length)];
+      const prize = botState.lotteryPool.jackpot;
+      const winner = botState.players[winningTicket.playerId];
+      if (winner) {
+        winner.wallet += prize;
+        addTransaction(winner, 'Lottery Jackpot Win', prize);
+      }
+      botState.lotteryPool = {
+        jackpot: LOTTERY_BASE_SEED,
+        tickets: [],
+        lastWinner: {
+          playerName: winningTicket.playerName,
+          amount: prize,
+          drawnAt: new Date().toISOString(),
+        },
+      };
+      return {
+        text: [
+          `🎟️ *${player.name}* bought *${count}* ticket${count > 1 ? 's' : ''} and triggered the draw!`,
+          `🎊 *LOTTERY WINNER: ${winningTicket.playerName}!*`,
+          `Prize Paid: *+${formatGold(prize)}*`,
+          `New Round Jackpot Seeded: *${formatGold(LOTTERY_BASE_SEED)}*`,
+        ].join('\n'),
+        handler: 'Economy',
+      };
+    }
+
     return {
-      text: `🎟️ *${player.name}* bought a Lottery Ticket! Jackpot is now *¥${botState.lotteryPool.jackpot.toLocaleString()}*.`,
+      text: `🎟️ *${player.name}* bought *${count}* Lottery Ticket${count > 1 ? 's' : ''} (*-${formatGold(cost)}*)!\nJackpot: *${formatGold(botState.lotteryPool.jackpot)}* (${botState.lotteryPool.tickets.length}/${LOTTERY_DRAW_THRESHOLD} tickets until draw).`,
       handler: 'Economy',
     };
   }
@@ -1910,25 +2552,87 @@ async function executeBuiltInCommand(
   if (cmd === 'transactions') {
     return {
       text: player.transactions.length
-        ? `*🧾 Recent Ledger (${player.name})*\n${player.transactions
-            .slice(0, 6)
-            .map((t) => `• ${t.summary}: ${t.amount >= 0 ? '+' : ''}¥${t.amount.toLocaleString()}`)
+        ? `*🧾 Recent Gold Ledger (${player.name})*\n${player.transactions
+            .slice(0, 8)
+            .map((t) => `• ${t.summary}: ${t.amount >= 0 ? '+' : '-'}${formatGold(Math.abs(t.amount))}`)
             .join('\n')}`
-        : `No transactions logged yet.`,
+        : `No Gold transactions logged yet.`,
       handler: 'Economy',
     };
   }
 
-  if (cmd === 'loan') {
-    const amt = Math.min(5000, Math.max(500, parseInt(argStr, 10) || 1000));
-    player.loan += amt;
-    player.wallet += amt;
-    addTransaction(player, 'Guild Bank Loan', amt);
-    return { text: `🏦 Approved *¥${amt.toLocaleString()}* loan. Total debt: *¥${player.loan.toLocaleString()}*.`, handler: 'Economy' };
+  if (cmd === 'loan' || cmd === 'repay') {
+    const isRepay = cmd === 'repay' || args[0]?.toLowerCase() === 'repay';
+    if (isRepay) {
+      if (player.loan <= 0) {
+        return { text: `You have no active Guild Bank debt!`, handler: 'Economy' };
+      }
+      const rawAmt = cmd === 'repay' ? args[0] : args[1];
+      const maxPayable = Math.min(player.wallet, player.loan);
+      const amt = parseAmountToken(rawAmt, maxPayable);
+      if (amt === null || amt <= 0) {
+        return {
+          text: `Usage: *${p}repay <amount|all>* · Current Debt: *${formatGold(player.loan)}* · Wallet: *${formatGold(player.wallet)}*`,
+          handler: 'Economy',
+        };
+      }
+      const payAmt = Math.min(amt, player.loan);
+      if (payAmt > player.wallet) {
+        return { text: `Insufficient wallet Gold (*${formatGold(player.wallet)}*).`, handler: 'Economy' };
+      }
+      player.wallet -= payAmt;
+      player.loan -= payAmt;
+      addTransaction(player, 'Loan Repayment', -payAmt);
+      return {
+        text: `✅ Repaid *${formatGold(payAmt)}* toward your loan.\nRemaining Debt: *${formatGold(player.loan)}* · Wallet: *${formatGold(player.wallet)}*`,
+        handler: 'Economy',
+      };
+    }
+
+    const cap = maxLoanCap(player);
+    const availableCredit = Math.max(0, cap - player.loan);
+    if (availableCredit < 100) {
+      return {
+        text: `🏦 Loan limit reached (*${formatGold(player.loan)} / ${formatGold(cap)}*). Repay with *${p}repay all* first!`,
+        handler: 'Economy',
+        status: 'blocked',
+      };
+    }
+    const requested = parseAmountToken(args[0], availableCredit);
+    if (requested === null || requested < 100) {
+      return {
+        text: `Usage: *${p}loan <amount>* (min 100 Gold, available credit: *${formatGold(availableCredit)}*, 10% guild fee) or *${p}repay <amount|all>*.`,
+        handler: 'Economy',
+      };
+    }
+    const principal = Math.min(requested, availableCredit);
+    const totalDebtAdded = Math.round(principal * (1 + LOAN_INTEREST_RATE));
+    player.loan += totalDebtAdded;
+    player.wallet += principal;
+    addTransaction(player, 'Guild Bank Loan', principal);
+    return {
+      text: `🏦 Approved *${formatGold(principal)}* loan (10% fee → *+${formatGold(totalDebtAdded)}* debt).\nTotal Debt: *${formatGold(player.loan)}* · Wallet: *${formatGold(player.wallet)}*\nRepay anytime with *${p}repay all*.`,
+      handler: 'Economy',
+    };
   }
 
   if (cmd === 'mycds') {
-    return { text: `⏱️ *Cooldowns (${player.name})*\n• Daily: Ready\n• Card Drop: Ready\n• Heist: Ready`, handler: 'Economy' };
+    const now = Date.now();
+    const cdLabel = (last: number | undefined, cdMs: number) => {
+      const rem = cdMs - (now - (last || 0));
+      return rem > 0 ? formatDuration(rem) : 'Ready';
+    };
+    const lines = [
+      `⏱️ *Cooldowns (${player.name})*`,
+      `• Daily: *${cdLabel(player.lastDaily, DAILY_COOLDOWN_MS)}*`,
+      `• Work: *${cdLabel(player.lastWork, WORK_COOLDOWN_MS)}*`,
+      `• Fish: *${cdLabel(player.lastFish, FISH_COOLDOWN_MS)}*`,
+      `• Rob: *${cdLabel(player.lastRob, ROB_COOLDOWN_MS)}*`,
+      `• Heist: *${cdLabel(player.lastHeist, HEIST_COOLDOWN_MS)}*`,
+      `• Luck Potion: *${hasLuckBoost(player) ? formatDuration((player.luckBoostUntil || 0) - now) : 'Inactive'}*`,
+      `• Rob Shield: *${hasRobShield(player) ? formatDuration((player.robShieldUntil || 0) - now) : 'Inactive'}*`,
+    ];
+    return { text: lines.join('\n'), handler: 'Economy' };
   }
 
   if (cmd === 'afk') {
@@ -1936,18 +2640,76 @@ async function executeBuiltInCommand(
     return { text: `💤 *${player.name}* is now AFK: _${player.afkReason}_`, handler: 'General' };
   }
 
-  if (cmd === 'rob' || cmd === 'heist') {
-    const win = Math.random() > 0.45;
-    if (win) {
-      const loot = cmd === 'heist' ? 1400 : 480;
-      player.wallet += loot;
-      addTransaction(player, `${cmd.toUpperCase()} Success`, loot);
-      return { text: `🕶️ *${cmd === 'heist' ? 'Dungeon Vault Heist' : 'Pickpocket'} Succeeded!*\n*${player.name}* scored *¥${loot.toLocaleString()}*!`, handler: 'Economy' };
+  if (cmd === 'rob') {
+    const remaining = ROB_COOLDOWN_MS - (Date.now() - (player.lastRob || 0));
+    if (remaining > 0) {
+      return { text: `Lay low for *${formatDuration(remaining)}* before attempting another *${p}rob*.`, handler: 'Economy', status: 'blocked' };
     }
-    const fine = 300;
-    player.wallet = Math.max(0, player.wallet - fine);
+    const target = findPlayerTarget(argStr);
+    if (!target) {
+      return { text: `Target not found. Usage: *${p}rob @user*`, handler: 'Economy' };
+    }
+    if (target.id === player.id) {
+      return { text: `You can't pickpocket yourself.`, handler: 'Economy' };
+    }
+    if (hasRobShield(target)) {
+      return { text: `🛡️ *${target.name}* has an active *Rob Shield*! Pickpocket blocked.`, handler: 'Economy', status: 'blocked' };
+    }
+    if (target.wallet < 200) {
+      return { text: `*${target.name}* has less than *200 Gold* in their wallet (their bank is safe!).`, handler: 'Economy' };
+    }
+    player.lastRob = Date.now();
+    const successChance = hasLuckBoost(player) ? 0.5 : 0.45;
+    if (Math.random() < successChance) {
+      const pct = 0.15 + Math.random() * 0.1;
+      const stolen = Math.min(1200, Math.max(50, Math.round(target.wallet * pct)));
+      target.wallet -= stolen;
+      player.wallet += stolen;
+      addTransaction(player, `Robbed ${target.name}`, stolen);
+      addTransaction(target, `Robbed by ${player.name}`, -stolen);
+      return {
+        text: `🕶️ *Pickpocket Succeeded!*\n*${player.name}* stole *${formatGold(stolen)}* from *@${target.name}*'s wallet!`,
+        handler: 'Economy',
+      };
+    }
+    const fine = Math.min(player.wallet, 250);
+    player.wallet -= fine;
+    target.wallet += fine;
     player.shamePoints += 1;
-    return { text: `🚨 Caught red-handed! Lost *¥${fine}* and gained +1 Shame Point.`, handler: 'Economy' };
+    if (fine > 0) {
+      addTransaction(player, `Caught robbing ${target.name}`, -fine);
+      addTransaction(target, `Robbery fine from ${player.name}`, fine);
+    }
+    return {
+      text: `🚨 Caught red-handed trying to rob *${target.name}*! Paid *${formatGold(fine)}* fine and gained +1 Shame Point.`,
+      handler: 'Economy',
+    };
+  }
+
+  if (cmd === 'heist') {
+    const remaining = HEIST_COOLDOWN_MS - (Date.now() - (player.lastHeist || 0));
+    if (remaining > 0) {
+      return { text: `Vault security is on high alert. Try *${p}heist* again in *${formatDuration(remaining)}*.`, handler: 'Economy', status: 'blocked' };
+    }
+    player.lastHeist = Date.now();
+    const successChance = hasLuckBoost(player) ? 0.52 : 0.48;
+    if (Math.random() < successChance) {
+      const loot = 900 + Math.floor(Math.random() * 601);
+      player.wallet += loot;
+      addTransaction(player, 'Dungeon Vault Heist', loot);
+      return {
+        text: `🕶️ *Dungeon Vault Heist Succeeded!*\n*${player.name}* escaped with *+${formatGold(loot)}*!`,
+        handler: 'Economy',
+      };
+    }
+    const fine = Math.min(player.wallet, 400);
+    player.wallet -= fine;
+    player.shamePoints += 1;
+    if (fine > 0) addTransaction(player, 'Failed Heist Fine', -fine);
+    return {
+      text: `🚨 Caught by the guild guards! Lost *${formatGold(fine)}* and gained +1 Shame Point.`,
+      handler: 'Economy',
+    };
   }
 
   if (cmd === 'myshame') {
@@ -1969,36 +2731,144 @@ async function executeBuiltInCommand(
 
   // ── GAMBLE ──
   if (cmd === 'slots' || cmd === 'cf' || cmd === 'dice' || cmd === 'db' || cmd === 'dp' || cmd === 'roulette' || cmd === 'horse' || cmd === 'rr' || cmd === 'gamble') {
-    const numericArg = args.find((a) => /^\d+$/.test(a));
-    const bet = Math.max(50, Math.min(player.wallet, parseInt(numericArg || '100', 10) || 100));
-    if (player.wallet < 50) {
-      return { text: `You need at least *¥50* in your wallet to wager. Claim *${p}daily*!`, handler: 'Gamble' };
+    if (player.wallet < MIN_WAGER) {
+      return { text: `You need at least *${formatGold(MIN_WAGER)}* in your wallet to wager. Try *${p}work* or *${p}daily*!`, handler: 'Gamble' };
+    }
+
+    const luckBonus = hasLuckBoost(player) ? 0.03 : 0;
+
+    if (cmd === 'cf') {
+      const sideRaw = (args[0] || '').toLowerCase();
+      const side = sideRaw.startsWith('h') ? 'heads' : sideRaw.startsWith('t') ? 'tails' : null;
+      const bet = parseAmountToken(args[1], Math.min(player.wallet, MAX_WAGER));
+      if (!side || bet === null || bet < MIN_WAGER || bet > MAX_WAGER || bet > player.wallet) {
+        return {
+          text: `Usage: *${p}cf <h|t> <amount>* (${MIN_WAGER}–${MAX_WAGER.toLocaleString()} Gold, wallet: ${formatGold(player.wallet)}).`,
+          handler: 'Gamble',
+        };
+      }
+      const won = Math.random() < 0.48 + luckBonus;
+      const landed = won ? side : side === 'heads' ? 'tails' : 'heads';
+      const delta = won ? bet : -bet;
+      player.wallet += delta;
+      addTransaction(player, `Coinflip (${side})`, delta);
+      return {
+        text: `*🪙 Coinflip Result*\nCall: *${side.toUpperCase()}* · Landed: *${landed.toUpperCase()}*\n${won ? `✅ Won *+${formatGold(bet)}*!` : `❌ Lost *${formatGold(bet)}*.`}\nWallet: *${formatGold(player.wallet)}*`,
+        handler: 'Gamble',
+      };
+    }
+
+    if (cmd === 'roulette') {
+      const color = (args[0] || '').toLowerCase();
+      if (!['red', 'black', 'green'].includes(color)) {
+        return { text: `Usage: *${p}roulette <red|black|green> <amount>*`, handler: 'Gamble' };
+      }
+      const bet = parseAmountToken(args[1], Math.min(player.wallet, MAX_WAGER));
+      if (bet === null || bet < MIN_WAGER || bet > MAX_WAGER || bet > player.wallet) {
+        return {
+          text: `Specify a valid Gold bet (${MIN_WAGER}–${MAX_WAGER.toLocaleString()} Gold, wallet: ${formatGold(player.wallet)}).`,
+          handler: 'Gamble',
+        };
+      }
+      const pocket = Math.floor(Math.random() * 37); // 0 green, 1-18 red, 19-36 black
+      const landedColor = pocket === 0 ? 'green' : pocket <= 18 ? 'red' : 'black';
+      const won = landedColor === color;
+      const delta = won ? (color === 'green' ? bet * 35 : bet) : -bet;
+      player.wallet += delta;
+      addTransaction(player, `Roulette (${color})`, delta);
+      const badge = landedColor === 'green' ? '🟢' : landedColor === 'red' ? '🔴' : '⚫';
+      return {
+        text: `*🎡 Roulette Spin*\nBall landed on: ${badge} *${landedColor.toUpperCase()} (${pocket})*\n${won ? `🎉 Won *+${formatGold(delta)}*!` : `💸 Lost *${formatGold(bet)}*.`}\nWallet: *${formatGold(player.wallet)}*`,
+        handler: 'Gamble',
+      };
+    }
+
+    if (cmd === 'horse') {
+      const lane = parseInt(args[0] || '', 10);
+      if (!(lane >= 1 && lane <= 4)) {
+        return { text: `Usage: *${p}horse <1-4> <amount>*`, handler: 'Gamble' };
+      }
+      const bet = parseAmountToken(args[1], Math.min(player.wallet, MAX_WAGER));
+      if (bet === null || bet < MIN_WAGER || bet > MAX_WAGER || bet > player.wallet) {
+        return {
+          text: `Specify a valid Gold bet (${MIN_WAGER}–${MAX_WAGER.toLocaleString()} Gold, wallet: ${formatGold(player.wallet)}).`,
+          handler: 'Gamble',
+        };
+      }
+      const winnerLane = Math.floor(Math.random() * 4) + 1;
+      const won = lane === winnerLane;
+      const delta = won ? Math.round(bet * 2.8) : -bet;
+      player.wallet += delta;
+      addTransaction(player, `Horse Derby (Lane ${lane})`, delta);
+      return {
+        text: `*🐎 Chocobo & Horse Derby*\nYour Pick: Lane *#${lane}* · Winner: Lane *#${winnerLane}*\n${won ? `🏆 Won *+${formatGold(delta)}*!` : `💸 Lost *${formatGold(bet)}*.`}\nWallet: *${formatGold(player.wallet)}*`,
+        handler: 'Gamble',
+      };
+    }
+
+    // Amount-only gamble commands: slots, dice, db, dp, rr, gamble
+    const bet = parseAmountToken(args[0], Math.min(player.wallet, MAX_WAGER));
+    if (bet === null || bet < MIN_WAGER || bet > MAX_WAGER || bet > player.wallet) {
+      return {
+        text: `Usage: *${p}${cmd} <amount>* (${MIN_WAGER}–${MAX_WAGER.toLocaleString()} Gold, wallet: ${formatGold(player.wallet)}).`,
+        handler: 'Gamble',
+      };
     }
 
     if (cmd === 'slots') {
       const icons = ['🍜', '⚔️', '🦊', '🔮', '⭐'];
       const r1 = icons[Math.floor(Math.random() * icons.length)];
       const r2 = icons[Math.floor(Math.random() * icons.length)];
-      const r3 = icons[Math.floor(Math.random() * icons.length)];
+      let r3 = icons[Math.floor(Math.random() * icons.length)];
+      if (hasLuckBoost(player) && r1 !== r2 && r2 !== r3 && r1 !== r3 && Math.random() < 0.12) {
+        r3 = r1;
+      }
       const jackpot = r1 === r2 && r2 === r3;
       const pair = r1 === r2 || r2 === r3 || r1 === r3;
       const delta = jackpot ? bet * 4 : pair ? Math.round(bet * 0.6) : -bet;
       player.wallet += delta;
       addTransaction(player, 'Slots Spin', delta);
       return {
-        text: `*🎰 ${botState.config.bannerTitle} Slots*\n[ ${r1} | ${r2} | ${r3} ]\n\n${delta >= 0 ? `🎉 Won *¥${delta.toLocaleString()}*!` : `💸 Lost *¥${bet.toLocaleString()}*.`}\nWallet: *¥${player.wallet.toLocaleString()}*`,
+        text: `*🎰 ${botState.config.bannerTitle} Slots*\n[ ${r1} | ${r2} | ${r3} ]\n\n${delta >= 0 ? `🎉 Won *+${formatGold(delta)}*!` : `💸 Lost *${formatGold(bet)}*.`}\nWallet: *${formatGold(player.wallet)}*`,
         handler: 'Gamble',
-        buttons: [{ id: 'slots_again', label: `Spin ¥${bet}`, command: `${p}slots ${bet}` }],
+        buttons: [{ id: 'slots_again', label: `Spin 🪙 ${bet}`, command: `${p}slots ${bet}` }],
       };
     }
 
-    const win = Math.random() > 0.48;
-    const multiplier = cmd === 'rr' ? 2.5 : cmd === 'horse' ? 2 : 1;
-    const delta = win ? Math.round(bet * multiplier) : -bet;
+    if (cmd === 'dice') {
+      const pRoll = (Math.floor(Math.random() * 6) + 1) + (Math.floor(Math.random() * 6) + 1);
+      const bRoll = (Math.floor(Math.random() * 6) + 1) + (Math.floor(Math.random() * 6) + 1);
+      const tie = pRoll === bRoll;
+      const won = pRoll > bRoll;
+      const delta = tie ? 0 : won ? bet : -bet;
+      player.wallet += delta;
+      if (delta !== 0) addTransaction(player, 'Dice Roll', delta);
+      return {
+        text: `*🎲 Dice Showdown*\nYou rolled: *${pRoll}* · ${botState.config.botName} rolled: *${bRoll}*\n${tie ? '🤝 Tie — wager returned.' : won ? `✅ Won *+${formatGold(bet)}*!` : `❌ Lost *${formatGold(bet)}*.`}\nWallet: *${formatGold(player.wallet)}*`,
+        handler: 'Gamble',
+      };
+    }
+
+    if (cmd === 'rr') {
+      const spin = Math.random() + luckBonus;
+      const mult = spin >= 0.96 ? 3 : spin >= 0.83 ? 1.5 : spin >= 0.58 ? 1 : -1;
+      const delta = Math.round(bet * mult);
+      player.wallet += delta;
+      addTransaction(player, 'Lucky Wheel (.rr)', delta);
+      return {
+        text: `*🎡 Lucky Wheel (.rr)*\nWager: *${formatGold(bet)}*\nOutcome: ${delta > 0 ? `🎉 Hit *${mult + 1}x* (*+${formatGold(delta)}*)!` : `❌ Bust (*-${formatGold(bet)}*).`}\nWallet: *${formatGold(player.wallet)}*`,
+        handler: 'Gamble',
+      };
+    }
+
+    const winChance = cmd === 'dp' ? 0.32 + luckBonus : 0.47 + luckBonus;
+    const win = Math.random() < winChance;
+    const multiplier = cmd === 'dp' ? 2 : 1;
+    const delta = win ? bet * multiplier : -bet;
     player.wallet += delta;
     addTransaction(player, `Gamble (${cmd})`, delta);
     return {
-      text: `*🎲 ${cmd.toUpperCase()} Result*\nWager: ¥${bet.toLocaleString()}\nOutcome: ${win ? `✅ Won *+¥${delta.toLocaleString()}*!` : `❌ Lost *¥${bet.toLocaleString()}*.`}\nWallet: *¥${player.wallet.toLocaleString()}*`,
+      text: `*🎲 ${cmd.toUpperCase()} Result*\nWager: *${formatGold(bet)}*\nOutcome: ${win ? `✅ Won *+${formatGold(delta)}*!` : `❌ Lost *${formatGold(bet)}*.`}\nWallet: *${formatGold(player.wallet)}*`,
       handler: 'Gamble',
     };
   }
@@ -2010,13 +2880,40 @@ async function executeBuiltInCommand(
     const sum = (cards: number[]) => cards.reduce((a, b) => a + b, 0);
 
     if (!session || (action !== 'hit' && action !== 'stand')) {
-      const bet = Math.max(50, Math.min(player.wallet, parseInt(args[0] || '200', 10) || 200));
-      if (player.wallet < bet) return { text: `Insufficient wallet Yen for *¥${bet}* Blackjack.`, handler: 'Blackjack' };
+      if (session) {
+        return {
+          text: `*🃏 You already have an active Blackjack hand!* (Bet: ${formatGold(session.bet)})\nYour Hand: [${session.playerCards.join(', ')}] = *${sum(session.playerCards)}*\nChoose *${p}bj hit* or *${p}bj stand*.`,
+          handler: 'Blackjack',
+          buttons: [
+            { id: 'bj_hit', label: 'Hit', command: `${p}bj hit` },
+            { id: 'bj_stand', label: 'Stand', command: `${p}bj stand` },
+          ],
+        };
+      }
+      const bet = parseAmountToken(args[0] || '200', Math.min(player.wallet, MAX_WAGER));
+      if (bet === null || bet < MIN_WAGER || bet > MAX_WAGER || player.wallet < bet) {
+        return {
+          text: `Usage: *${p}bj <amount>* (${MIN_WAGER}–${MAX_WAGER.toLocaleString()} Gold, wallet: ${formatGold(player.wallet)}).`,
+          handler: 'Blackjack',
+        };
+      }
+      // Escrow wager on deal so wallet cannot be spent mid-hand
+      player.wallet -= bet;
       const pCards = [draw(), draw()];
       const dCards = [draw(), draw()];
+      const pSum = sum(pCards);
+      if (pSum === 21) {
+        const payout = Math.round(bet * 2.5);
+        player.wallet += payout;
+        addTransaction(player, 'Blackjack Natural 21', payout - bet);
+        return {
+          text: `*🃏 Natural 21!*\nHand: [${pCards.join(', ')}]\nWon *+${formatGold(payout - bet)}*! Wallet: *${formatGold(player.wallet)}*`,
+          handler: 'Blackjack',
+        };
+      }
       botState.activeBlackjack[player.id] = { playerCards: pCards, dealerCards: dCards, bet };
       return {
-        text: `*🃏 Blackjack (Bet ¥${bet})*\nYour Hand: [${pCards.join(', ')}] = *${sum(pCards)}*\n${botState.config.botName}'s Card: [${dCards[0]}, ?]`,
+        text: `*🃏 Blackjack (Bet ${formatGold(bet)})*\nYour Hand: [${pCards.join(', ')}] = *${pSum}*\n${botState.config.botName}'s Card: [${dCards[0]}, ?]`,
         handler: 'Blackjack',
         buttons: [
           { id: 'bj_hit', label: 'Hit', command: `${p}bj hit` },
@@ -2029,10 +2926,10 @@ async function executeBuiltInCommand(
       session.playerCards.push(draw());
       const total = sum(session.playerCards);
       if (total > 21) {
-        player.wallet -= session.bet;
+        addTransaction(player, 'Blackjack Bust', -session.bet);
         delete botState.activeBlackjack[player.id];
         return {
-          text: `*🃏 Bust! (${total})*\nHand: [${session.playerCards.join(', ')}]\nLost *¥${session.bet}*. Wallet: *¥${player.wallet.toLocaleString()}*`,
+          text: `*🃏 Bust! (${total})*\nHand: [${session.playerCards.join(', ')}]\nLost *${formatGold(session.bet)}*. Wallet: *${formatGold(player.wallet)}*`,
           handler: 'Blackjack',
         };
       }
@@ -2052,12 +2949,17 @@ async function executeBuiltInCommand(
     const dTotal = sum(session.dealerCards);
     const won = dTotal > 21 || pTotal > dTotal;
     const tie = pTotal === dTotal;
-    if (!tie) {
-      player.wallet += won ? session.bet : -session.bet;
+    if (tie) {
+      player.wallet += session.bet;
+    } else if (won) {
+      player.wallet += session.bet * 2;
+      addTransaction(player, 'Blackjack Win', session.bet);
+    } else {
+      addTransaction(player, 'Blackjack Loss', -session.bet);
     }
     delete botState.activeBlackjack[player.id];
     return {
-      text: `*🃏 Blackjack Showdown*\nYou: *${pTotal}* [${session.playerCards.join(', ')}]\n${botState.config.botName}: *${dTotal}* [${session.dealerCards.join(', ')}]\n\n${tie ? '🤝 Push (Tie).' : won ? `🎉 You win *+¥${session.bet}*!` : `💸 ${botState.config.botName} wins *¥${session.bet}*.`}`,
+      text: `*🃏 Blackjack Showdown*\nYou: *${pTotal}* [${session.playerCards.join(', ')}]\n${botState.config.botName}: *${dTotal}* [${session.dealerCards.join(', ')}]\n\n${tie ? '🤝 Push (Tie — bet returned).' : won ? `🎉 You win *+${formatGold(session.bet)}*!` : `💸 ${botState.config.botName} wins *${formatGold(session.bet)}*.`}\nWallet: *${formatGold(player.wallet)}*`,
       handler: 'Blackjack',
     };
   }
@@ -2071,9 +2973,10 @@ async function executeBuiltInCommand(
       if (idx === q.answerIndex) {
         player.wallet += q.reward;
         player.orbs += 1;
+        addTransaction(player, `Anime Quiz (${q.anime})`, q.reward);
         botState.eventScores[player.id] = (botState.eventScores[player.id] || 0) + 50;
         return {
-          text: `🎉 *Correct!* (${q.options[q.answerIndex]})\n*${player.name}* won *¥${q.reward}* + *1 Orb*!`,
+          text: `🎉 *Correct!* (${q.options[q.answerIndex]})\n*${player.name}* won *${formatGold(q.reward)}* + *1 Orb*!`,
           handler: 'Anime Quiz',
           buttons: [{ id: 'next_quiz', label: 'Next Question', command: `${p}aquiz` }],
         };
@@ -2118,7 +3021,7 @@ async function executeBuiltInCommand(
     const picked = bank[Math.floor(Math.random() * bank.length)];
     botState.activeQuiz = picked;
     return {
-      text: `*❓ Anime Trivia (${picked.anime})*\n${picked.question}\n\nA) ${picked.options[0]}\nB) ${picked.options[1]}\nC) ${picked.options[2]}\nD) ${picked.options[3]}\n\nReward: *¥${picked.reward}* + *1 Orb*`,
+      text: `*❓ Anime Trivia (${picked.anime})*\n${picked.question}\n\nA) ${picked.options[0]}\nB) ${picked.options[1]}\nC) ${picked.options[2]}\nD) ${picked.options[3]}\n\nReward: *${formatGold(picked.reward)}* + *1 Orb*`,
       handler: 'Anime Quiz',
       buttons: [
         { id: 'quiz_a', label: 'A', command: `${p}aquiz a` },
@@ -2139,9 +3042,10 @@ async function executeBuiltInCommand(
       player.wallet += 900;
       player.orbs += 2;
       player.xp += 120;
+      addTransaction(player, 'Floor Boss Victory', 900);
     }
     return {
-      text: `*⚔️ ${botState.config.bannerTitle} Floor Boss Battle*\nYour Deck Power: *${deckPower}*\nBoss (Veldora Shadow): *${bossPower}*\n\n${won ? '🏆 *Victory!* Earned +¥900, +2 Orbs, +120 XP!' : '🛡️ *Defeated!* Upgrade your *.deck* with stronger cards!'}`,
+      text: `*⚔️ ${botState.config.bannerTitle} Floor Boss Battle*\nYour Deck Power: *${deckPower}*\nBoss (Veldora Shadow): *${bossPower}*\n\n${won ? `🏆 *Victory!* Earned *+${formatGold(900)}*, +2 Orbs, +120 XP!` : '🛡️ *Defeated!* Upgrade your *.deck* with stronger cards!'}`,
       handler: 'Battle Arena',
     };
   }
@@ -2205,8 +3109,9 @@ async function executeBuiltInCommand(
     const botPick = words.find((w) => w.startsWith(replyStart) && !wc.used.includes(w)) || `${replyStart}ren`;
     wc.lastWord = botPick;
     player.wallet += 120;
+    addTransaction(player, `Word Chain (${next})`, 120);
     return {
-      text: `✅ Nice! *${next}* (+¥120)\n${botState.config.botName} plays: *${botPick.toUpperCase()}*\nNext letter: *${botPick.slice(-1).toUpperCase()}* (Streak: ${wc.score})`,
+      text: `✅ Nice! *${next}* (+${formatGold(120)})\n${botState.config.botName} plays: *${botPick.toUpperCase()}*\nNext letter: *${botPick.slice(-1).toUpperCase()}* (Streak: ${wc.score})`,
       handler: 'Word Chain',
     };
   }

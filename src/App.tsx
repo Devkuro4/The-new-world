@@ -174,6 +174,7 @@ export default function App() {
         imageUrl: replyPayload?.imageUrl,
         audioUrl: replyPayload?.audioUrl,
         imageCaption: replyPayload?.imageCaption,
+        thumbnail: replyPayload?.thumbnail,
         buttons: replyPayload?.buttons,
         handler: replyPayload?.handler,
         timestamp: nowStamp(),

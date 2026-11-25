@@ -83,6 +83,12 @@ export interface PlayerProfile {
   afkReason?: string;
   lastDaily?: number;
   lastFish?: number;
+  lastWork?: number;
+  lastRob?: number;
+  lastHeist?: number;
+  lastCardDrop?: number;
+  luckBoostUntil?: number;
+  robShieldUntil?: number;
   messagesSent: number;
   transactions: Array<{ id: string; summary: string; amount: number; timestamp: string }>;
 }
@@ -140,6 +146,16 @@ export interface WhatsAppSimButton {
   command: string;
 }
 
+export interface CommandThumbnail {
+  title: string;
+  body: string;
+  imageUrl: string;
+  sourceUrl: string;
+  thumbKey: string;
+  usage?: string;
+  category?: string;
+}
+
 export interface BotReplyPayload {
   text: string;
   imageUrl?: string;
@@ -151,6 +167,8 @@ export interface BotReplyPayload {
   hideText?: boolean;
   /** Link for the fast thumbnail card (thumbnail is embedded in the message, no media upload). */
   cardLink?: string;
+  /** Command-specific thumbnail preview card metadata. */
+  thumbnail?: CommandThumbnail;
   /** Media still downloading: the card is sent first, the file follows when ready (Baileys runner only). */
   pendingMedia?: Promise<{ path?: string; reason?: string }>;
   pendingKind?: 'audio' | 'video';
@@ -267,9 +285,10 @@ export const DEFAULT_COMMANDS: BotCommandDef[] = [
   { name: 'clb', category: 'Cards', description: 'View Card collection leaderboard', usage: '.clb', role: 'everyone', enabled: true },
   { name: 'deck', category: 'Cards', description: 'View or manage your active 6-card battle deck', usage: '.deck', role: 'everyone', enabled: true },
   { name: 'col', category: 'Cards', description: 'List all anime cards in your collection', usage: '.col', role: 'everyone', enabled: true },
-  { name: 'cardshop', category: 'Cards', description: 'Browse featured cards available for direct purchase', usage: '.cardshop', role: 'everyone', enabled: true },
-  { name: 'sellc', category: 'Cards', description: 'Sell a card from your collection for Yen & Stardust', usage: '.sellc <cardId>', role: 'everyone', enabled: true },
-  { name: 'rc', category: 'Cards', description: 'Roll a random gacha card pack (costs 500 Yen)', usage: '.rc', role: 'everyone', enabled: true },
+  { name: 'cardshop', category: 'Cards', description: 'Browse featured cards available for direct purchase with Gold', usage: '.cardshop', role: 'everyone', enabled: true },
+  { name: 'buycard', category: 'Cards', description: 'Buy a catalog anime card directly with Gold', usage: '.buycard <cardId>', role: 'everyone', enabled: true },
+  { name: 'sellc', category: 'Cards', description: 'Sell a card from your collection for Gold & Stardust', usage: '.sellc <cardId>', role: 'everyone', enabled: true },
+  { name: 'rc', category: 'Cards', description: 'Roll a random gacha card pack (500 Gold or .rc orb for 2 Orbs)', usage: '.rc [orb]', role: 'everyone', enabled: true },
   { name: 'vs', category: 'Cards', description: 'Challenge another player or boss with your deck', usage: '.vs [@player]', role: 'everyone', enabled: true },
   { name: 'sc', category: 'Cards', description: 'Spawn a specific card (Owner/Admin test tool)', usage: '.sc <cardId>', role: 'admin', enabled: true },
   { name: 'tc', category: 'Cards', description: 'Transfer a card to another collector', usage: '.tc <cardId> <@user>', role: 'everyone', enabled: true },
@@ -278,7 +297,7 @@ export const DEFAULT_COMMANDS: BotCommandDef[] = [
   { name: 'auction', category: 'Cards', description: 'List one of your cards on the live auction house', usage: '.auction <cardId> <minBid>', role: 'everyone', enabled: true },
   { name: 'submit', category: 'Cards', description: 'Submit a new anime character card suggestion', usage: '.submit <name | series>', role: 'everyone', enabled: true },
   { name: 'myauc', category: 'Cards', description: 'Check your active card auctions', usage: '.myauc', role: 'everyone', enabled: true },
-  { name: 'remauc', category: 'Cards', description: 'Cancel an active auction you created', usage: '.remauc <auctionId>', role: 'everyone', enabled: true },
+  { name: 'remauc', category: 'Cards', description: 'Cancel an active auction you created (refunds top bidder)', usage: '.remauc <auctionId>', role: 'everyone', enabled: true },
   { name: 'listauc', category: 'Cards', description: 'List all open live card auctions', usage: '.listauc', role: 'everyone', enabled: true },
   { name: 'stardust', category: 'Cards', description: 'Check your Stardust balance & upgrade costs', usage: '.stardust', role: 'everyone', enabled: true },
   { name: 'anticamp', category: 'Cards', description: 'Show card drop anti-camp cooldown timer', usage: '.anticamp', role: 'everyone', enabled: true },
@@ -287,42 +306,45 @@ export const DEFAULT_COMMANDS: BotCommandDef[] = [
   { name: 'myseries', category: 'Cards', description: 'Show series completion progress in your collection', usage: '.myseries', role: 'everyone', enabled: true },
   { name: 'fusion', category: 'Cards', description: 'Fuse two cards with Stardust to forge a stronger card', usage: '.fusion <id1> <id2>', role: 'everyone', enabled: true },
   { name: 'resell', category: 'Cards', description: 'Post a card for instant resale listing', usage: '.resell <cardId> <price>', role: 'everyone', enabled: true },
-  { name: 'bid', category: 'Cards', description: 'Place a bid on an active auction', usage: '.bid <auctionId> <amount>', role: 'everyone', enabled: true },
+  { name: 'bid', category: 'Cards', description: 'Place a Gold bid on an active auction', usage: '.bid <auctionId> <amount>', role: 'everyone', enabled: true },
 
   // Economy
-  { name: 'bal', aliases: ['balance'], category: 'Economy', description: 'Check your Yen wallet & bank balance', usage: '.bal', role: 'everyone', enabled: true },
-  { name: 'orbs', category: 'Economy', description: 'Check your Spirit Orbs balance', usage: '.orbs', role: 'everyone', enabled: true },
-  { name: 'ebal', category: 'Economy', description: 'View combined Economy summary (Yen, Bank, Orbs, Stardust)', usage: '.ebal', role: 'everyone', enabled: true },
-  { name: 'fish', category: 'Economy', description: 'Fish for anime-world catches, yen and rare items', usage: '.fish', role: 'everyone', enabled: true },
-  { name: 'daily', category: 'Economy', description: 'Claim your daily Yen, Orbs, and Stardust stipend', usage: '.daily', role: 'everyone', enabled: true },
-  { name: 'wd', aliases: ['withdraw'], category: 'Economy', description: 'Withdraw Yen from your bank to wallet', usage: '.wd <amount|all>', role: 'everyone', enabled: true },
-  { name: 'dep', aliases: ['deposit'], category: 'Economy', description: 'Deposit wallet Yen safely into the bank', usage: '.dep <amount|all>', role: 'everyone', enabled: true },
-  { name: 'donate', category: 'Economy', description: 'Send Yen from your wallet to another user', usage: '.donate <@user> <amount>', role: 'everyone', enabled: true },
-  { name: 'lottery', category: 'Economy', description: 'Buy a The new world lottery ticket for 250 Yen', usage: '.lottery', role: 'everyone', enabled: true },
+  { name: 'bal', aliases: ['balance'], category: 'Economy', description: 'Check your Gold wallet, bank & net worth', usage: '.bal', role: 'everyone', enabled: true },
+  { name: 'orbs', category: 'Economy', description: 'Check your Spirit Orbs balance & gacha uses', usage: '.orbs', role: 'everyone', enabled: true },
+  { name: 'ebal', category: 'Economy', description: 'View combined Economy summary (Gold, Bank, Orbs, Stardust, Debt)', usage: '.ebal', role: 'everyone', enabled: true },
+  { name: 'work', category: 'Economy', description: 'Work a guild shift for guaranteed Gold & XP', usage: '.work', role: 'everyone', enabled: true },
+  { name: 'fish', category: 'Economy', description: 'Fish for anime-world catches, Gold and rare items', usage: '.fish', role: 'everyone', enabled: true },
+  { name: 'daily', category: 'Economy', description: 'Claim your daily Gold, Orbs, and Stardust stipend', usage: '.daily', role: 'everyone', enabled: true },
+  { name: 'wd', aliases: ['withdraw'], category: 'Economy', description: 'Withdraw Gold from your bank to wallet', usage: '.wd <amount|all>', role: 'everyone', enabled: true },
+  { name: 'dep', aliases: ['deposit'], category: 'Economy', description: 'Deposit wallet Gold safely into the bank', usage: '.dep <amount|all>', role: 'everyone', enabled: true },
+  { name: 'donate', aliases: ['pay'], category: 'Economy', description: 'Send Gold from your wallet to another user', usage: '.donate <@user> <amount>', role: 'everyone', enabled: true },
+  { name: 'lottery', category: 'Economy', description: 'Buy lottery tickets (250 Gold each; auto-draws at 5 tickets)', usage: '.lottery [count]', role: 'everyone', enabled: true },
   { name: 'lotterylist', category: 'Economy', description: 'Show current lottery jackpot and participants', usage: '.lotterylist', role: 'everyone', enabled: true },
-  { name: 'rich', category: 'Economy', description: 'Global richest players ranking', usage: '.rich', role: 'everyone', enabled: true },
-  { name: 'richg', category: 'Economy', description: 'Richest players in this group', usage: '.richg', role: 'everyone', enabled: true },
+  { name: 'rich', category: 'Economy', description: 'Global richest players ranking by net Gold worth', usage: '.rich', role: 'everyone', enabled: true },
+  { name: 'richg', category: 'Economy', description: 'Richest active players in this group', usage: '.richg', role: 'everyone', enabled: true },
   { name: 'p', aliases: ['profile'], category: 'Economy', description: 'Show your anime RPG profile card', usage: '.p', role: 'everyone', enabled: true },
   { name: 'edit', category: 'Economy', description: 'Show editable profile fields', usage: '.edit', role: 'everyone', enabled: true },
   { name: 'bio', category: 'Economy', description: 'Set your anime profile bio', usage: '.bio <text>', role: 'everyone', enabled: true },
   { name: 'setage', category: 'Economy', description: 'Set display age on your profile', usage: '.setage <number>', role: 'everyone', enabled: true },
   { name: 'inv', aliases: ['inventory'], category: 'Economy', description: 'Inspect items and consumables in your bag', usage: '.inv', role: 'everyone', enabled: true },
+  { name: 'shop', category: 'Economy', description: 'Open The new world Gold item shop', usage: '.shop', role: 'everyone', enabled: true },
+  { name: 'buy', category: 'Economy', description: 'Buy an item from the Gold item shop', usage: '.buy <item> [qty]', role: 'everyone', enabled: true },
   { name: 'use', category: 'Economy', description: 'Use an item from your inventory', usage: '.use <item>', role: 'everyone', enabled: true },
-  { name: 'sell', category: 'Economy', description: 'Sell an inventory item for Yen', usage: '.sell <item>', role: 'everyone', enabled: true },
-  { name: 'shop', category: 'Economy', description: 'Open The new world item shop', usage: '.shop', role: 'everyone', enabled: true },
+  { name: 'sell', category: 'Economy', description: 'Sell an inventory item for Gold', usage: '.sell <item> [qty|all]', role: 'everyone', enabled: true },
   { name: 'lb', aliases: ['leaderboard'], category: 'Economy', description: 'View XP & Level leaderboard', usage: '.lb', role: 'everyone', enabled: true },
   { name: 'stlb', category: 'Economy', description: 'View Stardust & Orbs leaderboard', usage: '.stlb', role: 'everyone', enabled: true },
   { name: 'roast', category: 'Economy', description: 'Generate a witty anime-themed roast via Groq AI', usage: '.roast [@name]', role: 'everyone', enabled: true },
-  { name: 'gamble', category: 'Economy', description: 'Quick 50/50 high-stakes wager', usage: '.gamble <amount>', role: 'everyone', enabled: true },
-  { name: 'loan', category: 'Economy', description: 'Borrow Yen from The new world guild bank', usage: '.loan <amount>', role: 'everyone', enabled: true },
-  { name: 'mycds', category: 'Economy', description: 'Check your active economy & gacha cooldowns', usage: '.mycds', role: 'everyone', enabled: true },
+  { name: 'gamble', category: 'Economy', description: 'Quick high-stakes Gold wager against Pieck', usage: '.gamble <amount>', role: 'everyone', enabled: true },
+  { name: 'loan', category: 'Economy', description: 'Borrow Gold from the guild bank (10% fee, capped)', usage: '.loan <amount|repay <amt>>', role: 'everyone', enabled: true },
+  { name: 'repay', category: 'Economy', description: 'Repay your guild bank Gold loan', usage: '.repay <amount|all>', role: 'everyone', enabled: true },
+  { name: 'mycds', category: 'Economy', description: 'Check your live economy cooldowns & active buffs', usage: '.mycds', role: 'everyone', enabled: true },
   { name: 'afk', category: 'Economy', description: 'Set an AFK auto-notice reason', usage: '.afk [reason]', role: 'everyone', enabled: true },
   { name: 'rename', category: 'Economy', description: 'Change your RPG display name', usage: '.rename <newName>', role: 'everyone', enabled: true },
-  { name: 'transactions', category: 'Economy', description: 'View your recent wallet & bank ledger', usage: '.transactions', role: 'everyone', enabled: true },
-  { name: 'rob', category: 'Economy', description: 'Attempt a playful wallet pickpocket on a rival', usage: '.rob <@user>', role: 'everyone', enabled: true },
+  { name: 'transactions', category: 'Economy', description: 'View your recent wallet & bank Gold ledger', usage: '.transactions', role: 'everyone', enabled: true },
+  { name: 'rob', category: 'Economy', description: 'Attempt to pickpocket wallet Gold from a rival', usage: '.rob <@user>', role: 'everyone', enabled: true },
   { name: 'shame', category: 'Economy', description: 'View group hall of shame leaderboard', usage: '.shame', role: 'everyone', enabled: true },
   { name: 'myshame', category: 'Economy', description: 'Check your personal failed heist/rob count', usage: '.myshame', role: 'everyone', enabled: true },
-  { name: 'heist', category: 'Economy', description: 'Launch a group co-op dungeon vault heist', usage: '.heist', role: 'everyone', enabled: true },
+  { name: 'heist', category: 'Economy', description: 'Launch a dungeon vault Gold heist', usage: '.heist', role: 'everyone', enabled: true },
 
   // Games
   { name: 'startbattle', category: 'Games', description: 'Fight a Floor Boss in The new world with your active card deck', usage: '.startbattle', role: 'everyone', enabled: true },
