@@ -290,6 +290,7 @@ async function startServer() {
       text?: string;
       senderRole?: CommandRole;
       chatMode?: 'group' | 'dm';
+      quotedText?: string;
     };
     const text = String(body.text || '').trim();
     if (!text) {
@@ -305,6 +306,9 @@ async function startServer() {
     };
     const sender = senderMap[role];
     const chatMode = 'group' as const;
+    const quotedText = typeof body.quotedText === 'string' && body.quotedText.trim()
+      ? body.quotedText.trim().slice(0, 1000)
+      : undefined;
 
     const reply = await handleIncomingMessage({
       senderId: sender.id,
@@ -313,6 +317,7 @@ async function startServer() {
       chatMode,
       source: 'simulator',
       text,
+      quotedText,
     });
 
     res.json({

@@ -137,13 +137,15 @@ export default function App() {
     fetchState();
   }, [fetchState]);
 
-  const handleSendMessage = async (text: string) => {
+  const handleSendMessage = async (text: string, quotedText?: string, quotedSender?: string) => {
     const senderLabel = senderRole === 'owner' ? config.creatorName : senderRole === 'admin' ? 'Rem (Admin)' : 'Sora';
     const userMsg: SimMessage = {
       id: `u-${Date.now()}`,
       sender: 'user',
       senderLabel,
       text,
+      quotedText,
+      quotedSender,
       timestamp: nowStamp(),
     };
     setMessages((prev) => [...prev, userMsg]);
@@ -153,7 +155,7 @@ export default function App() {
       const res = await fetch('/api/simulate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ text, senderRole, chatMode }),
+        body: JSON.stringify({ text, senderRole, chatMode, quotedText }),
       });
       const data = (await res.json()) as {
         reply?: BotReplyPayload;

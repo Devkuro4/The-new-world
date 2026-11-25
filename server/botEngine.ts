@@ -22,7 +22,7 @@ import {
   type GroupSettings,
   type PlayerProfile,
 } from '../src/shared/botSchema.ts';
-import { askGroqText, hasGroqKey, GROQ_MODEL } from './groqClient.ts';
+import { askGroqText, hasGroqKey, GROQ_MODEL, type GroqChatMessage } from './groqClient.ts';
 import { applyTextUi, buildMenuUi } from './textUi.ts';
 import { getCommandPreviewPath, getThumbImageUrl, MENU_IMAGE_URL, resolveThumbKey } from './assets.ts';
 
@@ -46,6 +46,12 @@ export interface BlackjackSession {
   bet: number;
 }
 
+export interface AiConversationTurn {
+  role: 'user' | 'assistant';
+  content: string;
+  timestamp: string;
+}
+
 export interface BotState {
   config: BotConfig;
   groupSettings: GroupSettings;
@@ -64,6 +70,8 @@ export interface BotState {
     lastWinner?: { playerName: string; amount: number; drawnAt: string };
   };
   eventScores: Record<string, number>;
+  aiConversations: Record<string, AiConversationTurn[]>;
+  aiMemories: Record<string, string[]>;
   logs: ActivityLogEntry[];
   stats: {
     totalCommands: number;
@@ -188,6 +196,8 @@ function createInitialState(): BotState {
       'admin-rem': 310,
       'member-sora': 185,
     },
+    aiConversations: {},
+    aiMemories: {},
     logs: [],
     stats: {
       totalCommands: 0,
@@ -227,17 +237,20 @@ function loadState(): BotState {
           const customCards = saved.filter((card) => !base.cards.some((defaultCard) => defaultCard.id === card.id));
           return [...currentDefaults, ...customCards];
         })(),
-      players: (() => {
-        const rawPlayers = parsed.players && Object.keys(parsed.players).length > 0 ? parsed.players : base.players;
-        const normalized: Record<string, PlayerProfile> = {};
-        for (const [id, pl] of Object.entries(rawPlayers)) {
-          normalized[id] = normalizePlayer(pl);
-        }
-        return normalized;
-      })(),
-      stats: { ...base.stats, ...(parsed.stats || {}) },
-    };
-  }
+        players: (() => {
+          const rawPlayers = parsed.players && Object.keys(parsed.players).length > 0 ? parsed.players : base.players;
+          const normalized: Record<string, PlayerProfile> = {};
+          for (const [id, pl] of Object.entries(rawPlayers)) {
+            normalized[id] = normalizePlayer(pl);
+          }
+          return normalized;
+        })(),
+        aiConversations:
+          parsed.aiConversations && typeof parsed.aiConversations === 'object' ? parsed.aiConversations : {},
+        aiMemories: parsed.aiMemories && typeof parsed.aiMemories === 'object' ? parsed.aiMemories : {},
+        stats: { ...base.stats, ...(parsed.stats || {}) },
+      };
+    }
   } catch {
     // Fall back to fresh initial state if state file is unreadable
   }
@@ -249,7 +262,7 @@ export const botState: BotState = loadState();
 if (botState.config.creatorName.trim().toLowerCase() === 'kuro') {
   botState.config.creatorName = DEFAULT_BOT_CONFIG.creatorName;
 }
-if (/created by kuro|gemini 4 hydrogen/i.test(botState.config.aiPersonaPrompt)) {
+if (/created by kuro|gemini 4 hydrogen|Ask a short follow-up question when it makes the conversation feel natural/i.test(botState.config.aiPersonaPrompt)) {
   botState.config.aiPersonaPrompt = DEFAULT_BOT_CONFIG.aiPersonaPrompt;
 }
 
@@ -1055,6 +1068,111 @@ function buildSystemInstruction(): string {
   return `${botState.config.aiPersonaPrompt}\nBot Name: ${botState.config.botName}. Creator: ${botState.config.creatorName}. Command Prefix: ${botState.config.prefix}.\n${guard}`;
 }
 
+function getAiHistory(playerId: string): GroqChatMessage[] {
+  const turns = botState.aiConversations[playerId] || [];
+  return turns.slice(-12).map((t) => ({ role: t.role, content: t.content }));
+}
+
+function appendAiTurn(playerId: string, userText: string, assistantText: string): void {
+  const list = botState.aiConversations[playerId] || [];
+  const now = new Date().toISOString();
+  list.push(
+    { role: 'user', content: userText.slice(0, 1200), timestamp: now },
+    { role: 'assistant', content: assistantText.slice(0, 1200), timestamp: now }
+  );
+  if (list.length > 16) {
+    list.splice(0, list.length - 16);
+  }
+  botState.aiConversations[playerId] = list;
+}
+
+function savePlayerMemory(playerId: string, rawNote: string): boolean {
+  const note = rawNote.replace(/\s+/g, ' ').trim().slice(0, 160);
+  if (note.length < 4) return false;
+  const list = botState.aiMemories[playerId] || [];
+  const lower = note.toLowerCase();
+  if (list.some((existing) => existing.toLowerCase() === lower)) return false;
+  list.unshift(note);
+  if (list.length > 20) list.length = 20;
+  botState.aiMemories[playerId] = list;
+  return true;
+}
+
+function captureLocalMemories(player: PlayerProfile, text: string): void {
+  const cleaned = text.replace(/\s+/g, ' ').trim();
+  if (!cleaned || cleaned.length > 260) return;
+
+  const forgetMatch = cleaned.match(/^(?:please\s+)?forget\s+(?:about\s+)?(.+)$/i);
+  if (forgetMatch) {
+    const target = forgetMatch[1].trim().toLowerCase();
+    const current = botState.aiMemories[player.id] || [];
+    botState.aiMemories[player.id] = current.filter((m) => !m.toLowerCase().includes(target));
+    return;
+  }
+
+  const rememberMatch = cleaned.match(
+    /(?:remember\s+(?:that\s+)?|don['’]?t\s+forget\s+(?:that\s+)?|keep\s+in\s+mind\s+(?:that\s+)?)(.+)$/i
+  );
+  if (rememberMatch) {
+    const fact = rememberMatch[1].replace(/[.!?]+$/, '').trim();
+    if (fact.length >= 4) {
+      savePlayerMemory(player.id, fact);
+      return;
+    }
+  }
+
+  const patterns: RegExp[] = [
+    /\b(my favorite [a-z\s]{2,24} is [^.!?\n]{2,70})/i,
+    /\b(call me [a-z0-9 _-]{2,28})/i,
+    /\b(my name is [a-z0-9 _-]{2,28})/i,
+    /\b(i['’]?m (?:currently\s+)?(?:watching|reading|playing|working on|studying|building)\s+[^.!?\n]{2,70})/i,
+    /\b(i (?:really\s+)?(?:like|love|prefer|hate)\s+[^.!?\n]{3,70})/i,
+  ];
+  for (const rx of patterns) {
+    const m = cleaned.match(rx);
+    if (m?.[1]) {
+      savePlayerMemory(player.id, m[1].trim());
+      break;
+    }
+  }
+}
+
+async function extractAiMemoryAsync(player: PlayerProfile, userText: string, replyText: string): Promise<void> {
+  if (!hasGroqKey() || userText.trim().length < 18) return;
+  try {
+    const existing = (botState.aiMemories[player.id] || []).slice(0, 12);
+    const result = await askGroqText(
+      `Existing memories for ${player.name}:\n${existing.length ? existing.map((m) => `- ${m}`).join('\n') : '(none)'}\n\nUser message: "${userText.slice(0, 400)}"\nAssistant reply: "${replyText.slice(0, 300)}"\n\nExtract at most ONE new durable personal fact, preference, ongoing goal, or context worth remembering about ${player.name} in future chats (under 110 characters, plain sentence). If nothing new/memorable was shared, reply with exact word NONE.`,
+      'You are a concise memory extractor. Reply ONLY with one short fact sentence or NONE.'
+    );
+    const cleaned = result.replace(/^[-•*\s]+/, '').replace(/\s+/g, ' ').trim();
+    if (cleaned && !/^none\b/i.test(cleaned) && cleaned.length >= 6 && cleaned.length <= 150) {
+      if (savePlayerMemory(player.id, cleaned)) {
+        persistState();
+      }
+    }
+  } catch {
+    // Silent background extraction failure never disrupts chat
+  }
+}
+
+function buildAiSystemInstruction(player: PlayerProfile, quotedText?: string): string {
+  const memories = botState.aiMemories[player.id] || [];
+  const topCards = player.deck
+    .map((id) => botState.cards.find((c) => c.id === id)?.name)
+    .filter(Boolean)
+    .slice(0, 3);
+  const profileContext = `Active user: ${player.name} (role: ${player.role}, level: ${player.level}, Gold: ${player.wallet + player.bank}${player.guild ? `, guild: ${player.guild}` : ''}${topCards.length ? `, deck: ${topCards.join(', ')}` : ''}).`;
+  const memoryBlock =
+    memories.length > 0
+      ? `\nSaved memories about ${player.name}:\n${memories.slice(0, 12).map((m) => `- ${m}`).join('\n')}`
+      : '';
+  const followUpRule = quotedText
+    ? `\nCRITICAL FOLLOW-UP RULE: The user is replying directly to this earlier message:\n"""${quotedText.slice(0, 700)}"""\nAnswer strictly as a direct follow-up continuing THAT message and thread. Never switch to a new topic or ask an unrelated question.`
+    : '\nCONTINUITY RULE: Use the conversation history and saved memories to continue ongoing threads naturally without tacking on unrelated questions.';
+  return `${buildSystemInstruction()}\n${profileContext}${memoryBlock}${followUpRule}`;
+}
+
 function buildCommandThumbnail(cmdDef: BotCommandDef, prefix: string): CommandThumbnail {
   const thumbKey = resolveThumbKey(cmdDef.name, cmdDef.category);
   const rawBody = (cmdDef.description || `${botState.config.botName} · ${cmdDef.category}`).trim();
@@ -1130,16 +1248,29 @@ export async function handleIncomingMessage(params: {
           handler: 'Prefix Hint',
         };
       } else if (!hasGroqKey()) {
+        captureLocalMemories(player, input);
         reply = {
           text: `Hi ${player.name}! Try a command like *${prefix}menu*, *${prefix}card*, *${prefix}anime Frieren*, or *${prefix}daily*. (Configure GROQ_API_KEY in Secrets for natural AI chat.)`,
           handler: 'Fallback Responder',
         };
       } else {
         botState.stats.totalAiCalls += 1;
+        captureLocalMemories(player, input);
+        const history = getAiHistory(player.id);
+        const userTurnPrompt = params.quotedText
+          ? `[Replying to: "${params.quotedText.slice(0, 600)}"]\n\n${player.name}: ${input}`
+          : `${player.name} (${params.chatMode}): ${input}`;
         const aiText = await askGroqText(
-          `User (${player.name}) says in ${params.chatMode}: ${input}`,
-          buildSystemInstruction()
+          userTurnPrompt,
+          buildAiSystemInstruction(player, params.quotedText),
+          history
         );
+        appendAiTurn(
+          player.id,
+          params.quotedText ? `[Replying to: "${params.quotedText.slice(0, 200)}"] ${input}` : input,
+          aiText
+        );
+        void extractAiMemoryAsync(player, input, aiText);
         reply = {
           text: aiText,
           handler: `Groq AI (${GROQ_MODEL})`,
@@ -1390,13 +1521,82 @@ async function executeBuiltInCommand(
       handler: 'General',
     };
   }
-  if (cmd === 'memories') {
-    const recent = botState.logs.slice(0, 4);
+  if (cmd === 'mem') {
+    const sub = args[0]?.toLowerCase();
+    if (sub === 'clear' || sub === 'reset') {
+      botState.aiMemories[player.id] = [];
+      botState.aiConversations[player.id] = [];
+      return {
+        text: `🧹 Cleared all saved memories and chat history for *${player.name}*.`,
+        handler: 'AI Memory',
+      };
+    }
+    if (sub === 'add' && args.slice(1).join(' ').trim()) {
+      const note = args.slice(1).join(' ').trim();
+      savePlayerMemory(player.id, note);
+      return {
+        text: `🧠 Saved to *${player.name}*'s memories:\n• _${note.slice(0, 160)}_`,
+        handler: 'AI Memory',
+      };
+    }
+    if ((sub === 'del' || sub === 'delete' || sub === 'remove') && args[1]) {
+      const idx = Number.parseInt(args[1], 10);
+      const list = botState.aiMemories[player.id] || [];
+      if (!Number.isFinite(idx) || idx < 1 || idx > list.length) {
+        return {
+          text: `Provide a valid memory number from *1* to *${list.length}* (check *${p}mem*).`,
+          handler: 'AI Memory',
+        };
+      }
+      const [removed] = list.splice(idx - 1, 1);
+      botState.aiMemories[player.id] = list;
+      return {
+        text: `🗑️ Removed memory #${idx} for *${player.name}*:\n• _${removed}_`,
+        handler: 'AI Memory',
+      };
+    }
+    const personal = botState.aiMemories[player.id] || [];
+    if (personal.length === 0) {
+      return {
+        text: `*🧠 Memories for ${player.name}*\n_I don't have any memories saved for you yet._\n\nTell me something in chat (e.g. "remember that...") or save one with *${p}mem add <note>*.`,
+        handler: 'AI Memory',
+      };
+    }
+    const lines = personal.map((m, i) => `${i + 1}. ${m}`).join('\n');
     return {
-      text: recent.length
-        ? `*🕰️ Recent Group Memories*\n${recent.map((l) => `• *${l.senderName}*: \`${l.input}\``).join('\n')}`
-        : '*🕰️ Group Memories*\nNo commands recorded yet in this session.',
-      handler: 'General',
+      text: `*🧠 What ${botState.config.botName} Remembers About ${player.name}* (${personal.length})\n${lines}\n\nManage: *${p}mem add <note>* · *${p}mem del <num>* · *${p}mem clear*`,
+      handler: 'AI Memory',
+    };
+  }
+  if (cmd === 'memories') {
+    const sub = args[0]?.toLowerCase();
+    if (sub === 'clear' || sub === 'reset') {
+      botState.aiMemories[player.id] = [];
+      botState.aiConversations[player.id] = [];
+      return {
+        text: `🧹 Cleared all saved AI memories and recent conversation history for *${player.name}*.`,
+        handler: 'AI Memory',
+      };
+    }
+    if (sub === 'add' && args.slice(1).join(' ').trim()) {
+      const note = args.slice(1).join(' ').trim();
+      savePlayerMemory(player.id, note);
+      return {
+        text: `🧠 Saved to *${player.name}*'s AI memories:\n• _${note.slice(0, 160)}_`,
+        handler: 'AI Memory',
+      };
+    }
+    const personal = botState.aiMemories[player.id] || [];
+    const recent = botState.logs.slice(0, 4);
+    const personalBlock = personal.length
+      ? `*🧠 What ${botState.config.botName} Remembers (${player.name})*\n${personal.slice(0, 8).map((m) => `• ${m}`).join('\n')}`
+      : `*🧠 AI Personal Memories (${player.name})*\n_None saved yet — mention facts in chat or use *${p}memories add <note>*._`;
+    const groupBlock = recent.length
+      ? `\n\n*🕰️ Recent Group Moments*\n${recent.map((l) => `• *${l.senderName}*: \`${l.input}\``).join('\n')}`
+      : '';
+    return {
+      text: `${personalBlock}${groupBlock}\n\nManage: *${p}memories add <note>* · *${p}memories clear*`,
+      handler: 'AI Memory',
     };
   }
 
@@ -3504,13 +3704,15 @@ async function executeBuiltInCommand(
   }
 
   if (['gpt', 'copilot', 'perplexity', 'imagine', 'tt', 'translate', 'tb', 'transcribe', 'ocr', 'tldr', 'tts', 'upscale'].includes(cmd)) {
-    if (!argStr && cmd !== 'upscale') {
-      return { text: `Usage: *${p}${cmd} <your prompt or text>*`, handler: 'Groq AI' };
+    const effectiveInput = (argStr || quotedText || '').trim();
+    if (!effectiveInput && cmd !== 'upscale') {
+      return { text: `Usage: *${p}${cmd} <your prompt or text>* (or reply to a message)`, handler: 'Groq AI' };
     }
     if (!hasGroqKey()) {
       return { text: `Groq chat is not configured yet. Add GROQ_API_KEY in Render Environment.`, handler: 'Groq AI', status: 'error' };
     }
     botState.stats.totalAiCalls += 1;
+    captureLocalMemories(player, effectiveInput);
     const taskPrefix =
       cmd === 'tldr'
         ? 'Summarize this concisely in 3 bullet points: '
@@ -3521,7 +3723,21 @@ async function executeBuiltInCommand(
         : cmd === 'imagine'
         ? 'Write a vivid anime art prompt and scene breakdown for: '
         : '';
-    const answer = await askGroqText(`${taskPrefix}${argStr || 'Enhance anime frame clarity'}`, buildSystemInstruction());
+    const promptBody =
+      quotedText && argStr
+        ? `${taskPrefix}[Replying to: "${quotedText.slice(0, 600)}"]\n\nFollow-up: ${argStr}`
+        : `${taskPrefix}${effectiveInput || 'Enhance anime frame clarity'}`;
+    const answer = await askGroqText(
+      promptBody,
+      buildAiSystemInstruction(player, quotedText),
+      getAiHistory(player.id)
+    );
+    appendAiTurn(
+      player.id,
+      quotedText && argStr ? `[Replying to: "${quotedText.slice(0, 200)}"] ${argStr}` : effectiveInput,
+      answer
+    );
+    void extractAiMemoryAsync(player, effectiveInput, answer);
     return { text: answer, handler: `Groq AI (.${cmd})` };
   }
 
@@ -3681,7 +3897,7 @@ async function executeBuiltInCommand(
 export function generateBaileysBotCode(): string {
   const c = botState.config;
   const enabledNames = botState.commands.filter((cmd) => cmd.enabled).map((cmd) => cmd.name);
-  return `// Standalone ${c.bannerTitle} / ${c.botName} WhatsApp Group Bot (Baileys + Groq)
+  return `// Standalone ${c.bannerTitle} / ${c.botName} WhatsApp Group Bot (Baileys + Engine Relay + Groq)
 // Generated by The new world Studio for ${c.creatorName}
 import makeWASocket, { useMultiFileAuthState, DisconnectReason } from '@whiskeysockets/baileys';
 
@@ -3689,9 +3905,25 @@ const PREFIX = ${JSON.stringify(c.prefix)};
 const BOT_NAME = ${JSON.stringify(c.botName)};
 const CREATOR = ${JSON.stringify(c.creatorName)};
 const OWNER_NUMBER = ${JSON.stringify(c.ownerNumber)};
-const ENABLED_COMMANDS = new Set(${JSON.stringify(enabledNames.slice(0, 30))});
+const SERVER_URL = (process.env.PIECK_SERVER_URL || process.env.APP_URL || 'http://localhost:3000').replace(/\\/+$/, '');
+const ENABLED_COMMANDS = new Set(${JSON.stringify(enabledNames)});
 
-async function askGroq(prompt) {
+async function callEngine(text, senderRole, quotedText) {
+  const res = await fetch(\`\${SERVER_URL}/api/simulate\`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ text, senderRole, chatMode: 'group', quotedText }),
+    signal: AbortSignal.timeout(15000),
+  });
+  if (!res.ok) throw new Error(\`Engine HTTP \${res.status}\`);
+  const data = await res.json();
+  return data.reply;
+}
+
+async function askGroq(prompt, quotedText) {
+  const sys = ${JSON.stringify(c.aiPersonaPrompt)} + (quotedText
+    ? \`\\nCRITICAL FOLLOW-UP RULE: The user is replying to: """\${quotedText}""". Answer as a direct follow-up continuing that exact topic.\`
+    : '');
   const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
     method: 'POST',
     headers: {
@@ -3703,8 +3935,8 @@ async function askGroq(prompt) {
       reasoning_effort: 'low',
       max_completion_tokens: 1024,
       messages: [
-        { role: 'system', content: ${JSON.stringify(c.aiPersonaPrompt)} },
-        { role: 'user', content: prompt },
+        { role: 'system', content: sys },
+        { role: 'user', content: quotedText ? \`[Replying to: "\${quotedText}"]\\n\${prompt}\` : prompt },
       ],
     }),
   });
@@ -3725,12 +3957,14 @@ function renderMenu() {
     '  ' + PREFIX + 'card',
     '  ' + PREFIX + 'bal',
     '  ' + PREFIX + 'daily',
+    '  ' + PREFIX + 'mem',
     '  ' + PREFIX + 'gpt <question>',
     '',
     line,
     '\`\`\`',
   ].join('\\n');
 }
+
 async function startBot() {
   const { state, saveCreds } = await useMultiFileAuthState('./auth_pieck');
   const sock = makeWASocket({ auth: state, printQRInTerminal: true });
@@ -3744,24 +3978,44 @@ async function startBot() {
 
   sock.ev.on('messages.upsert', async ({ messages }) => {
     const msg = messages[0];
-    if (!msg?.message || msg.key.fromMe) return;
+    if (!msg?.message) return;
     const jid = msg.key.remoteJid;
     if (!jid?.endsWith('@g.us')) return;
-    const body = msg.message.conversation || msg.message.extendedTextMessage?.text || '';
+    const body = (msg.message.conversation || msg.message.extendedTextMessage?.text || '').trim();
+    if (!body) return;
     const context = msg.message.extendedTextMessage?.contextInfo;
+    const quotedText = (
+      context?.quotedMessage?.conversation ||
+      context?.quotedMessage?.extendedTextMessage?.text ||
+      ''
+    ).trim() || undefined;
     const botNumber = sock.user?.id?.split('@')[0]?.split(':')[0];
     const isCommand = body.startsWith(PREFIX);
+    if (msg.key.fromMe && !isCommand) return;
     const isTagged = Boolean((context?.mentionedJid || []).some(
-      (jid) => jid.split('@')[0]?.split(':')[0] === botNumber
+      (id) => id.split('@')[0]?.split(':')[0] === botNumber
     ));
     const isReply = Boolean(
       context?.stanzaId && context?.participant?.split('@')[0]?.split(':')[0] === botNumber
     );
     if (!isCommand && !isTagged && !isReply) return;
 
+    const senderDigits = (msg.key.participant || jid).split('@')[0]?.split(':')[0];
+    const senderRole = senderDigits === OWNER_NUMBER.replace(/[^\\d]/g, '') || msg.key.fromMe ? 'owner' : 'everyone';
+
+    try {
+      const engineReply = await callEngine(body, senderRole, quotedText);
+      if (engineReply?.text) {
+        await sock.sendMessage(jid, { text: engineReply.text }, { quoted: msg });
+        return;
+      }
+    } catch {
+      // Fall back to direct handlers when the studio server is unreachable
+    }
+
     if (!isCommand) {
-      const prompt = body.replace(/@\d+/g, '').trim() || 'Hello Pieck';
-      await sock.sendMessage(jid, { text: await askGroq(prompt) });
+      const prompt = body.replace(/@\\d+/g, '').trim() || 'Hello Pieck';
+      await sock.sendMessage(jid, { text: await askGroq(prompt, quotedText) }, { quoted: msg });
       return;
     }
 
@@ -3769,16 +4023,20 @@ async function startBot() {
     const arg = rest.join(' ');
 
     if (cmd === 'menu' || cmd === 'help') {
-      await sock.sendMessage(jid, { text: renderMenu() });
+      await sock.sendMessage(jid, { text: renderMenu() }, { quoted: msg });
     } else if (cmd === 'anime' && arg) {
       const res = await fetch(\`https://api.jikan.moe/v4/anime?q=\${encodeURIComponent(arg)}&limit=1&sfw=true\`);
       const json = await res.json();
       const anime = json.data?.[0];
       await sock.sendMessage(jid, {
         text: anime ? \`*\${anime.title}* (★ \${anime.score})\\n\${anime.synopsis?.slice(0, 220)}...\` : 'Anime not found.',
-      });
+      }, { quoted: msg });
     } else if ((cmd === 'gpt' || cmd === 'copilot') && arg) {
-      await sock.sendMessage(jid, { text: await askGroq(arg) });
+      await sock.sendMessage(jid, { text: await askGroq(arg, quotedText) }, { quoted: msg });
+    } else if (ENABLED_COMMANDS.has(cmd.toLowerCase())) {
+      await sock.sendMessage(jid, {
+        text: \`Command *\${PREFIX}\${cmd}* requires your Pieck Studio server running at \${SERVER_URL} (run *npm run dev* / *npm start*).\`,
+      }, { quoted: msg });
     }
   });
 }

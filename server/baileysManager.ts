@@ -115,11 +115,17 @@ function extractQuotedText(msg: WAMessage): string {
   const ctx = extractContextInfo(msg);
   const q = ctx?.quotedMessage;
   if (!q) return '';
+  const inner =
+    q.ephemeralMessage?.message ||
+    q.viewOnceMessage?.message ||
+    q.viewOnceMessageV2?.message ||
+    q;
   return (
-    q.conversation ||
-    q.extendedTextMessage?.text ||
-    q.imageMessage?.caption ||
-    q.videoMessage?.caption ||
+    inner.conversation ||
+    inner.extendedTextMessage?.text ||
+    inner.imageMessage?.caption ||
+    inner.videoMessage?.caption ||
+    inner.documentMessage?.caption ||
     ''
   ).trim();
 }
@@ -357,17 +363,25 @@ async function sendBotReply(
         }
       : undefined;
 
-    const plainContent = { text: finalText.slice(0, 4096), mentions };
+    const plainContent = mentions && mentions.length > 0
+      ? { text: finalText.slice(0, 4096), mentions }
+      : { text: finalText.slice(0, 4096) };
+    const cardContextInfo = linkCard
+      ? {
+          ...linkCard,
+          ...(mentions && mentions.length > 0 ? { mentionedJid: mentions } : {}),
+        }
+      : undefined;
     let textMessage;
     try {
       textMessage = await sock.sendMessage(
         remoteJid,
-        linkCard ? { ...plainContent, contextInfo: { ...linkCard, mentionedJid: mentions || [] } } : plainContent,
+        cardContextInfo ? { ...plainContent, contextInfo: cardContextInfo } : plainContent,
         { quoted }
       );
     } catch (error) {
       if (!linkCard) throw error;
-      // The thumbnail card was rejected: always fall back to the plain reply.
+      console.warn('[Baileys] externalAdReply rejected, falling back to plain text:', error instanceof Error ? error.message : error);
       textMessage = await sock.sendMessage(remoteJid, plainContent, { quoted });
     }
     trackSentId(textMessage?.key?.id);
@@ -753,6 +767,7 @@ async function startSocket(): Promise<WASocket> {
         await sendBotReply(sock, remoteJid, msg, outgoing, effect.mentions);
       } catch (err) {
         lastError = err instanceof Error ? err.message : 'Message handler error';
+        console.error('[Baileys] incoming message error:', err);
       }
     }
   });

@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { CheckCheck, RotateCcw, Send, Sparkles } from 'lucide-react';
+import { CheckCheck, Reply, RotateCcw, Send, Sparkles, X } from 'lucide-react';
 import type { BotConfig, CommandRole, CommandThumbnail, GroupSettings, WhatsAppSimButton } from '../shared/botSchema';
 import { WhatsAppText } from './WhatsAppText';
 
@@ -8,6 +8,8 @@ export interface SimMessage {
   sender: 'user' | 'bot';
   senderLabel: string;
   text: string;
+  quotedText?: string;
+  quotedSender?: string;
   imageUrl?: string;
   imageCaption?: string;
   audioUrl?: string;
@@ -26,7 +28,7 @@ interface WhatsAppSimulatorProps {
   chatMode: 'group' | 'dm';
   onChangeRole: (role: CommandRole) => void;
   onChangeChatMode: (mode: 'group' | 'dm') => void;
-  onSendMessage: (text: string) => void;
+  onSendMessage: (text: string, quotedText?: string, quotedSender?: string) => void;
   onClearChat: () => void;
 }
 
@@ -45,10 +47,12 @@ export const WhatsAppSimulator: React.FC<WhatsAppSimulatorProps> = ({
   onClearChat,
 }) => {
   const [draft, setDraft] = useState('');
+  const [replyingTo, setReplyingTo] = useState<{ text: string; senderLabel: string } | null>(null);
   const [avatarBroken, setAvatarBroken] = useState(false);
   const [brokenImages, setBrokenImages] = useState<Record<string, boolean>>({});
   const [brokenThumbs, setBrokenThumbs] = useState<Record<string, boolean>>({});
   const endRef = useRef<HTMLDivElement | null>(null);
+  const inputRef = useRef<HTMLInputElement | null>(null);
 
   useEffect(() => {
     endRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -70,8 +74,18 @@ export const WhatsAppSimulator: React.FC<WhatsAppSimulatorProps> = ({
     e.preventDefault();
     const trimmed = draft.trim();
     if (!trimmed || sending) return;
+    const activeReply = replyingTo;
     setDraft('');
-    onSendMessage(trimmed);
+    setReplyingTo(null);
+    onSendMessage(trimmed, activeReply?.text, activeReply?.senderLabel);
+  };
+
+  const handleReplyClick = (msg: SimMessage) => {
+    setReplyingTo({
+      text: msg.text,
+      senderLabel: msg.senderLabel,
+    });
+    inputRef.current?.focus();
   };
 
   return (
@@ -100,7 +114,10 @@ export const WhatsAppSimulator: React.FC<WhatsAppSimulatorProps> = ({
 
           <button
             type="button"
-            onClick={onClearChat}
+            onClick={() => {
+              setReplyingTo(null);
+              onClearChat();
+            }}
             title="Reset simulator conversation"
             className="inline-flex items-center gap-1 rounded-md border border-slate-200 bg-white px-2.5 py-1 text-xs font-medium text-slate-600 hover:bg-slate-50 hover:text-slate-900 whitespace-nowrap shrink-0"
           >
@@ -147,16 +164,40 @@ export const WhatsAppSimulator: React.FC<WhatsAppSimulatorProps> = ({
         {messages.map((msg) => {
           const isUser = msg.sender === 'user';
           return (
-            <div key={msg.id} className={`flex flex-col ${isUser ? 'items-end' : 'items-start'}`}>
+            <div key={msg.id} className={`group flex flex-col ${isUser ? 'items-end' : 'items-start'}`}>
               <div
-                className={`max-w-[92%] rounded-lg px-3.5 py-2.5 shadow-xs ${
+                className={`relative max-w-[92%] rounded-lg px-3.5 py-2.5 shadow-xs ${
                   isUser ? 'bg-[#d9fdd3] text-slate-900' : 'bg-white text-slate-900 border border-slate-200/70'
                 }`}
               >
                 {!isUser && (
                   <div className="mb-1 flex items-center justify-between gap-3 text-[11px] font-medium text-emerald-700">
                     <span>{msg.senderLabel}</span>
-                    {msg.handler && <span className="font-normal text-slate-400">{msg.handler}</span>}
+                    <div className="flex items-center gap-2">
+                      {msg.handler && <span className="font-normal text-slate-400">{msg.handler}</span>}
+                      <button
+                        type="button"
+                        onClick={() => handleReplyClick(msg)}
+                        title="Reply to this message"
+                        className="inline-flex items-center gap-1 rounded px-1.5 py-0.5 text-[10px] font-medium text-slate-500 hover:bg-slate-100 hover:text-emerald-700 transition-colors"
+                      >
+                        <Reply className="h-3 w-3" />
+                        <span>Reply</span>
+                      </button>
+                    </div>
+                  </div>
+                )}
+
+                {msg.quotedText && (
+                  <div
+                    className={`mb-2 rounded-md border-l-4 border-emerald-600 px-2.5 py-1.5 text-xs ${
+                      isUser ? 'bg-black/5' : 'bg-slate-100/80'
+                    }`}
+                  >
+                    <div className="text-[11px] font-semibold text-emerald-700">
+                      {msg.quotedSender || config.botName}
+                    </div>
+                    <div className="line-clamp-2 text-[11px] text-slate-600">{msg.quotedText}</div>
                   </div>
                 )}
 
@@ -213,7 +254,17 @@ export const WhatsAppSimulator: React.FC<WhatsAppSimulatorProps> = ({
 
                 <WhatsAppText text={msg.text} />
 
-                <div className="mt-1 flex items-center justify-end gap-1 text-[10px] text-slate-500 tabular-nums">
+                <div className="mt-1 flex items-center justify-end gap-1.5 text-[10px] text-slate-500 tabular-nums">
+                  {isUser && (
+                    <button
+                      type="button"
+                      onClick={() => handleReplyClick(msg)}
+                      title="Reply to this message"
+                      className="inline-flex items-center gap-0.5 rounded px-1 py-0.5 text-[10px] text-slate-500 opacity-0 group-hover:opacity-100 hover:bg-black/5 hover:text-emerald-700 transition-opacity"
+                    >
+                      <Reply className="h-3 w-3" />
+                    </button>
+                  )}
                   <span>{msg.timestamp}</span>
                   {isUser && <CheckCheck className="h-3.5 w-3.5 text-sky-600" />}
                 </div>
@@ -263,13 +314,38 @@ export const WhatsAppSimulator: React.FC<WhatsAppSimulatorProps> = ({
         ))}
       </div>
 
+      {/* Active Reply Bar */}
+      {replyingTo && (
+        <div className="flex items-center justify-between gap-2 border-t border-slate-200 bg-slate-100 px-3 py-2">
+          <div className="min-w-0 flex-1 rounded border-l-4 border-emerald-600 bg-white px-2.5 py-1.5">
+            <div className="text-[11px] font-semibold text-emerald-700">
+              Replying to {replyingTo.senderLabel}
+            </div>
+            <div className="truncate text-xs text-slate-600">{replyingTo.text}</div>
+          </div>
+          <button
+            type="button"
+            onClick={() => setReplyingTo(null)}
+            aria-label="Cancel reply"
+            className="inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-md text-slate-500 hover:bg-slate-200 hover:text-slate-800"
+          >
+            <X className="h-4 w-4" />
+          </button>
+        </div>
+      )}
+
       {/* Message Composer */}
       <form onSubmit={handleSubmit} className="flex items-center gap-2 border-t border-slate-200 bg-[#f0f2f5] px-3 py-2.5">
         <input
+          ref={inputRef}
           type="text"
           value={draft}
           onChange={(e) => setDraft(e.target.value)}
-          placeholder={`Message ${config.botName} (try ${p}menu, ${p}card, ${p}anime Frieren, or ask anything)...`}
+          placeholder={
+            replyingTo
+              ? `Reply to ${replyingTo.senderLabel}...`
+              : `Message ${config.botName} (try ${p}menu, ${p}mem, or ask anything)...`
+          }
           className="flex-1 rounded-lg border border-slate-200 bg-white px-3.5 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:border-emerald-600 focus:outline-none"
         />
         <button

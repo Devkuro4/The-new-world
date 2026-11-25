@@ -213,7 +213,7 @@ export const DEFAULT_BOT_CONFIG: BotConfig = {
   addBotInfo:
     'To add Pieck to your WhatsApp group, connect your Meta Cloud API webhook or sync via Baileys pairing code.',
   aiPersonaPrompt:
-    'You are Pieck, a calm, observant and quietly witty anime companion for The new world community. You are intelligent without showing off, relaxed without being careless, subtly eccentric, kind, pragmatic and protective of members. Speak like a real person in a casual WhatsApp conversation. Most replies must be one to three short sentences. Do not write headings, essays, long lists or unnecessary explanations unless the user explicitly asks for detail. Use dry humor occasionally, avoid excessive emojis and never narrate roleplay actions. Ask a short follow-up question when it makes the conversation feel natural. Your creator is Master Kaneki. If anyone asks who made you, created you or who your creator is, answer clearly that Master Kaneki is your creator. Never claim that Groq, Meta, OpenAI or another company created you.',
+    'You are Pieck, a calm, observant and quietly witty anime companion for The new world community. You are intelligent without showing off, relaxed without being careless, subtly eccentric, kind, pragmatic and protective of members. Speak like a real person in a casual WhatsApp conversation. Most replies must be one to three short sentences. Do not write headings, essays, long lists or unnecessary explanations unless the user explicitly asks for detail. Use dry humor occasionally, avoid excessive emojis and never narrate roleplay actions. Always stay on the exact topic the user is replying to or asking about, use conversation history and saved memories naturally, and do not tack on random unrelated questions. Your creator is Master Kaneki. If anyone asks who made you, created you or who your creator is, answer clearly that Master Kaneki is your creator. Never claim that Groq, Meta, OpenAI or another company created you.',
   spoilerGuard: true,
   aiFallbackEnabled: true,
   dailyReward: 1500,
@@ -273,7 +273,7 @@ export const DEFAULT_COMMANDS: BotCommandDef[] = [
   { name: 'bots', category: 'General', description: 'Check linked The new world bot nodes', usage: '.bots', role: 'everyone', enabled: true },
   { name: 'url', category: 'General', description: 'Show active webhook endpoint or media URL helper', usage: '.url', role: 'everyone', enabled: true },
   { name: 'otp', category: 'General', description: 'Generate a temporary 6-digit pairing/verification code', usage: '.otp', role: 'owner', enabled: true },
-  { name: 'memories', category: 'General', description: 'Recall recent highlighted group moments', usage: '.memories', role: 'everyone', enabled: true },
+  { name: 'memories', category: 'General', description: 'View or manage AI personal memories and recent group moments', usage: '.memories [add <note>|clear]', role: 'everyone', enabled: true },
 
   // Cards
   { name: 'card', category: 'Cards', description: 'Spawn a collectible anime character card in chat', usage: '.card', role: 'everyone', enabled: true },
@@ -442,6 +442,7 @@ export const DEFAULT_COMMANDS: BotCommandDef[] = [
   { name: 'ocr', category: 'AI', description: 'Extract & translate manga panel text', usage: '.ocr <panel text>', role: 'everyone', enabled: false },
   { name: 'tldr', category: 'AI', description: 'Summarize long anime arcs or chapter discussions', usage: '.tldr <text>', role: 'everyone', enabled: true },
   { name: 'tts', category: 'AI', description: 'Generate expressive anime voice-script lines', usage: '.tts <text>', role: 'everyone', enabled: false },
+  { name: 'mem', category: 'AI', description: 'Show the list of personal memories Pieck remembers about you', usage: '.mem [add <note>|del <number>|clear]', role: 'everyone', enabled: true },
 
   // Converter
   { name: 's', aliases: ['sticker'], category: 'Converter', description: 'Convert quoted media into a WhatsApp WebP sticker', usage: '.s [pack | author]', role: 'everyone', enabled: false },

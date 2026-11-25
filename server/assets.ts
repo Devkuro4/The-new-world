@@ -105,14 +105,15 @@ export function getThumbImageUrl(thumbKey?: string): string {
 
 const thumbCache = new Map<string, Buffer | null>();
 
-/** Small JPEG used for the link-preview thumbnail card. */
+/** Small JPEG (<10KB) used for WhatsApp Baileys externalAdReply thumbnail cards. */
 export function getThumbBufferByKey(thumbKey?: string): Buffer | null {
   const key = thumbKey && THUMB_KEYS.has(thumbKey) ? thumbKey : 'pieck';
   if (thumbCache.has(key)) return thumbCache.get(key) ?? null;
+  const waPath = path.join(ASSET_DIR, 'thumbs-wa', `${key}.jpg`);
   const relPath = key === 'pieck' ? 'pieck-thumb.jpg' : path.join('thumbs', `${key}.jpg`);
   let buf: Buffer | null = null;
   try {
-    buf = fs.readFileSync(path.join(ASSET_DIR, relPath));
+    buf = fs.existsSync(waPath) ? fs.readFileSync(waPath) : fs.readFileSync(path.join(ASSET_DIR, relPath));
   } catch {
     try {
       buf = fs.readFileSync(path.join(ASSET_DIR, 'pieck-thumb.jpg'));
