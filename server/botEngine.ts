@@ -3,6 +3,8 @@ import { createRequire } from 'node:module';
 const cardBattleRequire = createRequire(import.meta.url);
 const cardBattleAdapter = cardBattleRequire('./cardBattle/adapter.cjs');
 const cardBattleRenderer = cardBattleRequire('./cardBattle/renderer.cjs');
+const cardBattleRegistry = cardBattleRequire('./cardBattle/registry.cjs');
+const CARD_BATTLE_ROSTER_VERSION = 'exact-card-variants-v1';
 import { reactions, mentionLabel } from './animeReactions.ts';
 import { cloudEnabled, readCloud, queueBotSnapshot } from './supabaseStore.ts';
 import { type AiContext, threadKey, serialize, clearThreads, relevantMemories, chatPrompt } from './aiThreads.ts';
@@ -224,6 +226,41 @@ function createInitialState(): BotState {
   };
 }
 
+export function migrateCardBattleRoster(state: BotState): BotState {
+  const cardBattle = (state.cardBattle ??= {});
+  cardBattle.settings ??= {};
+  if (cardBattle.settings.rosterVersion === CARD_BATTLE_ROSTER_VERSION) return state;
+
+  cardBattle.economy ??= { players: {} };
+  cardBattle.economy.players ??= {};
+  for (const player of Object.values(cardBattle.economy.players) as Array<Record<string, any>>) {
+    player.cards = (Array.isArray(player.cards) ? player.cards : []).filter((card: any) => {
+      try {
+        if (String(card?.id || '').startsWith('catalog:')) cardBattleRegistry.getCollectible(card.id);
+        else cardBattleRegistry.getCard(card.id);
+        return true;
+      } catch { return false; }
+    });
+    const hasBattleCard = player.cards.some((card: any) => cardBattleRegistry.isBattleReady(card.id));
+    if (!hasBattleCard && player.receipts) {
+      delete player.receipts['starter-v1'];
+      delete player.receipts['starter-v2'];
+    }
+  }
+
+  // Old encounters and decks contain removed generic character IDs and cannot
+  // be resumed safely. Economy balances, items and valid collectible cards stay.
+  cardBattle.wild = {};
+  cardBattle.pvp = {};
+  cardBattle.tower = {};
+  cardBattle.exped = {};
+  cardBattle.decks = {};
+  cardBattle.nextSpawn = {};
+  cardBattle.notices = {};
+  cardBattle.settings.rosterVersion = CARD_BATTLE_ROSTER_VERSION;
+  return state;
+}
+
 function loadState(cloudRaw?: string): BotState {
   try {
     if (cloudRaw !== undefined || fs.existsSync(STATE_FILE)) {
@@ -269,13 +306,14 @@ function loadState(cloudRaw?: string): BotState {
       if (loaded.config.supportInfo === 'Need help with Pieck? Use .support <issue> to open a ticket for Master Kaneki and the mod team.') {
         loaded.config.supportInfo = base.config.supportInfo;
       }
+      migrateCardBattleRoster(loaded);
       retireLegacyAuctions(loaded);
       return loaded;
     }
   } catch {
     // Fall back to fresh initial state if state file is unreadable
   }
-  return createInitialState();
+  return migrateCardBattleRoster(createInitialState());
 }
 
 export const botState: BotState = loadState();

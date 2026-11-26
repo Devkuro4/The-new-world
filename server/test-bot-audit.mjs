@@ -134,7 +134,13 @@ const scratch = mkdtempSync(join(tmpdir(),'pieck-audit-'));
 process.env.DATA_DIR = scratch;
 delete process.env.SUPABASE_URL;
 try {
-  const { botState, findCommand, handleIncomingMessage, takeAfkReturn } = await import('./botEngine.ts');
+  const { botState, findCommand, handleIncomingMessage, takeAfkReturn, migrateCardBattleRoster } = await import('./botEngine.ts');
+  const legacyRosterState = { cardBattle:{ settings:{}, economy:{players:{legacy:{cards:[{id:'izumi-miyamura-base',uid:'old',level:5}],receipts:{'starter-v2':true}}}}, wild:{groups:{old:{}}}, decks:{legacy:['old']} } };
+  migrateCardBattleRoster(legacyRosterState);
+  assert.deepEqual(legacyRosterState.cardBattle.economy.players.legacy.cards,[]);
+  assert.equal(legacyRosterState.cardBattle.economy.players.legacy.receipts['starter-v2'],undefined);
+  assert.deepEqual(legacyRosterState.cardBattle.wild,{});
+  assert.deepEqual(legacyRosterState.cardBattle.decks,{});
   botState.groupSettings.isOpen = true;
   const playerA = 'wa-700';
   const playerB = 'wa-lid-900';
