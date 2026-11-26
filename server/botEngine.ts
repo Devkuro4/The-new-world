@@ -1,3 +1,7 @@
+import { createRequire } from 'node:module';
+const cardBattleRequire = createRequire(import.meta.url);
+const cardBattleAdapter = cardBattleRequire('./cardBattle/adapter.cjs');
+const cardBattleRenderer = cardBattleRequire('./cardBattle/renderer.cjs');
 import { reactions, mentionLabel } from './animeReactions.ts';
 import { cloudEnabled, readCloud, queueBotSnapshot } from './supabaseStore.ts';
 import { type AiContext, threadKey, serialize, clearThreads, relevantMemories, chatPrompt } from './aiThreads.ts';
@@ -65,6 +69,7 @@ export interface AiConversationTurn {
 }
 
 export interface BotState {
+  cardBattle?: Record<string, any>;
   config: BotConfig;
   groupSettings: GroupSettings;
   commands: BotCommandDef[];
@@ -299,6 +304,17 @@ export function persistState(): void {
   } catch {
     // Non-fatal in read-only environments
   }
+}
+
+export function tickCardBattle(): Array<{group: string; text: string; imagePath?: string}> {
+  if (!botState.cardBattle) return [];
+  const draft = structuredClone(botState.cardBattle);
+  const notices = cardBattleAdapter.tick(draft);
+  if (JSON.stringify(draft) !== JSON.stringify(botState.cardBattle)) {
+    botState.cardBattle = draft;
+    persistState();
+  }
+  return notices;
 }
 
 const MIN_WAGER = 50;
@@ -1493,6 +1509,35 @@ async function handleIncomingMessageInternal(params: IncomingParams): Promise<Bo
       'rich', 'richg', 'lb', 'leaderboard', 'stlb', 'myshame', 'mycds', 'transactions',
       'rules', 'support', 'community', 'addbot', 'ping', 'stats', 'bots', 'url', 'otp',
     ]);
+
+    if (cmdDef.name === 'cb') {
+      if (params.chatMode !== 'group') return { text: 'Card Battle is group-only.', handler: 'Card Battle', status: 'blocked' };
+      const draft = structuredClone(botState.cardBattle || {});
+      const targetJid = params.reactionTargetJid || '';
+      const targetNumber = targetJid.split('@')[0].split(':')[0].replace(/\D/g, '');
+      const target = targetNumber ? (targetNumber === (botState.config.ownerNumber || '').replace(/\D/g, '') ? 'owner-kuro' : targetJid.endsWith('@lid') ? `wa-lid-${targetNumber}` : `wa-${targetNumber}`) : undefined;
+      const result = cardBattleAdapter.run(draft, {
+        player: player.id, group: params.groupId || `simulator:${botState.groupSettings.groupName}`, prefix,
+        target, label: (id: string) => botState.players[id]?.name || (id.startsWith('wild:') ? 'Wild Card' : id.startsWith('tower:') ? 'Tower' : id),
+      }, rawCmd.toLowerCase() === 'cb' ? (restTokens[0] || 'help').toLowerCase() : rawCmd.toLowerCase(), rawCmd.toLowerCase() === 'cb' ? restTokens.slice(1) : restTokens);
+      botState.cardBattle = draft;
+      persistState();
+      reply = { text: result.text, handler: 'Card Battle' };
+      try {
+        if (result.battle) {
+          const visual = structuredClone(result.battle);
+          const label = (id: string) => botState.players[id]?.name || (id.startsWith('wild:') ? 'Wild Card' : id.startsWith('tower:') ? 'Tower' : id);
+          for (const side of visual.sides) side.id = label(side.id);
+          if (visual.winner) visual.winner = label(visual.winner);
+          for (const event of visual.events || []) if (event.winner) event.winner = label(event.winner);
+          reply.imageBuffer = await cardBattleRenderer.renderBattle(visual);
+        }
+        else if (result.imagePath) reply.imageBuffer = fs.readFileSync(result.imagePath);
+        if (reply.imageBuffer && reply.text.length <= 1024) { reply.hideText = true; reply.imageCaption = reply.text; }
+      } catch (err) { console.warn('[Card Battle] Image rendering failed; using text', err); }
+      recordLog(params, input, reply, Date.now() - started);
+      return reply;
+    }
 
     reply = await executeBuiltInCommand(
       cmdDef.name,

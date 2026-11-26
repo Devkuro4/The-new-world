@@ -1,0 +1,14 @@
+{
+  "name": "card-battle-beta",
+  "version": "0.10.0",
+  "private": true,
+  "scripts": {
+    "test": "node test.cjs && node test-progression.cjs && node test-moves.cjs && node test-battle.cjs && node test-renderer.cjs && node test-wild.cjs && node test-pvp.cjs && node test-tower.cjs && node test-expeditions.cjs && node test-economy.cjs"
+  },
+  "dependencies": {
+    "sharp": "^0.34.0"
+  },
+  "optionalDependencies": {
+    "@napi-rs/canvas": "^0.1.80"
+  }
+}

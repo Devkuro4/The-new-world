@@ -1,0 +1,1 @@
+const assert=require('node:assert/strict');const r=require('./registry.cjs');assert.equal(r.validate(),37);assert.equal(r.multiplier('Strength','Arcane'),1.5);assert.equal(r.multiplier('Arcane','Strength'),.5);assert.equal(r.statsAt('son-goku-base',100).HP,595);assert.throws(()=>r.statsAt('son-goku-base',101));console.log('Registry tests passed');

@@ -1,0 +1,2999 @@
+{
+  "hiromi-higuruma-base": [
+    {
+      "id": "hiromi-higuruma-base:1",
+      "name": "Judgment Hammer",
+      "category": "attack",
+      "level": 1,
+      "power": 0.9,
+      "cooldown": 0,
+      "kind": "arcane"
+    },
+    {
+      "id": "hiromi-higuruma-base:2",
+      "name": "Gavel Strike",
+      "category": "attack",
+      "level": 1,
+      "power": 1.2,
+      "cooldown": 1,
+      "kind": "arcane"
+    },
+    {
+      "id": "hiromi-higuruma-base:3",
+      "name": "Courtroom Pressure",
+      "category": "attack",
+      "level": 1,
+      "power": 1.5,
+      "cooldown": 2,
+      "kind": "arcane"
+    },
+    {
+      "id": "hiromi-higuruma-base:4",
+      "name": "Confiscation",
+      "category": "attack",
+      "level": 12,
+      "power": 1.65,
+      "cooldown": 2,
+      "kind": "arcane"
+    },
+    {
+      "id": "hiromi-higuruma-base:5",
+      "name": "Verdict Blow",
+      "category": "attack",
+      "level": 30,
+      "power": 1.85,
+      "cooldown": 3,
+      "kind": "arcane"
+    },
+    {
+      "id": "hiromi-higuruma-base:6",
+      "name": "Executioner's Sword",
+      "category": "ultimate",
+      "level": 20,
+      "power": 2.6,
+      "cooldown": 5,
+      "kind": "arcane"
+    },
+    {
+      "id": "hiromi-higuruma-base:7",
+      "name": "Recover",
+      "category": "healing",
+      "level": 1,
+      "heal": 0.18,
+      "cooldown": 3
+    },
+    {
+      "id": "hiromi-higuruma-base:8",
+      "name": "Second Wind",
+      "category": "healing",
+      "level": 40,
+      "heal": 0.3,
+      "cooldown": 4
+    },
+    {
+      "id": "hiromi-higuruma-base:9",
+      "name": "Verdict Blow — Mastery",
+      "category": "attack",
+      "level": 80,
+      "power": 2.1,
+      "cooldown": 4,
+      "kind": "arcane"
+    }
+  ],
+  "light-yagami-base": [
+    {
+      "id": "light-yagami-base:1",
+      "name": "Notebook Scheme",
+      "category": "attack",
+      "level": 1,
+      "power": 0.9,
+      "cooldown": 0,
+      "kind": "arcane"
+    },
+    {
+      "id": "light-yagami-base:2",
+      "name": "Calculated Feint",
+      "category": "attack",
+      "level": 1,
+      "power": 1.2,
+      "cooldown": 1,
+      "kind": "arcane"
+    },
+    {
+      "id": "light-yagami-base:3",
+      "name": "False Lead",
+      "category": "attack",
+      "level": 1,
+      "power": 1.5,
+      "cooldown": 2,
+      "kind": "arcane"
+    },
+    {
+      "id": "light-yagami-base:4",
+      "name": "Perfect Alibi",
+      "category": "attack",
+      "level": 12,
+      "power": 1.65,
+      "cooldown": 2,
+      "kind": "arcane"
+    },
+    {
+      "id": "light-yagami-base:5",
+      "name": "Final Deduction",
+      "category": "attack",
+      "level": 30,
+      "power": 1.85,
+      "cooldown": 3,
+      "kind": "arcane"
+    },
+    {
+      "id": "light-yagami-base:6",
+      "name": "Death Note Gambit",
+      "category": "ultimate",
+      "level": 20,
+      "power": 2.6,
+      "cooldown": 5,
+      "kind": "arcane"
+    },
+    {
+      "id": "light-yagami-base:7",
+      "name": "Recover",
+      "category": "healing",
+      "level": 1,
+      "heal": 0.18,
+      "cooldown": 3
+    },
+    {
+      "id": "light-yagami-base:8",
+      "name": "Second Wind",
+      "category": "healing",
+      "level": 40,
+      "heal": 0.3,
+      "cooldown": 4
+    },
+    {
+      "id": "light-yagami-base:9",
+      "name": "Final Deduction — Mastery",
+      "category": "attack",
+      "level": 80,
+      "power": 2.1,
+      "cooldown": 4,
+      "kind": "arcane"
+    }
+  ],
+  "choso-base": [
+    {
+      "id": "choso-base:1",
+      "name": "Piercing Blood",
+      "category": "attack",
+      "level": 1,
+      "power": 0.9,
+      "cooldown": 0,
+      "kind": "arcane"
+    },
+    {
+      "id": "choso-base:2",
+      "name": "Blood Edge",
+      "category": "attack",
+      "level": 1,
+      "power": 1.2,
+      "cooldown": 1,
+      "kind": "arcane"
+    },
+    {
+      "id": "choso-base:3",
+      "name": "Slicing Exorcism",
+      "category": "attack",
+      "level": 1,
+      "power": 1.5,
+      "cooldown": 2,
+      "kind": "arcane"
+    },
+    {
+      "id": "choso-base:4",
+      "name": "Supernova",
+      "category": "attack",
+      "level": 12,
+      "power": 1.65,
+      "cooldown": 2,
+      "kind": "arcane"
+    },
+    {
+      "id": "choso-base:5",
+      "name": "Blood Meteor",
+      "category": "attack",
+      "level": 30,
+      "power": 1.85,
+      "cooldown": 3,
+      "kind": "arcane"
+    },
+    {
+      "id": "choso-base:6",
+      "name": "Crimson Convergence",
+      "category": "ultimate",
+      "level": 20,
+      "power": 2.6,
+      "cooldown": 5,
+      "kind": "arcane"
+    },
+    {
+      "id": "choso-base:7",
+      "name": "Recover",
+      "category": "healing",
+      "level": 1,
+      "heal": 0.18,
+      "cooldown": 3
+    },
+    {
+      "id": "choso-base:8",
+      "name": "Second Wind",
+      "category": "healing",
+      "level": 40,
+      "heal": 0.3,
+      "cooldown": 4
+    },
+    {
+      "id": "choso-base:9",
+      "name": "Blood Meteor — Mastery",
+      "category": "attack",
+      "level": 80,
+      "power": 2.1,
+      "cooldown": 4,
+      "kind": "arcane"
+    }
+  ],
+  "toji-fushiguro-base": [
+    {
+      "id": "toji-fushiguro-base:1",
+      "name": "Blade Rush",
+      "category": "attack",
+      "level": 1,
+      "power": 0.9,
+      "cooldown": 0,
+      "kind": "physical"
+    },
+    {
+      "id": "toji-fushiguro-base:2",
+      "name": "Heavy Kick",
+      "category": "attack",
+      "level": 1,
+      "power": 1.2,
+      "cooldown": 1,
+      "kind": "physical"
+    },
+    {
+      "id": "toji-fushiguro-base:3",
+      "name": "Chain Sweep",
+      "category": "attack",
+      "level": 1,
+      "power": 1.5,
+      "cooldown": 2,
+      "kind": "physical"
+    },
+    {
+      "id": "toji-fushiguro-base:4",
+      "name": "Silent Pursuit",
+      "category": "attack",
+      "level": 12,
+      "power": 1.65,
+      "cooldown": 2,
+      "kind": "physical"
+    },
+    {
+      "id": "toji-fushiguro-base:5",
+      "name": "Weapon Barrage",
+      "category": "attack",
+      "level": 30,
+      "power": 1.85,
+      "cooldown": 3,
+      "kind": "physical"
+    },
+    {
+      "id": "toji-fushiguro-base:6",
+      "name": "Inverted Spear Assault",
+      "category": "ultimate",
+      "level": 20,
+      "power": 2.6,
+      "cooldown": 5,
+      "kind": "physical"
+    },
+    {
+      "id": "toji-fushiguro-base:7",
+      "name": "Recover",
+      "category": "healing",
+      "level": 1,
+      "heal": 0.18,
+      "cooldown": 3
+    },
+    {
+      "id": "toji-fushiguro-base:8",
+      "name": "Second Wind",
+      "category": "healing",
+      "level": 40,
+      "heal": 0.3,
+      "cooldown": 4
+    },
+    {
+      "id": "toji-fushiguro-base:9",
+      "name": "Weapon Barrage — Mastery",
+      "category": "attack",
+      "level": 80,
+      "power": 2.1,
+      "cooldown": 4,
+      "kind": "physical"
+    }
+  ],
+  "toge-inumaki-base": [
+    {
+      "id": "toge-inumaki-base:1",
+      "name": "Stop",
+      "category": "attack",
+      "level": 1,
+      "power": 0.9,
+      "cooldown": 0,
+      "kind": "arcane"
+    },
+    {
+      "id": "toge-inumaki-base:2",
+      "name": "Blast Away",
+      "category": "attack",
+      "level": 1,
+      "power": 1.2,
+      "cooldown": 1,
+      "kind": "arcane"
+    },
+    {
+      "id": "toge-inumaki-base:3",
+      "name": "Cursed Echo",
+      "category": "attack",
+      "level": 1,
+      "power": 1.5,
+      "cooldown": 2,
+      "kind": "arcane"
+    },
+    {
+      "id": "toge-inumaki-base:4",
+      "name": "Command Burst",
+      "category": "attack",
+      "level": 12,
+      "power": 1.65,
+      "cooldown": 2,
+      "kind": "arcane"
+    },
+    {
+      "id": "toge-inumaki-base:5",
+      "name": "Crushing Voice",
+      "category": "attack",
+      "level": 30,
+      "power": 1.85,
+      "cooldown": 3,
+      "kind": "arcane"
+    },
+    {
+      "id": "toge-inumaki-base:6",
+      "name": "Forbidden Command",
+      "category": "ultimate",
+      "level": 20,
+      "power": 2.6,
+      "cooldown": 5,
+      "kind": "arcane"
+    },
+    {
+      "id": "toge-inumaki-base:7",
+      "name": "Recover",
+      "category": "healing",
+      "level": 1,
+      "heal": 0.18,
+      "cooldown": 3
+    },
+    {
+      "id": "toge-inumaki-base:8",
+      "name": "Second Wind",
+      "category": "healing",
+      "level": 40,
+      "heal": 0.3,
+      "cooldown": 4
+    },
+    {
+      "id": "toge-inumaki-base:9",
+      "name": "Crushing Voice — Mastery",
+      "category": "attack",
+      "level": 80,
+      "power": 2.1,
+      "cooldown": 4,
+      "kind": "arcane"
+    }
+  ],
+  "panda-base": [
+    {
+      "id": "panda-base:1",
+      "name": "Panda Punch",
+      "category": "attack",
+      "level": 1,
+      "power": 0.9,
+      "cooldown": 0,
+      "kind": "physical"
+    },
+    {
+      "id": "panda-base:2",
+      "name": "Shoulder Charge",
+      "category": "attack",
+      "level": 1,
+      "power": 1.2,
+      "cooldown": 1,
+      "kind": "physical"
+    },
+    {
+      "id": "panda-base:3",
+      "name": "Guard Break",
+      "category": "attack",
+      "level": 1,
+      "power": 1.5,
+      "cooldown": 2,
+      "kind": "physical"
+    },
+    {
+      "id": "panda-base:4",
+      "name": "Gorilla Smash",
+      "category": "attack",
+      "level": 12,
+      "power": 1.65,
+      "cooldown": 2,
+      "kind": "physical"
+    },
+    {
+      "id": "panda-base:5",
+      "name": "Heavy Barrage",
+      "category": "attack",
+      "level": 30,
+      "power": 1.85,
+      "cooldown": 3,
+      "kind": "physical"
+    },
+    {
+      "id": "panda-base:6",
+      "name": "Gorilla Rampage",
+      "category": "ultimate",
+      "level": 20,
+      "power": 2.6,
+      "cooldown": 5,
+      "kind": "physical"
+    },
+    {
+      "id": "panda-base:7",
+      "name": "Recover",
+      "category": "healing",
+      "level": 1,
+      "heal": 0.18,
+      "cooldown": 3
+    },
+    {
+      "id": "panda-base:8",
+      "name": "Second Wind",
+      "category": "healing",
+      "level": 40,
+      "heal": 0.3,
+      "cooldown": 4
+    },
+    {
+      "id": "panda-base:9",
+      "name": "Heavy Barrage — Mastery",
+      "category": "attack",
+      "level": 80,
+      "power": 2.1,
+      "cooldown": 4,
+      "kind": "physical"
+    }
+  ],
+  "mei-mei-base": [
+    {
+      "id": "mei-mei-base:1",
+      "name": "Axe Swing",
+      "category": "attack",
+      "level": 1,
+      "power": 0.9,
+      "cooldown": 0,
+      "kind": "physical"
+    },
+    {
+      "id": "mei-mei-base:2",
+      "name": "Crow Strike",
+      "category": "attack",
+      "level": 1,
+      "power": 1.2,
+      "cooldown": 1,
+      "kind": "physical"
+    },
+    {
+      "id": "mei-mei-base:3",
+      "name": "Axe Sweep",
+      "category": "attack",
+      "level": 1,
+      "power": 1.5,
+      "cooldown": 2,
+      "kind": "physical"
+    },
+    {
+      "id": "mei-mei-base:4",
+      "name": "Crow Ambush",
+      "category": "attack",
+      "level": 12,
+      "power": 1.65,
+      "cooldown": 2,
+      "kind": "physical"
+    },
+    {
+      "id": "mei-mei-base:5",
+      "name": "Aerial Cleave",
+      "category": "attack",
+      "level": 30,
+      "power": 1.85,
+      "cooldown": 3,
+      "kind": "physical"
+    },
+    {
+      "id": "mei-mei-base:6",
+      "name": "Bird Strike",
+      "category": "ultimate",
+      "level": 20,
+      "power": 2.6,
+      "cooldown": 5,
+      "kind": "physical"
+    },
+    {
+      "id": "mei-mei-base:7",
+      "name": "Recover",
+      "category": "healing",
+      "level": 1,
+      "heal": 0.18,
+      "cooldown": 3
+    },
+    {
+      "id": "mei-mei-base:8",
+      "name": "Second Wind",
+      "category": "healing",
+      "level": 40,
+      "heal": 0.3,
+      "cooldown": 4
+    },
+    {
+      "id": "mei-mei-base:9",
+      "name": "Aerial Cleave — Mastery",
+      "category": "attack",
+      "level": 80,
+      "power": 2.1,
+      "cooldown": 4,
+      "kind": "physical"
+    }
+  ],
+  "yuta-okkotsu-base": [
+    {
+      "id": "yuta-okkotsu-base:1",
+      "name": "Sword Slash",
+      "category": "attack",
+      "level": 1,
+      "power": 0.9,
+      "cooldown": 0,
+      "kind": "arcane"
+    },
+    {
+      "id": "yuta-okkotsu-base:2",
+      "name": "Cursed Burst",
+      "category": "attack",
+      "level": 1,
+      "power": 1.2,
+      "cooldown": 1,
+      "kind": "arcane"
+    },
+    {
+      "id": "yuta-okkotsu-base:3",
+      "name": "Spirit Strike",
+      "category": "attack",
+      "level": 1,
+      "power": 1.5,
+      "cooldown": 2,
+      "kind": "arcane"
+    },
+    {
+      "id": "yuta-okkotsu-base:4",
+      "name": "Rika Assist",
+      "category": "attack",
+      "level": 12,
+      "power": 1.65,
+      "cooldown": 2,
+      "kind": "arcane"
+    },
+    {
+      "id": "yuta-okkotsu-base:5",
+      "name": "Copied Technique",
+      "category": "attack",
+      "level": 30,
+      "power": 1.85,
+      "cooldown": 3,
+      "kind": "arcane"
+    },
+    {
+      "id": "yuta-okkotsu-base:6",
+      "name": "True Love Beam",
+      "category": "ultimate",
+      "level": 20,
+      "power": 2.6,
+      "cooldown": 5,
+      "kind": "arcane"
+    },
+    {
+      "id": "yuta-okkotsu-base:7",
+      "name": "Recover",
+      "category": "healing",
+      "level": 1,
+      "heal": 0.18,
+      "cooldown": 3
+    },
+    {
+      "id": "yuta-okkotsu-base:8",
+      "name": "Second Wind",
+      "category": "healing",
+      "level": 40,
+      "heal": 0.3,
+      "cooldown": 4
+    },
+    {
+      "id": "yuta-okkotsu-base:9",
+      "name": "Copied Technique — Mastery",
+      "category": "attack",
+      "level": 80,
+      "power": 2.1,
+      "cooldown": 4,
+      "kind": "arcane"
+    }
+  ],
+  "yuji-itadori-base": [
+    {
+      "id": "yuji-itadori-base:1",
+      "name": "Divergent Fist",
+      "category": "attack",
+      "level": 1,
+      "power": 0.9,
+      "cooldown": 0,
+      "kind": "physical"
+    },
+    {
+      "id": "yuji-itadori-base:2",
+      "name": "Low Kick",
+      "category": "attack",
+      "level": 1,
+      "power": 1.2,
+      "cooldown": 1,
+      "kind": "physical"
+    },
+    {
+      "id": "yuji-itadori-base:3",
+      "name": "Rapid Punch",
+      "category": "attack",
+      "level": 1,
+      "power": 1.5,
+      "cooldown": 2,
+      "kind": "physical"
+    },
+    {
+      "id": "yuji-itadori-base:4",
+      "name": "Black Flash",
+      "category": "attack",
+      "level": 12,
+      "power": 1.65,
+      "cooldown": 2,
+      "kind": "physical"
+    },
+    {
+      "id": "yuji-itadori-base:5",
+      "name": "Impact Barrage",
+      "category": "attack",
+      "level": 30,
+      "power": 1.85,
+      "cooldown": 3,
+      "kind": "physical"
+    },
+    {
+      "id": "yuji-itadori-base:6",
+      "name": "Black Flash Rush",
+      "category": "ultimate",
+      "level": 20,
+      "power": 2.6,
+      "cooldown": 5,
+      "kind": "physical"
+    },
+    {
+      "id": "yuji-itadori-base:7",
+      "name": "Recover",
+      "category": "healing",
+      "level": 1,
+      "heal": 0.18,
+      "cooldown": 3
+    },
+    {
+      "id": "yuji-itadori-base:8",
+      "name": "Second Wind",
+      "category": "healing",
+      "level": 40,
+      "heal": 0.3,
+      "cooldown": 4
+    },
+    {
+      "id": "yuji-itadori-base:9",
+      "name": "Impact Barrage — Mastery",
+      "category": "attack",
+      "level": 80,
+      "power": 2.1,
+      "cooldown": 4,
+      "kind": "physical"
+    }
+  ],
+  "rias-gremory-base": [
+    {
+      "id": "rias-gremory-base:1",
+      "name": "Destruction Bolt",
+      "category": "attack",
+      "level": 1,
+      "power": 0.9,
+      "cooldown": 0,
+      "kind": "arcane"
+    },
+    {
+      "id": "rias-gremory-base:2",
+      "name": "Crimson Pulse",
+      "category": "attack",
+      "level": 1,
+      "power": 1.2,
+      "cooldown": 1,
+      "kind": "arcane"
+    },
+    {
+      "id": "rias-gremory-base:3",
+      "name": "Demonic Wave",
+      "category": "attack",
+      "level": 1,
+      "power": 1.5,
+      "cooldown": 2,
+      "kind": "arcane"
+    },
+    {
+      "id": "rias-gremory-base:4",
+      "name": "Scarlet Burst",
+      "category": "attack",
+      "level": 12,
+      "power": 1.65,
+      "cooldown": 2,
+      "kind": "arcane"
+    },
+    {
+      "id": "rias-gremory-base:5",
+      "name": "Ruin Barrage",
+      "category": "attack",
+      "level": 30,
+      "power": 1.85,
+      "cooldown": 3,
+      "kind": "arcane"
+    },
+    {
+      "id": "rias-gremory-base:6",
+      "name": "Power of Destruction",
+      "category": "ultimate",
+      "level": 20,
+      "power": 2.6,
+      "cooldown": 5,
+      "kind": "arcane"
+    },
+    {
+      "id": "rias-gremory-base:7",
+      "name": "Recover",
+      "category": "healing",
+      "level": 1,
+      "heal": 0.18,
+      "cooldown": 3
+    },
+    {
+      "id": "rias-gremory-base:8",
+      "name": "Second Wind",
+      "category": "healing",
+      "level": 40,
+      "heal": 0.3,
+      "cooldown": 4
+    },
+    {
+      "id": "rias-gremory-base:9",
+      "name": "Ruin Barrage — Mastery",
+      "category": "attack",
+      "level": 80,
+      "power": 2.1,
+      "cooldown": 4,
+      "kind": "arcane"
+    }
+  ],
+  "suguru-geto-base": [
+    {
+      "id": "suguru-geto-base:1",
+      "name": "Spirit Bolt",
+      "category": "attack",
+      "level": 1,
+      "power": 0.9,
+      "cooldown": 0,
+      "kind": "arcane"
+    },
+    {
+      "id": "suguru-geto-base:2",
+      "name": "Curse Swarm",
+      "category": "attack",
+      "level": 1,
+      "power": 1.2,
+      "cooldown": 1,
+      "kind": "arcane"
+    },
+    {
+      "id": "suguru-geto-base:3",
+      "name": "Spirit Claw",
+      "category": "attack",
+      "level": 1,
+      "power": 1.5,
+      "cooldown": 2,
+      "kind": "arcane"
+    },
+    {
+      "id": "suguru-geto-base:4",
+      "name": "Curse Ambush",
+      "category": "attack",
+      "level": 12,
+      "power": 1.65,
+      "cooldown": 2,
+      "kind": "arcane"
+    },
+    {
+      "id": "suguru-geto-base:5",
+      "name": "Spirit Barrage",
+      "category": "attack",
+      "level": 30,
+      "power": 1.85,
+      "cooldown": 3,
+      "kind": "arcane"
+    },
+    {
+      "id": "suguru-geto-base:6",
+      "name": "Maximum Uzumaki",
+      "category": "ultimate",
+      "level": 20,
+      "power": 2.6,
+      "cooldown": 5,
+      "kind": "arcane"
+    },
+    {
+      "id": "suguru-geto-base:7",
+      "name": "Recover",
+      "category": "healing",
+      "level": 1,
+      "heal": 0.18,
+      "cooldown": 3
+    },
+    {
+      "id": "suguru-geto-base:8",
+      "name": "Second Wind",
+      "category": "healing",
+      "level": 40,
+      "heal": 0.3,
+      "cooldown": 4
+    },
+    {
+      "id": "suguru-geto-base:9",
+      "name": "Spirit Barrage — Mastery",
+      "category": "attack",
+      "level": 80,
+      "power": 2.1,
+      "cooldown": 4,
+      "kind": "arcane"
+    }
+  ],
+  "jogo-base": [
+    {
+      "id": "jogo-base:1",
+      "name": "Ember Shot",
+      "category": "attack",
+      "level": 1,
+      "power": 0.9,
+      "cooldown": 0,
+      "kind": "arcane"
+    },
+    {
+      "id": "jogo-base:2",
+      "name": "Flame Burst",
+      "category": "attack",
+      "level": 1,
+      "power": 1.2,
+      "cooldown": 1,
+      "kind": "arcane"
+    },
+    {
+      "id": "jogo-base:3",
+      "name": "Lava Strike",
+      "category": "attack",
+      "level": 1,
+      "power": 1.5,
+      "cooldown": 2,
+      "kind": "arcane"
+    },
+    {
+      "id": "jogo-base:4",
+      "name": "Volcanic Surge",
+      "category": "attack",
+      "level": 12,
+      "power": 1.65,
+      "cooldown": 2,
+      "kind": "arcane"
+    },
+    {
+      "id": "jogo-base:5",
+      "name": "Fire Barrage",
+      "category": "attack",
+      "level": 30,
+      "power": 1.85,
+      "cooldown": 3,
+      "kind": "arcane"
+    },
+    {
+      "id": "jogo-base:6",
+      "name": "Maximum Meteor",
+      "category": "ultimate",
+      "level": 20,
+      "power": 2.6,
+      "cooldown": 5,
+      "kind": "arcane"
+    },
+    {
+      "id": "jogo-base:7",
+      "name": "Recover",
+      "category": "healing",
+      "level": 1,
+      "heal": 0.18,
+      "cooldown": 3
+    },
+    {
+      "id": "jogo-base:8",
+      "name": "Second Wind",
+      "category": "healing",
+      "level": 40,
+      "heal": 0.3,
+      "cooldown": 4
+    },
+    {
+      "id": "jogo-base:9",
+      "name": "Fire Barrage — Mastery",
+      "category": "attack",
+      "level": 80,
+      "power": 2.1,
+      "cooldown": 4,
+      "kind": "arcane"
+    }
+  ],
+  "nobara-kugisaki-base": [
+    {
+      "id": "nobara-kugisaki-base:1",
+      "name": "Hammer Strike",
+      "category": "attack",
+      "level": 1,
+      "power": 0.9,
+      "cooldown": 0,
+      "kind": "arcane"
+    },
+    {
+      "id": "nobara-kugisaki-base:2",
+      "name": "Nail Shot",
+      "category": "attack",
+      "level": 1,
+      "power": 1.2,
+      "cooldown": 1,
+      "kind": "arcane"
+    },
+    {
+      "id": "nobara-kugisaki-base:3",
+      "name": "Straw Doll Strike",
+      "category": "attack",
+      "level": 1,
+      "power": 1.5,
+      "cooldown": 2,
+      "kind": "arcane"
+    },
+    {
+      "id": "nobara-kugisaki-base:4",
+      "name": "Hairpin",
+      "category": "attack",
+      "level": 12,
+      "power": 1.65,
+      "cooldown": 2,
+      "kind": "arcane"
+    },
+    {
+      "id": "nobara-kugisaki-base:5",
+      "name": "Resonance",
+      "category": "attack",
+      "level": 30,
+      "power": 1.85,
+      "cooldown": 3,
+      "kind": "arcane"
+    },
+    {
+      "id": "nobara-kugisaki-base:6",
+      "name": "Resonance Barrage",
+      "category": "ultimate",
+      "level": 20,
+      "power": 2.6,
+      "cooldown": 5,
+      "kind": "arcane"
+    },
+    {
+      "id": "nobara-kugisaki-base:7",
+      "name": "Recover",
+      "category": "healing",
+      "level": 1,
+      "heal": 0.18,
+      "cooldown": 3
+    },
+    {
+      "id": "nobara-kugisaki-base:8",
+      "name": "Second Wind",
+      "category": "healing",
+      "level": 40,
+      "heal": 0.3,
+      "cooldown": 4
+    },
+    {
+      "id": "nobara-kugisaki-base:9",
+      "name": "Resonance — Mastery",
+      "category": "attack",
+      "level": 80,
+      "power": 2.1,
+      "cooldown": 4,
+      "kind": "arcane"
+    }
+  ],
+  "satoru-gojo-base": [
+    {
+      "id": "satoru-gojo-base:1",
+      "name": "Blue Pull",
+      "category": "attack",
+      "level": 1,
+      "power": 0.9,
+      "cooldown": 0,
+      "kind": "arcane"
+    },
+    {
+      "id": "satoru-gojo-base:2",
+      "name": "Cursed Strike",
+      "category": "attack",
+      "level": 1,
+      "power": 1.2,
+      "cooldown": 1,
+      "kind": "arcane"
+    },
+    {
+      "id": "satoru-gojo-base:3",
+      "name": "Red Burst",
+      "category": "attack",
+      "level": 1,
+      "power": 1.5,
+      "cooldown": 2,
+      "kind": "arcane"
+    },
+    {
+      "id": "satoru-gojo-base:4",
+      "name": "Blue Crush",
+      "category": "attack",
+      "level": 12,
+      "power": 1.65,
+      "cooldown": 2,
+      "kind": "arcane"
+    },
+    {
+      "id": "satoru-gojo-base:5",
+      "name": "Red Reversal",
+      "category": "attack",
+      "level": 30,
+      "power": 1.85,
+      "cooldown": 3,
+      "kind": "arcane"
+    },
+    {
+      "id": "satoru-gojo-base:6",
+      "name": "Hollow Purple",
+      "category": "ultimate",
+      "level": 20,
+      "power": 2.6,
+      "cooldown": 5,
+      "kind": "arcane"
+    },
+    {
+      "id": "satoru-gojo-base:7",
+      "name": "Recover",
+      "category": "healing",
+      "level": 1,
+      "heal": 0.18,
+      "cooldown": 3
+    },
+    {
+      "id": "satoru-gojo-base:8",
+      "name": "Second Wind",
+      "category": "healing",
+      "level": 40,
+      "heal": 0.3,
+      "cooldown": 4
+    },
+    {
+      "id": "satoru-gojo-base:9",
+      "name": "Red Reversal — Mastery",
+      "category": "attack",
+      "level": 80,
+      "power": 2.1,
+      "cooldown": 4,
+      "kind": "arcane"
+    }
+  ],
+  "kento-nanami-base": [
+    {
+      "id": "kento-nanami-base:1",
+      "name": "Ratio Strike",
+      "category": "attack",
+      "level": 1,
+      "power": 0.9,
+      "cooldown": 0,
+      "kind": "physical"
+    },
+    {
+      "id": "kento-nanami-base:2",
+      "name": "Blunt Slash",
+      "category": "attack",
+      "level": 1,
+      "power": 1.2,
+      "cooldown": 1,
+      "kind": "physical"
+    },
+    {
+      "id": "kento-nanami-base:3",
+      "name": "Precision Kick",
+      "category": "attack",
+      "level": 1,
+      "power": 1.5,
+      "cooldown": 2,
+      "kind": "physical"
+    },
+    {
+      "id": "kento-nanami-base:4",
+      "name": "Collapse",
+      "category": "attack",
+      "level": 12,
+      "power": 1.65,
+      "cooldown": 2,
+      "kind": "physical"
+    },
+    {
+      "id": "kento-nanami-base:5",
+      "name": "Overtime Strike",
+      "category": "attack",
+      "level": 30,
+      "power": 1.85,
+      "cooldown": 3,
+      "kind": "physical"
+    },
+    {
+      "id": "kento-nanami-base:6",
+      "name": "Ratio Collapse",
+      "category": "ultimate",
+      "level": 20,
+      "power": 2.6,
+      "cooldown": 5,
+      "kind": "physical"
+    },
+    {
+      "id": "kento-nanami-base:7",
+      "name": "Recover",
+      "category": "healing",
+      "level": 1,
+      "heal": 0.18,
+      "cooldown": 3
+    },
+    {
+      "id": "kento-nanami-base:8",
+      "name": "Second Wind",
+      "category": "healing",
+      "level": 40,
+      "heal": 0.3,
+      "cooldown": 4
+    },
+    {
+      "id": "kento-nanami-base:9",
+      "name": "Overtime Strike — Mastery",
+      "category": "attack",
+      "level": 80,
+      "power": 2.1,
+      "cooldown": 4,
+      "kind": "physical"
+    }
+  ],
+  "mahito-base": [
+    {
+      "id": "mahito-base:1",
+      "name": "Soul Jab",
+      "category": "attack",
+      "level": 1,
+      "power": 0.9,
+      "cooldown": 0,
+      "kind": "physical"
+    },
+    {
+      "id": "mahito-base:2",
+      "name": "Morphing Fist",
+      "category": "attack",
+      "level": 1,
+      "power": 1.2,
+      "cooldown": 1,
+      "kind": "physical"
+    },
+    {
+      "id": "mahito-base:3",
+      "name": "Body Spike",
+      "category": "attack",
+      "level": 1,
+      "power": 1.5,
+      "cooldown": 2,
+      "kind": "physical"
+    },
+    {
+      "id": "mahito-base:4",
+      "name": "Soul Distortion",
+      "category": "attack",
+      "level": 12,
+      "power": 1.65,
+      "cooldown": 2,
+      "kind": "physical"
+    },
+    {
+      "id": "mahito-base:5",
+      "name": "Transfigured Barrage",
+      "category": "attack",
+      "level": 30,
+      "power": 1.85,
+      "cooldown": 3,
+      "kind": "physical"
+    },
+    {
+      "id": "mahito-base:6",
+      "name": "Self Embodiment",
+      "category": "ultimate",
+      "level": 20,
+      "power": 2.6,
+      "cooldown": 5,
+      "kind": "physical"
+    },
+    {
+      "id": "mahito-base:7",
+      "name": "Recover",
+      "category": "healing",
+      "level": 1,
+      "heal": 0.18,
+      "cooldown": 3
+    },
+    {
+      "id": "mahito-base:8",
+      "name": "Second Wind",
+      "category": "healing",
+      "level": 40,
+      "heal": 0.3,
+      "cooldown": 4
+    },
+    {
+      "id": "mahito-base:9",
+      "name": "Transfigured Barrage — Mastery",
+      "category": "attack",
+      "level": 80,
+      "power": 2.1,
+      "cooldown": 4,
+      "kind": "physical"
+    }
+  ],
+  "maki-zenin-base": [
+    {
+      "id": "maki-zenin-base:1",
+      "name": "Polearm Sweep",
+      "category": "attack",
+      "level": 1,
+      "power": 0.9,
+      "cooldown": 0,
+      "kind": "physical"
+    },
+    {
+      "id": "maki-zenin-base:2",
+      "name": "Quick Slash",
+      "category": "attack",
+      "level": 1,
+      "power": 1.2,
+      "cooldown": 1,
+      "kind": "physical"
+    },
+    {
+      "id": "maki-zenin-base:3",
+      "name": "Vault Kick",
+      "category": "attack",
+      "level": 1,
+      "power": 1.5,
+      "cooldown": 2,
+      "kind": "physical"
+    },
+    {
+      "id": "maki-zenin-base:4",
+      "name": "Weapon Rush",
+      "category": "attack",
+      "level": 12,
+      "power": 1.65,
+      "cooldown": 2,
+      "kind": "physical"
+    },
+    {
+      "id": "maki-zenin-base:5",
+      "name": "Split Soul Slash",
+      "category": "attack",
+      "level": 30,
+      "power": 1.85,
+      "cooldown": 3,
+      "kind": "physical"
+    },
+    {
+      "id": "maki-zenin-base:6",
+      "name": "Heavenly Assault",
+      "category": "ultimate",
+      "level": 20,
+      "power": 2.6,
+      "cooldown": 5,
+      "kind": "physical"
+    },
+    {
+      "id": "maki-zenin-base:7",
+      "name": "Recover",
+      "category": "healing",
+      "level": 1,
+      "heal": 0.18,
+      "cooldown": 3
+    },
+    {
+      "id": "maki-zenin-base:8",
+      "name": "Second Wind",
+      "category": "healing",
+      "level": 40,
+      "heal": 0.3,
+      "cooldown": 4
+    },
+    {
+      "id": "maki-zenin-base:9",
+      "name": "Split Soul Slash — Mastery",
+      "category": "attack",
+      "level": 80,
+      "power": 2.1,
+      "cooldown": 4,
+      "kind": "physical"
+    }
+  ],
+  "yoriichi-tsugikuni-base": [
+    {
+      "id": "yoriichi-tsugikuni-base:1",
+      "name": "Sun Slash",
+      "category": "attack",
+      "level": 1,
+      "power": 0.9,
+      "cooldown": 0,
+      "kind": "physical"
+    },
+    {
+      "id": "yoriichi-tsugikuni-base:2",
+      "name": "Swift Cut",
+      "category": "attack",
+      "level": 1,
+      "power": 1.2,
+      "cooldown": 1,
+      "kind": "physical"
+    },
+    {
+      "id": "yoriichi-tsugikuni-base:3",
+      "name": "Flame Arc",
+      "category": "attack",
+      "level": 1,
+      "power": 1.5,
+      "cooldown": 2,
+      "kind": "physical"
+    },
+    {
+      "id": "yoriichi-tsugikuni-base:4",
+      "name": "Solar Wheel",
+      "category": "attack",
+      "level": 12,
+      "power": 1.65,
+      "cooldown": 2,
+      "kind": "physical"
+    },
+    {
+      "id": "yoriichi-tsugikuni-base:5",
+      "name": "Sun Halo",
+      "category": "attack",
+      "level": 30,
+      "power": 1.85,
+      "cooldown": 3,
+      "kind": "physical"
+    },
+    {
+      "id": "yoriichi-tsugikuni-base:6",
+      "name": "Thirteenth Form",
+      "category": "ultimate",
+      "level": 20,
+      "power": 2.6,
+      "cooldown": 5,
+      "kind": "physical"
+    },
+    {
+      "id": "yoriichi-tsugikuni-base:7",
+      "name": "Recover",
+      "category": "healing",
+      "level": 1,
+      "heal": 0.18,
+      "cooldown": 3
+    },
+    {
+      "id": "yoriichi-tsugikuni-base:8",
+      "name": "Second Wind",
+      "category": "healing",
+      "level": 40,
+      "heal": 0.3,
+      "cooldown": 4
+    },
+    {
+      "id": "yoriichi-tsugikuni-base:9",
+      "name": "Sun Halo — Mastery",
+      "category": "attack",
+      "level": 80,
+      "power": 2.1,
+      "cooldown": 4,
+      "kind": "physical"
+    }
+  ],
+  "kyoko-hori-base": [
+    {
+      "id": "kyoko-hori-base:1",
+      "name": "Quick Jab",
+      "category": "attack",
+      "level": 1,
+      "power": 0.9,
+      "cooldown": 0,
+      "kind": "physical"
+    },
+    {
+      "id": "kyoko-hori-base:2",
+      "name": "Counter Slap",
+      "category": "attack",
+      "level": 1,
+      "power": 1.2,
+      "cooldown": 1,
+      "kind": "physical"
+    },
+    {
+      "id": "kyoko-hori-base:3",
+      "name": "Firm Kick",
+      "category": "attack",
+      "level": 1,
+      "power": 1.5,
+      "cooldown": 2,
+      "kind": "physical"
+    },
+    {
+      "id": "kyoko-hori-base:4",
+      "name": "Resolute Strike",
+      "category": "attack",
+      "level": 12,
+      "power": 1.65,
+      "cooldown": 2,
+      "kind": "physical"
+    },
+    {
+      "id": "kyoko-hori-base:5",
+      "name": "Fierce Combo",
+      "category": "attack",
+      "level": 30,
+      "power": 1.85,
+      "cooldown": 3,
+      "kind": "physical"
+    },
+    {
+      "id": "kyoko-hori-base:6",
+      "name": "Unyielding Resolve",
+      "category": "ultimate",
+      "level": 20,
+      "power": 2.6,
+      "cooldown": 5,
+      "kind": "physical"
+    },
+    {
+      "id": "kyoko-hori-base:7",
+      "name": "Recover",
+      "category": "healing",
+      "level": 1,
+      "heal": 0.18,
+      "cooldown": 3
+    },
+    {
+      "id": "kyoko-hori-base:8",
+      "name": "Second Wind",
+      "category": "healing",
+      "level": 40,
+      "heal": 0.3,
+      "cooldown": 4
+    },
+    {
+      "id": "kyoko-hori-base:9",
+      "name": "Fierce Combo — Mastery",
+      "category": "attack",
+      "level": 80,
+      "power": 2.1,
+      "cooldown": 4,
+      "kind": "physical"
+    }
+  ],
+  "ryomen-sukuna-base": [
+    {
+      "id": "ryomen-sukuna-base:1",
+      "name": "Dismantle",
+      "category": "attack",
+      "level": 1,
+      "power": 0.9,
+      "cooldown": 0,
+      "kind": "arcane"
+    },
+    {
+      "id": "ryomen-sukuna-base:2",
+      "name": "Cleave",
+      "category": "attack",
+      "level": 1,
+      "power": 1.2,
+      "cooldown": 1,
+      "kind": "arcane"
+    },
+    {
+      "id": "ryomen-sukuna-base:3",
+      "name": "Cursed Jab",
+      "category": "attack",
+      "level": 1,
+      "power": 1.5,
+      "cooldown": 2,
+      "kind": "arcane"
+    },
+    {
+      "id": "ryomen-sukuna-base:4",
+      "name": "Flame Arrow",
+      "category": "attack",
+      "level": 12,
+      "power": 1.65,
+      "cooldown": 2,
+      "kind": "arcane"
+    },
+    {
+      "id": "ryomen-sukuna-base:5",
+      "name": "Slashing Storm",
+      "category": "attack",
+      "level": 30,
+      "power": 1.85,
+      "cooldown": 3,
+      "kind": "arcane"
+    },
+    {
+      "id": "ryomen-sukuna-base:6",
+      "name": "Malevolent Shrine",
+      "category": "ultimate",
+      "level": 20,
+      "power": 2.6,
+      "cooldown": 5,
+      "kind": "arcane"
+    },
+    {
+      "id": "ryomen-sukuna-base:7",
+      "name": "Recover",
+      "category": "healing",
+      "level": 1,
+      "heal": 0.18,
+      "cooldown": 3
+    },
+    {
+      "id": "ryomen-sukuna-base:8",
+      "name": "Second Wind",
+      "category": "healing",
+      "level": 40,
+      "heal": 0.3,
+      "cooldown": 4
+    },
+    {
+      "id": "ryomen-sukuna-base:9",
+      "name": "Slashing Storm — Mastery",
+      "category": "attack",
+      "level": 80,
+      "power": 2.1,
+      "cooldown": 4,
+      "kind": "arcane"
+    }
+  ],
+  "megumi-fushiguro-base": [
+    {
+      "id": "megumi-fushiguro-base:1",
+      "name": "Divine Dog",
+      "category": "attack",
+      "level": 1,
+      "power": 0.9,
+      "cooldown": 0,
+      "kind": "arcane"
+    },
+    {
+      "id": "megumi-fushiguro-base:2",
+      "name": "Shadow Strike",
+      "category": "attack",
+      "level": 1,
+      "power": 1.2,
+      "cooldown": 1,
+      "kind": "arcane"
+    },
+    {
+      "id": "megumi-fushiguro-base:3",
+      "name": "Toad Snare",
+      "category": "attack",
+      "level": 1,
+      "power": 1.5,
+      "cooldown": 2,
+      "kind": "arcane"
+    },
+    {
+      "id": "megumi-fushiguro-base:4",
+      "name": "Nue Lightning",
+      "category": "attack",
+      "level": 12,
+      "power": 1.65,
+      "cooldown": 2,
+      "kind": "arcane"
+    },
+    {
+      "id": "megumi-fushiguro-base:5",
+      "name": "Shadow Swarm",
+      "category": "attack",
+      "level": 30,
+      "power": 1.85,
+      "cooldown": 3,
+      "kind": "arcane"
+    },
+    {
+      "id": "megumi-fushiguro-base:6",
+      "name": "Chimera Shadow Garden",
+      "category": "ultimate",
+      "level": 20,
+      "power": 2.6,
+      "cooldown": 5,
+      "kind": "arcane"
+    },
+    {
+      "id": "megumi-fushiguro-base:7",
+      "name": "Recover",
+      "category": "healing",
+      "level": 1,
+      "heal": 0.18,
+      "cooldown": 3
+    },
+    {
+      "id": "megumi-fushiguro-base:8",
+      "name": "Second Wind",
+      "category": "healing",
+      "level": 40,
+      "heal": 0.3,
+      "cooldown": 4
+    },
+    {
+      "id": "megumi-fushiguro-base:9",
+      "name": "Shadow Swarm — Mastery",
+      "category": "attack",
+      "level": 80,
+      "power": 2.1,
+      "cooldown": 4,
+      "kind": "arcane"
+    }
+  ],
+  "shoto-todoroki-base": [
+    {
+      "id": "shoto-todoroki-base:1",
+      "name": "Ice Shard",
+      "category": "attack",
+      "level": 1,
+      "power": 0.9,
+      "cooldown": 0,
+      "kind": "arcane"
+    },
+    {
+      "id": "shoto-todoroki-base:2",
+      "name": "Fire Burst",
+      "category": "attack",
+      "level": 1,
+      "power": 1.2,
+      "cooldown": 1,
+      "kind": "arcane"
+    },
+    {
+      "id": "shoto-todoroki-base:3",
+      "name": "Frost Wave",
+      "category": "attack",
+      "level": 1,
+      "power": 1.5,
+      "cooldown": 2,
+      "kind": "arcane"
+    },
+    {
+      "id": "shoto-todoroki-base:4",
+      "name": "Ice Wall Strike",
+      "category": "attack",
+      "level": 12,
+      "power": 1.65,
+      "cooldown": 2,
+      "kind": "arcane"
+    },
+    {
+      "id": "shoto-todoroki-base:5",
+      "name": "Flashfreeze Heatwave",
+      "category": "attack",
+      "level": 30,
+      "power": 1.85,
+      "cooldown": 3,
+      "kind": "arcane"
+    },
+    {
+      "id": "shoto-todoroki-base:6",
+      "name": "Phosphor Burst",
+      "category": "ultimate",
+      "level": 20,
+      "power": 2.6,
+      "cooldown": 5,
+      "kind": "arcane"
+    },
+    {
+      "id": "shoto-todoroki-base:7",
+      "name": "Recover",
+      "category": "healing",
+      "level": 1,
+      "heal": 0.18,
+      "cooldown": 3
+    },
+    {
+      "id": "shoto-todoroki-base:8",
+      "name": "Second Wind",
+      "category": "healing",
+      "level": 40,
+      "heal": 0.3,
+      "cooldown": 4
+    },
+    {
+      "id": "shoto-todoroki-base:9",
+      "name": "Flashfreeze Heatwave — Mastery",
+      "category": "attack",
+      "level": 80,
+      "power": 2.1,
+      "cooldown": 4,
+      "kind": "arcane"
+    }
+  ],
+  "izumi-miyamura-base": [
+    {
+      "id": "izumi-miyamura-base:1",
+      "name": "Quick Jab",
+      "category": "attack",
+      "level": 1,
+      "power": 0.9,
+      "cooldown": 0,
+      "kind": "physical"
+    },
+    {
+      "id": "izumi-miyamura-base:2",
+      "name": "Side Kick",
+      "category": "attack",
+      "level": 1,
+      "power": 1.2,
+      "cooldown": 1,
+      "kind": "physical"
+    },
+    {
+      "id": "izumi-miyamura-base:3",
+      "name": "Counter Strike",
+      "category": "attack",
+      "level": 1,
+      "power": 1.5,
+      "cooldown": 2,
+      "kind": "physical"
+    },
+    {
+      "id": "izumi-miyamura-base:4",
+      "name": "Swift Combo",
+      "category": "attack",
+      "level": 12,
+      "power": 1.65,
+      "cooldown": 2,
+      "kind": "physical"
+    },
+    {
+      "id": "izumi-miyamura-base:5",
+      "name": "Determined Rush",
+      "category": "attack",
+      "level": 30,
+      "power": 1.85,
+      "cooldown": 3,
+      "kind": "physical"
+    },
+    {
+      "id": "izumi-miyamura-base:6",
+      "name": "Unshakable Spirit",
+      "category": "ultimate",
+      "level": 20,
+      "power": 2.6,
+      "cooldown": 5,
+      "kind": "physical"
+    },
+    {
+      "id": "izumi-miyamura-base:7",
+      "name": "Recover",
+      "category": "healing",
+      "level": 1,
+      "heal": 0.18,
+      "cooldown": 3
+    },
+    {
+      "id": "izumi-miyamura-base:8",
+      "name": "Second Wind",
+      "category": "healing",
+      "level": 40,
+      "heal": 0.3,
+      "cooldown": 4
+    },
+    {
+      "id": "izumi-miyamura-base:9",
+      "name": "Determined Rush — Mastery",
+      "category": "attack",
+      "level": 80,
+      "power": 2.1,
+      "cooldown": 4,
+      "kind": "physical"
+    }
+  ],
+  "edward-elric-base": [
+    {
+      "id": "edward-elric-base:1",
+      "name": "Stone Spike",
+      "category": "attack",
+      "level": 1,
+      "power": 0.9,
+      "cooldown": 0,
+      "kind": "arcane"
+    },
+    {
+      "id": "edward-elric-base:2",
+      "name": "Metal Blade",
+      "category": "attack",
+      "level": 1,
+      "power": 1.2,
+      "cooldown": 1,
+      "kind": "arcane"
+    },
+    {
+      "id": "edward-elric-base:3",
+      "name": "Alchemy Burst",
+      "category": "attack",
+      "level": 1,
+      "power": 1.5,
+      "cooldown": 2,
+      "kind": "arcane"
+    },
+    {
+      "id": "edward-elric-base:4",
+      "name": "Ground Pillar",
+      "category": "attack",
+      "level": 12,
+      "power": 1.65,
+      "cooldown": 2,
+      "kind": "arcane"
+    },
+    {
+      "id": "edward-elric-base:5",
+      "name": "Transmutation Wave",
+      "category": "attack",
+      "level": 30,
+      "power": 1.85,
+      "cooldown": 3,
+      "kind": "arcane"
+    },
+    {
+      "id": "edward-elric-base:6",
+      "name": "Fullmetal Assault",
+      "category": "ultimate",
+      "level": 20,
+      "power": 2.6,
+      "cooldown": 5,
+      "kind": "arcane"
+    },
+    {
+      "id": "edward-elric-base:7",
+      "name": "Recover",
+      "category": "healing",
+      "level": 1,
+      "heal": 0.18,
+      "cooldown": 3
+    },
+    {
+      "id": "edward-elric-base:8",
+      "name": "Second Wind",
+      "category": "healing",
+      "level": 40,
+      "heal": 0.3,
+      "cooldown": 4
+    },
+    {
+      "id": "edward-elric-base:9",
+      "name": "Transmutation Wave — Mastery",
+      "category": "attack",
+      "level": 80,
+      "power": 2.1,
+      "cooldown": 4,
+      "kind": "arcane"
+    }
+  ],
+  "katsuki-bakugo-base": [
+    {
+      "id": "katsuki-bakugo-base:1",
+      "name": "Blast Punch",
+      "category": "attack",
+      "level": 1,
+      "power": 0.9,
+      "cooldown": 0,
+      "kind": "physical"
+    },
+    {
+      "id": "katsuki-bakugo-base:2",
+      "name": "Explosion Shot",
+      "category": "attack",
+      "level": 1,
+      "power": 1.2,
+      "cooldown": 1,
+      "kind": "physical"
+    },
+    {
+      "id": "katsuki-bakugo-base:3",
+      "name": "Burst Kick",
+      "category": "attack",
+      "level": 1,
+      "power": 1.5,
+      "cooldown": 2,
+      "kind": "physical"
+    },
+    {
+      "id": "katsuki-bakugo-base:4",
+      "name": "AP Shot",
+      "category": "attack",
+      "level": 12,
+      "power": 1.65,
+      "cooldown": 2,
+      "kind": "physical"
+    },
+    {
+      "id": "katsuki-bakugo-base:5",
+      "name": "Stun Grenade",
+      "category": "attack",
+      "level": 30,
+      "power": 1.85,
+      "cooldown": 3,
+      "kind": "physical"
+    },
+    {
+      "id": "katsuki-bakugo-base:6",
+      "name": "Howitzer Impact",
+      "category": "ultimate",
+      "level": 20,
+      "power": 2.6,
+      "cooldown": 5,
+      "kind": "physical"
+    },
+    {
+      "id": "katsuki-bakugo-base:7",
+      "name": "Recover",
+      "category": "healing",
+      "level": 1,
+      "heal": 0.18,
+      "cooldown": 3
+    },
+    {
+      "id": "katsuki-bakugo-base:8",
+      "name": "Second Wind",
+      "category": "healing",
+      "level": 40,
+      "heal": 0.3,
+      "cooldown": 4
+    },
+    {
+      "id": "katsuki-bakugo-base:9",
+      "name": "Stun Grenade — Mastery",
+      "category": "attack",
+      "level": 80,
+      "power": 2.1,
+      "cooldown": 4,
+      "kind": "physical"
+    }
+  ],
+  "sailor-moon-base": [
+    {
+      "id": "sailor-moon-base:1",
+      "name": "Moon Tiara",
+      "category": "attack",
+      "level": 1,
+      "power": 0.9,
+      "cooldown": 0,
+      "kind": "arcane"
+    },
+    {
+      "id": "sailor-moon-base:2",
+      "name": "Moon Beam",
+      "category": "attack",
+      "level": 1,
+      "power": 1.2,
+      "cooldown": 1,
+      "kind": "arcane"
+    },
+    {
+      "id": "sailor-moon-base:3",
+      "name": "Lunar Pulse",
+      "category": "attack",
+      "level": 1,
+      "power": 1.5,
+      "cooldown": 2,
+      "kind": "arcane"
+    },
+    {
+      "id": "sailor-moon-base:4",
+      "name": "Moon Spiral",
+      "category": "attack",
+      "level": 12,
+      "power": 1.65,
+      "cooldown": 2,
+      "kind": "arcane"
+    },
+    {
+      "id": "sailor-moon-base:5",
+      "name": "Silver Flash",
+      "category": "attack",
+      "level": 30,
+      "power": 1.85,
+      "cooldown": 3,
+      "kind": "arcane"
+    },
+    {
+      "id": "sailor-moon-base:6",
+      "name": "Moon Healing Escalation",
+      "category": "ultimate",
+      "level": 20,
+      "power": 2.6,
+      "cooldown": 5,
+      "kind": "arcane"
+    },
+    {
+      "id": "sailor-moon-base:7",
+      "name": "Recover",
+      "category": "healing",
+      "level": 1,
+      "heal": 0.18,
+      "cooldown": 3
+    },
+    {
+      "id": "sailor-moon-base:8",
+      "name": "Second Wind",
+      "category": "healing",
+      "level": 40,
+      "heal": 0.3,
+      "cooldown": 4
+    },
+    {
+      "id": "sailor-moon-base:9",
+      "name": "Silver Flash — Mastery",
+      "category": "attack",
+      "level": 80,
+      "power": 2.1,
+      "cooldown": 4,
+      "kind": "arcane"
+    }
+  ],
+  "izuku-midoriya-base": [
+    {
+      "id": "izuku-midoriya-base:1",
+      "name": "Smash",
+      "category": "attack",
+      "level": 1,
+      "power": 0.9,
+      "cooldown": 0,
+      "kind": "physical"
+    },
+    {
+      "id": "izuku-midoriya-base:2",
+      "name": "Air Force",
+      "category": "attack",
+      "level": 1,
+      "power": 1.2,
+      "cooldown": 1,
+      "kind": "physical"
+    },
+    {
+      "id": "izuku-midoriya-base:3",
+      "name": "Quick Kick",
+      "category": "attack",
+      "level": 1,
+      "power": 1.5,
+      "cooldown": 2,
+      "kind": "physical"
+    },
+    {
+      "id": "izuku-midoriya-base:4",
+      "name": "Delaware Smash",
+      "category": "attack",
+      "level": 12,
+      "power": 1.65,
+      "cooldown": 2,
+      "kind": "physical"
+    },
+    {
+      "id": "izuku-midoriya-base:5",
+      "name": "Manchester Smash",
+      "category": "attack",
+      "level": 30,
+      "power": 1.85,
+      "cooldown": 3,
+      "kind": "physical"
+    },
+    {
+      "id": "izuku-midoriya-base:6",
+      "name": "United States of World Smash",
+      "category": "ultimate",
+      "level": 20,
+      "power": 2.6,
+      "cooldown": 5,
+      "kind": "physical"
+    },
+    {
+      "id": "izuku-midoriya-base:7",
+      "name": "Recover",
+      "category": "healing",
+      "level": 1,
+      "heal": 0.18,
+      "cooldown": 3
+    },
+    {
+      "id": "izuku-midoriya-base:8",
+      "name": "Second Wind",
+      "category": "healing",
+      "level": 40,
+      "heal": 0.3,
+      "cooldown": 4
+    },
+    {
+      "id": "izuku-midoriya-base:9",
+      "name": "Manchester Smash — Mastery",
+      "category": "attack",
+      "level": 80,
+      "power": 2.1,
+      "cooldown": 4,
+      "kind": "physical"
+    }
+  ],
+  "all-might-base": [
+    {
+      "id": "all-might-base:1",
+      "name": "Texas Smash",
+      "category": "attack",
+      "level": 1,
+      "power": 0.9,
+      "cooldown": 0,
+      "kind": "physical"
+    },
+    {
+      "id": "all-might-base:2",
+      "name": "Heavy Punch",
+      "category": "attack",
+      "level": 1,
+      "power": 1.2,
+      "cooldown": 1,
+      "kind": "physical"
+    },
+    {
+      "id": "all-might-base:3",
+      "name": "Carolina Smash",
+      "category": "attack",
+      "level": 1,
+      "power": 1.5,
+      "cooldown": 2,
+      "kind": "physical"
+    },
+    {
+      "id": "all-might-base:4",
+      "name": "Detroit Smash",
+      "category": "attack",
+      "level": 12,
+      "power": 1.65,
+      "cooldown": 2,
+      "kind": "physical"
+    },
+    {
+      "id": "all-might-base:5",
+      "name": "Oklahoma Smash",
+      "category": "attack",
+      "level": 30,
+      "power": 1.85,
+      "cooldown": 3,
+      "kind": "physical"
+    },
+    {
+      "id": "all-might-base:6",
+      "name": "United States of Smash",
+      "category": "ultimate",
+      "level": 20,
+      "power": 2.6,
+      "cooldown": 5,
+      "kind": "physical"
+    },
+    {
+      "id": "all-might-base:7",
+      "name": "Recover",
+      "category": "healing",
+      "level": 1,
+      "heal": 0.18,
+      "cooldown": 3
+    },
+    {
+      "id": "all-might-base:8",
+      "name": "Second Wind",
+      "category": "healing",
+      "level": 40,
+      "heal": 0.3,
+      "cooldown": 4
+    },
+    {
+      "id": "all-might-base:9",
+      "name": "Oklahoma Smash — Mastery",
+      "category": "attack",
+      "level": 80,
+      "power": 2.1,
+      "cooldown": 4,
+      "kind": "physical"
+    }
+  ],
+  "saitama-base": [
+    {
+      "id": "saitama-base:1",
+      "name": "Normal Punch",
+      "category": "attack",
+      "level": 1,
+      "power": 0.9,
+      "cooldown": 0,
+      "kind": "physical"
+    },
+    {
+      "id": "saitama-base:2",
+      "name": "Quick Jab",
+      "category": "attack",
+      "level": 1,
+      "power": 1.2,
+      "cooldown": 1,
+      "kind": "physical"
+    },
+    {
+      "id": "saitama-base:3",
+      "name": "Consecutive Punches",
+      "category": "attack",
+      "level": 1,
+      "power": 1.5,
+      "cooldown": 2,
+      "kind": "physical"
+    },
+    {
+      "id": "saitama-base:4",
+      "name": "Heavy Punch",
+      "category": "attack",
+      "level": 12,
+      "power": 1.65,
+      "cooldown": 2,
+      "kind": "physical"
+    },
+    {
+      "id": "saitama-base:5",
+      "name": "Rapid Barrage",
+      "category": "attack",
+      "level": 30,
+      "power": 1.85,
+      "cooldown": 3,
+      "kind": "physical"
+    },
+    {
+      "id": "saitama-base:6",
+      "name": "Serious Punch",
+      "category": "ultimate",
+      "level": 20,
+      "power": 2.6,
+      "cooldown": 5,
+      "kind": "physical"
+    },
+    {
+      "id": "saitama-base:7",
+      "name": "Recover",
+      "category": "healing",
+      "level": 1,
+      "heal": 0.18,
+      "cooldown": 3
+    },
+    {
+      "id": "saitama-base:8",
+      "name": "Second Wind",
+      "category": "healing",
+      "level": 40,
+      "heal": 0.3,
+      "cooldown": 4
+    },
+    {
+      "id": "saitama-base:9",
+      "name": "Rapid Barrage — Mastery",
+      "category": "attack",
+      "level": 80,
+      "power": 2.1,
+      "cooldown": 4,
+      "kind": "physical"
+    }
+  ],
+  "ken-kaneki-base": [
+    {
+      "id": "ken-kaneki-base:1",
+      "name": "Kagune Jab",
+      "category": "attack",
+      "level": 1,
+      "power": 0.9,
+      "cooldown": 0,
+      "kind": "physical"
+    },
+    {
+      "id": "ken-kaneki-base:2",
+      "name": "Tentacle Sweep",
+      "category": "attack",
+      "level": 1,
+      "power": 1.2,
+      "cooldown": 1,
+      "kind": "physical"
+    },
+    {
+      "id": "ken-kaneki-base:3",
+      "name": "Claw Strike",
+      "category": "attack",
+      "level": 1,
+      "power": 1.5,
+      "cooldown": 2,
+      "kind": "physical"
+    },
+    {
+      "id": "ken-kaneki-base:4",
+      "name": "Kagune Rush",
+      "category": "attack",
+      "level": 12,
+      "power": 1.65,
+      "cooldown": 2,
+      "kind": "physical"
+    },
+    {
+      "id": "ken-kaneki-base:5",
+      "name": "Crimson Barrage",
+      "category": "attack",
+      "level": 30,
+      "power": 1.85,
+      "cooldown": 3,
+      "kind": "physical"
+    },
+    {
+      "id": "ken-kaneki-base:6",
+      "name": "Centipede Assault",
+      "category": "ultimate",
+      "level": 20,
+      "power": 2.6,
+      "cooldown": 5,
+      "kind": "physical"
+    },
+    {
+      "id": "ken-kaneki-base:7",
+      "name": "Recover",
+      "category": "healing",
+      "level": 1,
+      "heal": 0.18,
+      "cooldown": 3
+    },
+    {
+      "id": "ken-kaneki-base:8",
+      "name": "Second Wind",
+      "category": "healing",
+      "level": 40,
+      "heal": 0.3,
+      "cooldown": 4
+    },
+    {
+      "id": "ken-kaneki-base:9",
+      "name": "Crimson Barrage — Mastery",
+      "category": "attack",
+      "level": 80,
+      "power": 2.1,
+      "cooldown": 4,
+      "kind": "physical"
+    }
+  ],
+  "l-lawliet-base": [
+    {
+      "id": "l-lawliet-base:1",
+      "name": "Calculated Jab",
+      "category": "attack",
+      "level": 1,
+      "power": 0.9,
+      "cooldown": 0,
+      "kind": "physical"
+    },
+    {
+      "id": "l-lawliet-base:2",
+      "name": "Quick Dodge Strike",
+      "category": "attack",
+      "level": 1,
+      "power": 1.2,
+      "cooldown": 1,
+      "kind": "physical"
+    },
+    {
+      "id": "l-lawliet-base:3",
+      "name": "Counter Kick",
+      "category": "attack",
+      "level": 1,
+      "power": 1.5,
+      "cooldown": 2,
+      "kind": "physical"
+    },
+    {
+      "id": "l-lawliet-base:4",
+      "name": "Deduction Strike",
+      "category": "attack",
+      "level": 12,
+      "power": 1.65,
+      "cooldown": 2,
+      "kind": "physical"
+    },
+    {
+      "id": "l-lawliet-base:5",
+      "name": "Tactical Rush",
+      "category": "attack",
+      "level": 30,
+      "power": 1.85,
+      "cooldown": 3,
+      "kind": "physical"
+    },
+    {
+      "id": "l-lawliet-base:6",
+      "name": "Checkmate",
+      "category": "ultimate",
+      "level": 20,
+      "power": 2.6,
+      "cooldown": 5,
+      "kind": "physical"
+    },
+    {
+      "id": "l-lawliet-base:7",
+      "name": "Recover",
+      "category": "healing",
+      "level": 1,
+      "heal": 0.18,
+      "cooldown": 3
+    },
+    {
+      "id": "l-lawliet-base:8",
+      "name": "Second Wind",
+      "category": "healing",
+      "level": 40,
+      "heal": 0.3,
+      "cooldown": 4
+    },
+    {
+      "id": "l-lawliet-base:9",
+      "name": "Tactical Rush — Mastery",
+      "category": "attack",
+      "level": 80,
+      "power": 2.1,
+      "cooldown": 4,
+      "kind": "physical"
+    }
+  ],
+  "monkey-d-luffy-base": [
+    {
+      "id": "monkey-d-luffy-base:1",
+      "name": "Gum Gum Pistol",
+      "category": "attack",
+      "level": 1,
+      "power": 0.9,
+      "cooldown": 0,
+      "kind": "physical"
+    },
+    {
+      "id": "monkey-d-luffy-base:2",
+      "name": "Gum Gum Whip",
+      "category": "attack",
+      "level": 1,
+      "power": 1.2,
+      "cooldown": 1,
+      "kind": "physical"
+    },
+    {
+      "id": "monkey-d-luffy-base:3",
+      "name": "Gum Gum Bazooka",
+      "category": "attack",
+      "level": 1,
+      "power": 1.5,
+      "cooldown": 2,
+      "kind": "physical"
+    },
+    {
+      "id": "monkey-d-luffy-base:4",
+      "name": "Gum Gum Gatling",
+      "category": "attack",
+      "level": 12,
+      "power": 1.65,
+      "cooldown": 2,
+      "kind": "physical"
+    },
+    {
+      "id": "monkey-d-luffy-base:5",
+      "name": "Red Hawk",
+      "category": "attack",
+      "level": 30,
+      "power": 1.85,
+      "cooldown": 3,
+      "kind": "physical"
+    },
+    {
+      "id": "monkey-d-luffy-base:6",
+      "name": "King Kong Gun",
+      "category": "ultimate",
+      "level": 20,
+      "power": 2.6,
+      "cooldown": 5,
+      "kind": "physical"
+    },
+    {
+      "id": "monkey-d-luffy-base:7",
+      "name": "Recover",
+      "category": "healing",
+      "level": 1,
+      "heal": 0.18,
+      "cooldown": 3
+    },
+    {
+      "id": "monkey-d-luffy-base:8",
+      "name": "Second Wind",
+      "category": "healing",
+      "level": 40,
+      "heal": 0.3,
+      "cooldown": 4
+    },
+    {
+      "id": "monkey-d-luffy-base:9",
+      "name": "Red Hawk — Mastery",
+      "category": "attack",
+      "level": 80,
+      "power": 2.1,
+      "cooldown": 4,
+      "kind": "physical"
+    }
+  ],
+  "son-goku-base": [
+    {
+      "id": "son-goku-base:1",
+      "name": "Power Pole Strike",
+      "category": "attack",
+      "level": 1,
+      "power": 0.9,
+      "cooldown": 0,
+      "kind": "physical"
+    },
+    {
+      "id": "son-goku-base:2",
+      "name": "Ki Blast",
+      "category": "attack",
+      "level": 1,
+      "power": 1.2,
+      "cooldown": 1,
+      "kind": "physical"
+    },
+    {
+      "id": "son-goku-base:3",
+      "name": "Meteor Smash",
+      "category": "attack",
+      "level": 1,
+      "power": 1.5,
+      "cooldown": 2,
+      "kind": "physical"
+    },
+    {
+      "id": "son-goku-base:4",
+      "name": "Kamehameha",
+      "category": "attack",
+      "level": 12,
+      "power": 1.65,
+      "cooldown": 2,
+      "kind": "physical"
+    },
+    {
+      "id": "son-goku-base:5",
+      "name": "Dragon Fist",
+      "category": "attack",
+      "level": 30,
+      "power": 1.85,
+      "cooldown": 3,
+      "kind": "physical"
+    },
+    {
+      "id": "son-goku-base:6",
+      "name": "Spirit Bomb",
+      "category": "ultimate",
+      "level": 20,
+      "power": 2.6,
+      "cooldown": 5,
+      "kind": "physical"
+    },
+    {
+      "id": "son-goku-base:7",
+      "name": "Recover",
+      "category": "healing",
+      "level": 1,
+      "heal": 0.18,
+      "cooldown": 3
+    },
+    {
+      "id": "son-goku-base:8",
+      "name": "Second Wind",
+      "category": "healing",
+      "level": 40,
+      "heal": 0.3,
+      "cooldown": 4
+    },
+    {
+      "id": "son-goku-base:9",
+      "name": "Dragon Fist — Mastery",
+      "category": "attack",
+      "level": 80,
+      "power": 2.1,
+      "cooldown": 4,
+      "kind": "physical"
+    }
+  ],
+  "ichigo-kurosaki-base": [
+    {
+      "id": "ichigo-kurosaki-base:1",
+      "name": "Sword Slash",
+      "category": "attack",
+      "level": 1,
+      "power": 0.9,
+      "cooldown": 0,
+      "kind": "physical"
+    },
+    {
+      "id": "ichigo-kurosaki-base:2",
+      "name": "Flash Step Strike",
+      "category": "attack",
+      "level": 1,
+      "power": 1.2,
+      "cooldown": 1,
+      "kind": "physical"
+    },
+    {
+      "id": "ichigo-kurosaki-base:3",
+      "name": "Getsuga Slash",
+      "category": "attack",
+      "level": 1,
+      "power": 1.5,
+      "cooldown": 2,
+      "kind": "physical"
+    },
+    {
+      "id": "ichigo-kurosaki-base:4",
+      "name": "Getsuga Tensho",
+      "category": "attack",
+      "level": 12,
+      "power": 1.65,
+      "cooldown": 2,
+      "kind": "physical"
+    },
+    {
+      "id": "ichigo-kurosaki-base:5",
+      "name": "Black Getsuga",
+      "category": "attack",
+      "level": 30,
+      "power": 1.85,
+      "cooldown": 3,
+      "kind": "physical"
+    },
+    {
+      "id": "ichigo-kurosaki-base:6",
+      "name": "Final Getsuga Tensho",
+      "category": "ultimate",
+      "level": 20,
+      "power": 2.6,
+      "cooldown": 5,
+      "kind": "physical"
+    },
+    {
+      "id": "ichigo-kurosaki-base:7",
+      "name": "Recover",
+      "category": "healing",
+      "level": 1,
+      "heal": 0.18,
+      "cooldown": 3
+    },
+    {
+      "id": "ichigo-kurosaki-base:8",
+      "name": "Second Wind",
+      "category": "healing",
+      "level": 40,
+      "heal": 0.3,
+      "cooldown": 4
+    },
+    {
+      "id": "ichigo-kurosaki-base:9",
+      "name": "Black Getsuga — Mastery",
+      "category": "attack",
+      "level": 80,
+      "power": 2.1,
+      "cooldown": 4,
+      "kind": "physical"
+    }
+  ],
+  "tanjiro-kamado-base": [
+    {
+      "id": "tanjiro-kamado-base:1",
+      "name": "Water Slash",
+      "category": "attack",
+      "level": 1,
+      "power": 0.9,
+      "cooldown": 0,
+      "kind": "physical"
+    },
+    {
+      "id": "tanjiro-kamado-base:2",
+      "name": "Flowing Dance",
+      "category": "attack",
+      "level": 1,
+      "power": 1.2,
+      "cooldown": 1,
+      "kind": "physical"
+    },
+    {
+      "id": "tanjiro-kamado-base:3",
+      "name": "Water Wheel",
+      "category": "attack",
+      "level": 1,
+      "power": 1.5,
+      "cooldown": 2,
+      "kind": "physical"
+    },
+    {
+      "id": "tanjiro-kamado-base:4",
+      "name": "Constant Flux",
+      "category": "attack",
+      "level": 12,
+      "power": 1.65,
+      "cooldown": 2,
+      "kind": "physical"
+    },
+    {
+      "id": "tanjiro-kamado-base:5",
+      "name": "Hinokami Kagura",
+      "category": "attack",
+      "level": 30,
+      "power": 1.85,
+      "cooldown": 3,
+      "kind": "physical"
+    },
+    {
+      "id": "tanjiro-kamado-base:6",
+      "name": "Sun Dragon Dance",
+      "category": "ultimate",
+      "level": 20,
+      "power": 2.6,
+      "cooldown": 5,
+      "kind": "physical"
+    },
+    {
+      "id": "tanjiro-kamado-base:7",
+      "name": "Recover",
+      "category": "healing",
+      "level": 1,
+      "heal": 0.18,
+      "cooldown": 3
+    },
+    {
+      "id": "tanjiro-kamado-base:8",
+      "name": "Second Wind",
+      "category": "healing",
+      "level": 40,
+      "heal": 0.3,
+      "cooldown": 4
+    },
+    {
+      "id": "tanjiro-kamado-base:9",
+      "name": "Hinokami Kagura — Mastery",
+      "category": "attack",
+      "level": 80,
+      "power": 2.1,
+      "cooldown": 4,
+      "kind": "physical"
+    }
+  ],
+  "naruto-uzumaki-base": [
+    {
+      "id": "naruto-uzumaki-base:1",
+      "name": "Shadow Clone Strike",
+      "category": "attack",
+      "level": 1,
+      "power": 0.9,
+      "cooldown": 0,
+      "kind": "arcane"
+    },
+    {
+      "id": "naruto-uzumaki-base:2",
+      "name": "Kunai Rush",
+      "category": "attack",
+      "level": 1,
+      "power": 1.2,
+      "cooldown": 1,
+      "kind": "arcane"
+    },
+    {
+      "id": "naruto-uzumaki-base:3",
+      "name": "Chakra Burst",
+      "category": "attack",
+      "level": 1,
+      "power": 1.5,
+      "cooldown": 2,
+      "kind": "arcane"
+    },
+    {
+      "id": "naruto-uzumaki-base:4",
+      "name": "Rasengan",
+      "category": "attack",
+      "level": 12,
+      "power": 1.65,
+      "cooldown": 2,
+      "kind": "arcane"
+    },
+    {
+      "id": "naruto-uzumaki-base:5",
+      "name": "Rasenshuriken",
+      "category": "attack",
+      "level": 30,
+      "power": 1.85,
+      "cooldown": 3,
+      "kind": "arcane"
+    },
+    {
+      "id": "naruto-uzumaki-base:6",
+      "name": "Tailed Beast Rasenshuriken",
+      "category": "ultimate",
+      "level": 20,
+      "power": 2.6,
+      "cooldown": 5,
+      "kind": "arcane"
+    },
+    {
+      "id": "naruto-uzumaki-base:7",
+      "name": "Recover",
+      "category": "healing",
+      "level": 1,
+      "heal": 0.18,
+      "cooldown": 3
+    },
+    {
+      "id": "naruto-uzumaki-base:8",
+      "name": "Second Wind",
+      "category": "healing",
+      "level": 40,
+      "heal": 0.3,
+      "cooldown": 4
+    },
+    {
+      "id": "naruto-uzumaki-base:9",
+      "name": "Rasenshuriken — Mastery",
+      "category": "attack",
+      "level": 80,
+      "power": 2.1,
+      "cooldown": 4,
+      "kind": "arcane"
+    }
+  ],
+  "eren-yeager-base": [
+    {
+      "id": "eren-yeager-base:1",
+      "name": "Blade Slash",
+      "category": "attack",
+      "level": 1,
+      "power": 0.9,
+      "cooldown": 0,
+      "kind": "physical"
+    },
+    {
+      "id": "eren-yeager-base:2",
+      "name": "ODM Rush",
+      "category": "attack",
+      "level": 1,
+      "power": 1.2,
+      "cooldown": 1,
+      "kind": "physical"
+    },
+    {
+      "id": "eren-yeager-base:3",
+      "name": "Spinning Cut",
+      "category": "attack",
+      "level": 1,
+      "power": 1.5,
+      "cooldown": 2,
+      "kind": "physical"
+    },
+    {
+      "id": "eren-yeager-base:4",
+      "name": "Titan Punch",
+      "category": "attack",
+      "level": 12,
+      "power": 1.65,
+      "cooldown": 2,
+      "kind": "physical"
+    },
+    {
+      "id": "eren-yeager-base:5",
+      "name": "Titan Charge",
+      "category": "attack",
+      "level": 30,
+      "power": 1.85,
+      "cooldown": 3,
+      "kind": "physical"
+    },
+    {
+      "id": "eren-yeager-base:6",
+      "name": "Attack Titan Assault",
+      "category": "ultimate",
+      "level": 20,
+      "power": 2.6,
+      "cooldown": 5,
+      "kind": "physical"
+    },
+    {
+      "id": "eren-yeager-base:7",
+      "name": "Recover",
+      "category": "healing",
+      "level": 1,
+      "heal": 0.18,
+      "cooldown": 3
+    },
+    {
+      "id": "eren-yeager-base:8",
+      "name": "Second Wind",
+      "category": "healing",
+      "level": 40,
+      "heal": 0.3,
+      "cooldown": 4
+    },
+    {
+      "id": "eren-yeager-base:9",
+      "name": "Titan Charge — Mastery",
+      "category": "attack",
+      "level": 80,
+      "power": 2.1,
+      "cooldown": 4,
+      "kind": "physical"
+    }
+  ]
+}

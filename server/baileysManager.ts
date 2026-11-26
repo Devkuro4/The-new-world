@@ -16,7 +16,7 @@ import makeWASocket, {
   type WASocket,
 } from '@whiskeysockets/baileys';
 import pino from 'pino';
-import { botState, handleIncomingMessage, aiReplyThreads } from './botEngine.ts';
+import { botState, handleIncomingMessage, aiReplyThreads, tickCardBattle } from './botEngine.ts';
 import { getCommandImageBuffer, resolveLocalAsset } from './assets.ts';
 import type { BotReplyPayload, CommandRole } from '../src/shared/botSchema.ts';
 
@@ -56,6 +56,25 @@ let reconnectTimer: NodeJS.Timeout | null = null;
 let manualDisconnect = false;
 let reconnectAttempts = 0;
 let cachedGroups: BaileysGroupSummary[] = [];
+
+let cardBattleTickBusy = false;
+const cardBattleTimer = setInterval(async () => {
+  if (cardBattleTickBusy || status !== 'connected' || !activeSock) return;
+  cardBattleTickBusy = true;
+  try {
+    const sock = activeSock;
+    for (const notice of tickCardBattle()) {
+      if (!notice.group.endsWith('@g.us') || !cachedGroups.some(g => g.id === notice.group)) continue;
+      try {
+        const text = notice.text.replace(/\.cb claim/g, `${botState.config.prefix || '.'}cb claim`);
+        const sent = await sock.sendMessage(notice.group, notice.imagePath ? {image: fs.readFileSync(notice.imagePath), caption: text} : {text});
+        trackSentId(sent?.key?.id);
+      } catch (err) { console.warn('[Card Battle] Notice failed', err); }
+    }
+  } catch (err) { console.warn('[Card Battle] Scheduled check failed', err); }
+  finally { cardBattleTickBusy = false; }
+}, 30_000);
+cardBattleTimer.unref();
 
 const sentMessageIds = new Set<string>();
 const groupMetadataCache = new Map<string, { meta: GroupMetadata; fetchedAt: number }>();

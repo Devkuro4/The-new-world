@@ -1,0 +1,742 @@
+[
+  {
+    "id": "hiromi-higuruma-base",
+    "name": "Hiromi Higuruma",
+    "series": "Jujutsu Kaisen",
+    "version": "base",
+    "type": "Arcane",
+    "rarity": "Rare",
+    "sprite": "sprites/hiromi-higuruma-base.png",
+    "source": "sprite/photo_2_2026-11-26_09-21-20.jpg",
+    "reviewRequired": true,
+    "baseStats": {
+      "HP": 100,
+      "ATK": 20,
+      "DEF": 14,
+      "SPD": 20,
+      "ARC": 32,
+      "CRT": 15
+    },
+    "mergeTarget": null
+  },
+  {
+    "id": "light-yagami-base",
+    "name": "Light Yagami",
+    "series": "Death Note",
+    "version": "base",
+    "type": "Arcane",
+    "rarity": "Mythical",
+    "sprite": "sprites/light-yagami-base.png",
+    "source": "sprite/photo_3_2026-11-26_09-21-20.jpg",
+    "reviewRequired": true,
+    "baseStats": {
+      "HP": 90,
+      "ATK": 17,
+      "DEF": 14,
+      "SPD": 23,
+      "ARC": 34,
+      "CRT": 16
+    },
+    "mergeTarget": null
+  },
+  {
+    "id": "choso-base",
+    "name": "Choso",
+    "series": "Jujutsu Kaisen",
+    "version": "base",
+    "type": "Arcane",
+    "rarity": "Epic",
+    "sprite": "sprites/choso-base.png",
+    "source": "sprite/photo_4_2026-11-26_09-21-20.jpg",
+    "reviewRequired": true,
+    "baseStats": {
+      "HP": 95,
+      "ATK": 19,
+      "DEF": 17,
+      "SPD": 18,
+      "ARC": 32,
+      "CRT": 15
+    },
+    "mergeTarget": null
+  },
+  {
+    "id": "toji-fushiguro-base",
+    "name": "Toji Fushiguro",
+    "series": "Jujutsu Kaisen",
+    "version": "base",
+    "type": "Strength",
+    "rarity": "Legendary",
+    "sprite": "sprites/toji-fushiguro-base.png",
+    "source": "sprite/photo_5_2026-11-26_09-21-20.jpg",
+    "reviewRequired": true,
+    "baseStats": {
+      "HP": 110,
+      "ATK": 28,
+      "DEF": 19,
+      "SPD": 16,
+      "ARC": 10,
+      "CRT": 14
+    },
+    "mergeTarget": null
+  },
+  {
+    "id": "toge-inumaki-base",
+    "name": "Toge Inumaki",
+    "series": "Jujutsu Kaisen",
+    "version": "base",
+    "type": "Arcane",
+    "rarity": "Rare",
+    "sprite": "sprites/toge-inumaki-base.png",
+    "source": "sprite/photo_6_2026-11-26_09-21-20.jpg",
+    "reviewRequired": true,
+    "baseStats": {
+      "HP": 90,
+      "ATK": 18,
+      "DEF": 14,
+      "SPD": 22,
+      "ARC": 34,
+      "CRT": 15
+    },
+    "mergeTarget": null
+  },
+  {
+    "id": "panda-base",
+    "name": "Panda",
+    "series": "Jujutsu Kaisen",
+    "version": "base",
+    "type": "Vitality",
+    "rarity": "Uncommon",
+    "sprite": "sprites/panda-base.png",
+    "source": "sprite/photo_7_2026-11-26_09-21-20.jpg",
+    "reviewRequired": true,
+    "baseStats": {
+      "HP": 145,
+      "ATK": 22,
+      "DEF": 23,
+      "SPD": 15,
+      "ARC": 12,
+      "CRT": 11
+    },
+    "mergeTarget": null
+  },
+  {
+    "id": "mei-mei-base",
+    "name": "Mei Mei",
+    "series": "Jujutsu Kaisen",
+    "version": "base",
+    "type": "Strength",
+    "rarity": "Rare",
+    "sprite": "sprites/mei-mei-base.png",
+    "source": "sprite/photo_8_2026-11-26_09-21-20.jpg",
+    "reviewRequired": true,
+    "baseStats": {
+      "HP": 105,
+      "ATK": 32,
+      "DEF": 17,
+      "SPD": 18,
+      "ARC": 10,
+      "CRT": 15
+    },
+    "mergeTarget": null
+  },
+  {
+    "id": "yuta-okkotsu-base",
+    "name": "Yuta Okkotsu",
+    "series": "Jujutsu Kaisen",
+    "version": "base",
+    "type": "Arcane",
+    "rarity": "Legendary",
+    "sprite": "sprites/yuta-okkotsu-base.png",
+    "source": "sprite/photo_9_2026-11-26_09-21-20.jpg",
+    "reviewRequired": true,
+    "baseStats": {
+      "HP": 90,
+      "ATK": 17,
+      "DEF": 14,
+      "SPD": 23,
+      "ARC": 34,
+      "CRT": 16
+    },
+    "mergeTarget": null
+  },
+  {
+    "id": "yuji-itadori-base",
+    "name": "Yuji Itadori",
+    "series": "Jujutsu Kaisen",
+    "version": "base",
+    "type": "Strength",
+    "rarity": "Epic",
+    "sprite": "sprites/yuji-itadori-base.png",
+    "source": "sprite/photo_10_2026-11-26_09-21-20.jpg",
+    "reviewRequired": true,
+    "baseStats": {
+      "HP": 100,
+      "ATK": 31,
+      "DEF": 20,
+      "SPD": 16,
+      "ARC": 10,
+      "CRT": 15
+    },
+    "mergeTarget": null
+  },
+  {
+    "id": "rias-gremory-base",
+    "name": "Rias Gremory",
+    "series": "High School DxD",
+    "version": "base",
+    "type": "Arcane",
+    "rarity": "Epic",
+    "sprite": "sprites/rias-gremory-base.png",
+    "source": "sprite/photo_11_2026-11-26_09-21-20.jpg",
+    "reviewRequired": true,
+    "baseStats": {
+      "HP": 105,
+      "ATK": 16,
+      "DEF": 16,
+      "SPD": 18,
+      "ARC": 32,
+      "CRT": 14
+    },
+    "mergeTarget": null
+  },
+  {
+    "id": "suguru-geto-base",
+    "name": "Suguru Geto",
+    "series": "Jujutsu Kaisen",
+    "version": "base",
+    "type": "Arcane",
+    "rarity": "Epic",
+    "sprite": "sprites/suguru-geto-base.png",
+    "source": "sprite/photo_12_2026-11-26_09-21-20.jpg",
+    "reviewRequired": true,
+    "baseStats": {
+      "HP": 90,
+      "ATK": 18,
+      "DEF": 14,
+      "SPD": 22,
+      "ARC": 34,
+      "CRT": 15
+    },
+    "mergeTarget": null
+  },
+  {
+    "id": "jogo-base",
+    "name": "Jogo",
+    "series": "Jujutsu Kaisen",
+    "version": "base",
+    "type": "Arcane",
+    "rarity": "Rare",
+    "sprite": "sprites/jogo-base.png",
+    "source": "sprite/photo_13_2026-11-26_09-21-20.jpg",
+    "reviewRequired": true,
+    "baseStats": {
+      "HP": 95,
+      "ATK": 20,
+      "DEF": 13,
+      "SPD": 21,
+      "ARC": 32,
+      "CRT": 16
+    },
+    "mergeTarget": null
+  },
+  {
+    "id": "nobara-kugisaki-base",
+    "name": "Nobara Kugisaki",
+    "series": "Jujutsu Kaisen",
+    "version": "base",
+    "type": "Arcane",
+    "rarity": "Rare",
+    "sprite": "sprites/nobara-kugisaki-base.png",
+    "source": "sprite/photo_14_2026-11-26_09-21-20.jpg",
+    "reviewRequired": true,
+    "baseStats": {
+      "HP": 100,
+      "ATK": 20,
+      "DEF": 14,
+      "SPD": 20,
+      "ARC": 32,
+      "CRT": 15
+    },
+    "mergeTarget": null
+  },
+  {
+    "id": "satoru-gojo-base",
+    "name": "Satoru Gojo",
+    "series": "Jujutsu Kaisen",
+    "version": "base",
+    "type": "Arcane",
+    "rarity": "Celestial",
+    "sprite": "sprites/satoru-gojo-base.png",
+    "source": "sprite/photo_15_2026-11-26_09-21-20.jpg",
+    "reviewRequired": true,
+    "baseStats": {
+      "HP": 90,
+      "ATK": 17,
+      "DEF": 14,
+      "SPD": 23,
+      "ARC": 34,
+      "CRT": 16
+    },
+    "mergeTarget": null
+  },
+  {
+    "id": "kento-nanami-base",
+    "name": "Kento Nanami",
+    "series": "Jujutsu Kaisen",
+    "version": "base",
+    "type": "Strength",
+    "rarity": "Epic",
+    "sprite": "sprites/kento-nanami-base.png",
+    "source": "sprite/photo_16_2026-11-26_09-21-20.jpg",
+    "reviewRequired": true,
+    "baseStats": {
+      "HP": 100,
+      "ATK": 31,
+      "DEF": 20,
+      "SPD": 16,
+      "ARC": 10,
+      "CRT": 15
+    },
+    "mergeTarget": null
+  },
+  {
+    "id": "mahito-base",
+    "name": "Mahito",
+    "series": "Jujutsu Kaisen",
+    "version": "base",
+    "type": "Vitality",
+    "rarity": "Epic",
+    "sprite": "sprites/mahito-base.png",
+    "source": "sprite/photo_17_2026-11-26_09-21-20.jpg",
+    "reviewRequired": true,
+    "baseStats": {
+      "HP": 155,
+      "ATK": 18,
+      "DEF": 26,
+      "SPD": 12,
+      "ARC": 12,
+      "CRT": 9
+    },
+    "mergeTarget": null
+  },
+  {
+    "id": "maki-zenin-base",
+    "name": "Maki Zenin",
+    "series": "Jujutsu Kaisen",
+    "version": "base",
+    "type": "Agility",
+    "rarity": "Epic",
+    "sprite": "sprites/maki-zenin-base.png",
+    "source": "sprite/photo_18_2026-11-26_09-21-20.jpg",
+    "reviewRequired": true,
+    "baseStats": {
+      "HP": 90,
+      "ATK": 23,
+      "DEF": 14,
+      "SPD": 34,
+      "ARC": 14,
+      "CRT": 18
+    },
+    "mergeTarget": null
+  },
+  {
+    "id": "yoriichi-tsugikuni-base",
+    "name": "Yoriichi Tsugikuni",
+    "series": "Demon Slayer",
+    "version": "base",
+    "type": "Agility",
+    "rarity": "Legendary",
+    "sprite": "sprites/yoriichi-tsugikuni-base.png",
+    "source": "sprite/photo_19_2026-11-26_09-21-20.jpg",
+    "reviewRequired": true,
+    "baseStats": {
+      "HP": 95,
+      "ATK": 25,
+      "DEF": 13,
+      "SPD": 33,
+      "ARC": 12,
+      "CRT": 19
+    },
+    "mergeTarget": null
+  },
+  {
+    "id": "kyoko-hori-base",
+    "name": "Kyoko Hori",
+    "series": "Horimiya",
+    "version": "base",
+    "type": "Vitality",
+    "rarity": "Common",
+    "sprite": "sprites/kyoko-hori-base.png",
+    "source": "sprite/photo_20_2026-11-26_09-21-20.jpg",
+    "reviewRequired": true,
+    "baseStats": {
+      "HP": 150,
+      "ATK": 22,
+      "DEF": 24,
+      "SPD": 14,
+      "ARC": 12,
+      "CRT": 10
+    },
+    "mergeTarget": null
+  },
+  {
+    "id": "ryomen-sukuna-base",
+    "name": "Ryomen Sukuna",
+    "series": "Jujutsu Kaisen",
+    "version": "base",
+    "type": "Arcane",
+    "rarity": "Mythical",
+    "sprite": "sprites/ryomen-sukuna-base.png",
+    "source": "sprite/photo_21_2026-11-26_09-21-20.jpg",
+    "reviewRequired": true,
+    "baseStats": {
+      "HP": 90,
+      "ATK": 17,
+      "DEF": 14,
+      "SPD": 23,
+      "ARC": 34,
+      "CRT": 16
+    },
+    "mergeTarget": null
+  },
+  {
+    "id": "megumi-fushiguro-base",
+    "name": "Megumi Fushiguro",
+    "series": "Jujutsu Kaisen",
+    "version": "base",
+    "type": "Arcane",
+    "rarity": "Epic",
+    "sprite": "sprites/megumi-fushiguro-base.png",
+    "source": "sprite/photo_22_2026-11-26_09-21-20.jpg",
+    "reviewRequired": true,
+    "baseStats": {
+      "HP": 95,
+      "ATK": 19,
+      "DEF": 17,
+      "SPD": 18,
+      "ARC": 32,
+      "CRT": 15
+    },
+    "mergeTarget": null
+  },
+  {
+    "id": "shoto-todoroki-base",
+    "name": "Shoto Todoroki",
+    "series": "My Hero Academia",
+    "version": "base",
+    "type": "Arcane",
+    "rarity": "Epic",
+    "sprite": "sprites/shoto-todoroki-base.png",
+    "source": "sprite/photo_23_2026-11-26_09-21-20.jpg",
+    "reviewRequired": true,
+    "baseStats": {
+      "HP": 105,
+      "ATK": 16,
+      "DEF": 16,
+      "SPD": 18,
+      "ARC": 32,
+      "CRT": 14
+    },
+    "mergeTarget": null
+  },
+  {
+    "id": "izumi-miyamura-base",
+    "name": "Izumi Miyamura",
+    "series": "Horimiya",
+    "version": "base",
+    "type": "Agility",
+    "rarity": "Common",
+    "sprite": "sprites/izumi-miyamura-base.png",
+    "source": "sprite/photo_24_2026-11-26_09-21-20.jpg",
+    "reviewRequired": true,
+    "baseStats": {
+      "HP": 90,
+      "ATK": 23,
+      "DEF": 14,
+      "SPD": 34,
+      "ARC": 14,
+      "CRT": 18
+    },
+    "mergeTarget": null
+  },
+  {
+    "id": "edward-elric-base",
+    "name": "Edward Elric",
+    "series": "Fullmetal Alchemist",
+    "version": "base",
+    "type": "Arcane",
+    "rarity": "Legendary",
+    "sprite": "sprites/edward-elric-base.png",
+    "source": "sprite/photo_25_2026-11-26_09-21-20.jpg",
+    "reviewRequired": true,
+    "baseStats": {
+      "HP": 95,
+      "ATK": 20,
+      "DEF": 13,
+      "SPD": 21,
+      "ARC": 32,
+      "CRT": 16
+    },
+    "mergeTarget": null
+  },
+  {
+    "id": "katsuki-bakugo-base",
+    "name": "Katsuki Bakugo",
+    "series": "My Hero Academia",
+    "version": "base",
+    "type": "Strength",
+    "rarity": "Epic",
+    "sprite": "sprites/katsuki-bakugo-base.png",
+    "source": "sprite/photo_26_2026-11-26_09-21-20.jpg",
+    "reviewRequired": true,
+    "baseStats": {
+      "HP": 105,
+      "ATK": 32,
+      "DEF": 17,
+      "SPD": 18,
+      "ARC": 10,
+      "CRT": 15
+    },
+    "mergeTarget": null
+  },
+  {
+    "id": "sailor-moon-base",
+    "name": "Sailor Moon",
+    "series": "Sailor Moon",
+    "version": "base",
+    "type": "Arcane",
+    "rarity": "Mythical",
+    "sprite": "sprites/sailor-moon-base.png",
+    "source": "sprite/photo_27_2026-11-26_09-21-20.jpg",
+    "reviewRequired": true,
+    "baseStats": {
+      "HP": 90,
+      "ATK": 17,
+      "DEF": 14,
+      "SPD": 23,
+      "ARC": 34,
+      "CRT": 16
+    },
+    "mergeTarget": null
+  },
+  {
+    "id": "izuku-midoriya-base",
+    "name": "Izuku Midoriya",
+    "series": "My Hero Academia",
+    "version": "base",
+    "type": "Strength",
+    "rarity": "Legendary",
+    "sprite": "sprites/izuku-midoriya-base.png",
+    "source": "sprite/photo_28_2026-11-26_09-21-20.jpg",
+    "reviewRequired": true,
+    "baseStats": {
+      "HP": 100,
+      "ATK": 31,
+      "DEF": 20,
+      "SPD": 16,
+      "ARC": 10,
+      "CRT": 15
+    },
+    "mergeTarget": null
+  },
+  {
+    "id": "all-might-base",
+    "name": "All Might",
+    "series": "My Hero Academia",
+    "version": "base",
+    "type": "Vitality",
+    "rarity": "Legendary",
+    "sprite": "sprites/all-might-base.png",
+    "source": "sprite/photo_29_2026-11-26_09-21-20.jpg",
+    "reviewRequired": true,
+    "baseStats": {
+      "HP": 155,
+      "ATK": 18,
+      "DEF": 26,
+      "SPD": 12,
+      "ARC": 12,
+      "CRT": 9
+    },
+    "mergeTarget": null
+  },
+  {
+    "id": "saitama-base",
+    "name": "Saitama",
+    "series": "One Punch Man",
+    "version": "base",
+    "type": "Strength",
+    "rarity": "Celestial",
+    "sprite": "sprites/saitama-base.png",
+    "source": "sprite/photo_30_2026-11-26_09-21-20.jpg",
+    "reviewRequired": true,
+    "baseStats": {
+      "HP": 95,
+      "ATK": 30,
+      "DEF": 17,
+      "SPD": 20,
+      "ARC": 12,
+      "CRT": 15
+    },
+    "mergeTarget": null
+  },
+  {
+    "id": "ken-kaneki-base",
+    "name": "Ken Kaneki",
+    "series": "Tokyo Ghoul",
+    "version": "base",
+    "type": "Vitality",
+    "rarity": "Mythical",
+    "sprite": "sprites/ken-kaneki-base.png",
+    "source": "sprite/photo_31_2026-11-26_09-21-20.jpg",
+    "reviewRequired": true,
+    "baseStats": {
+      "HP": 145,
+      "ATK": 22,
+      "DEF": 23,
+      "SPD": 15,
+      "ARC": 12,
+      "CRT": 11
+    },
+    "mergeTarget": null
+  },
+  {
+    "id": "l-lawliet-base",
+    "name": "L Lawliet",
+    "series": "Death Note",
+    "version": "base",
+    "type": "Agility",
+    "rarity": "Epic",
+    "sprite": "sprites/l-lawliet-base.png",
+    "source": "sprite/photo_32_2026-11-26_09-21-20.jpg",
+    "reviewRequired": true,
+    "baseStats": {
+      "HP": 100,
+      "ATK": 25,
+      "DEF": 14,
+      "SPD": 32,
+      "ARC": 12,
+      "CRT": 18
+    },
+    "mergeTarget": null
+  },
+  {
+    "id": "monkey-d-luffy-base",
+    "name": "Monkey D. Luffy",
+    "series": "One Piece",
+    "version": "base",
+    "type": "Vitality",
+    "rarity": "Celestial",
+    "sprite": "sprites/monkey-d-luffy-base.png",
+    "source": "sprite/photo_33_2026-11-26_09-21-20.jpg",
+    "reviewRequired": true,
+    "baseStats": {
+      "HP": 140,
+      "ATK": 19,
+      "DEF": 24,
+      "SPD": 17,
+      "ARC": 14,
+      "CRT": 11
+    },
+    "mergeTarget": null
+  },
+  {
+    "id": "son-goku-base",
+    "name": "Son Goku",
+    "series": "Dragon Ball",
+    "version": "base",
+    "type": "Strength",
+    "rarity": "Celestial",
+    "sprite": "sprites/son-goku-base.png",
+    "source": "sprite/photo_34_2026-11-26_09-21-20.jpg",
+    "reviewRequired": true,
+    "baseStats": {
+      "HP": 100,
+      "ATK": 30,
+      "DEF": 18,
+      "SPD": 18,
+      "ARC": 10,
+      "CRT": 15
+    },
+    "mergeTarget": null
+  },
+  {
+    "id": "ichigo-kurosaki-base",
+    "name": "Ichigo Kurosaki",
+    "series": "Bleach",
+    "version": "base",
+    "type": "Strength",
+    "rarity": "Mythical",
+    "sprite": "sprites/ichigo-kurosaki-base.png",
+    "source": "sprite/photo_35_2026-11-26_09-21-20.jpg",
+    "reviewRequired": true,
+    "baseStats": {
+      "HP": 110,
+      "ATK": 28,
+      "DEF": 19,
+      "SPD": 16,
+      "ARC": 10,
+      "CRT": 14
+    },
+    "mergeTarget": null
+  },
+  {
+    "id": "tanjiro-kamado-base",
+    "name": "Tanjiro Kamado",
+    "series": "Demon Slayer",
+    "version": "base",
+    "type": "Agility",
+    "rarity": "Legendary",
+    "sprite": "sprites/tanjiro-kamado-base.png",
+    "source": "sprite/photo_36_2026-11-26_09-21-20.jpg",
+    "reviewRequired": true,
+    "baseStats": {
+      "HP": 90,
+      "ATK": 23,
+      "DEF": 14,
+      "SPD": 34,
+      "ARC": 14,
+      "CRT": 18
+    },
+    "mergeTarget": null
+  },
+  {
+    "id": "naruto-uzumaki-base",
+    "name": "Naruto Uzumaki",
+    "series": "Naruto",
+    "version": "base",
+    "type": "Arcane",
+    "rarity": "Celestial",
+    "sprite": "sprites/naruto-uzumaki-base.png",
+    "source": "sprite/photo_37_2026-11-26_09-21-20.jpg",
+    "reviewRequired": true,
+    "baseStats": {
+      "HP": 95,
+      "ATK": 20,
+      "DEF": 13,
+      "SPD": 21,
+      "ARC": 32,
+      "CRT": 16
+    },
+    "mergeTarget": null
+  },
+  {
+    "id": "eren-yeager-base",
+    "name": "Eren Yeager",
+    "series": "Attack on Titan",
+    "version": "base",
+    "type": "Agility",
+    "rarity": "Legendary",
+    "sprite": "sprites/eren-yeager-base.png",
+    "source": "sprite/photo_39_2026-11-26_09-21-20.jpg",
+    "reviewRequired": true,
+    "baseStats": {
+      "HP": 100,
+      "ATK": 25,
+      "DEF": 14,
+      "SPD": 32,
+      "ARC": 12,
+      "CRT": 18
+    },
+    "mergeTarget": null
+  }
+]
