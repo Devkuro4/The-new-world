@@ -79,6 +79,7 @@ export interface BotState {
   players: Record<string, PlayerProfile>;
   activeDrop: ActiveDrop | null;
   activeQuiz: ActiveQuiz | null;
+  activeQuizzes?: Record<string, ActiveQuiz & { id: string }>;
   activeBlackjack: Record<string, BlackjackSession>;
   activeConnect4: Record<string, { board: number[][]; turn: number }>;
   activeWordChain: Record<string, { lastWord: string; used: string[]; score: number }>;
@@ -258,6 +259,9 @@ function loadState(cloudRaw?: string): BotState {
         aiMemories: parsed.aiMemories && typeof parsed.aiMemories === 'object' ? parsed.aiMemories : {},
         stats: { ...base.stats, ...(parsed.stats || {}) },
       };
+      if (loaded.config.supportInfo === 'Need help with Pieck? Use .support <issue> to open a ticket for Master Kaneki and the mod team.') {
+        loaded.config.supportInfo = base.config.supportInfo;
+      }
       retireLegacyAuctions(loaded);
       return loaded;
     }
@@ -742,7 +746,7 @@ function parseTranslateArgs(argStr: string, quotedText?: string): { language: st
 }
 
 
-// ── .play YouTube search + optional audio download (needs yt-dlp on the server) ──
+// ── .play music search and audio download ──
 interface YtResult {
   title: string;
   channel: string;
@@ -881,6 +885,39 @@ function ensureYtDlp(): Promise<string> {
   return ytDlpReady;
 }
 
+type SoundCloudTrack = Pick<YtResult, 'title' | 'url' | 'seconds' | 'thumbnail'>;
+
+async function searchSoundCloud(bin: string, query: string): Promise<SoundCloudTrack | null> {
+  const args = ['--ignore-config', '--flat-playlist', '--dump-single-json', '--no-warnings',
+    '--socket-timeout', '5', '--retries', '0', '--', `scsearch5:${query}`];
+  return new Promise(resolve => {
+    execFile(bin, args, { timeout: 10_000, maxBuffer: 1024 * 1024 }, (error, stdout) => {
+      if (error) return resolve(null);
+      try {
+        const words = (value: string) => value.normalize('NFKD').replace(/\p{M}/gu, '')
+          .toLowerCase().match(/[\p{L}\p{N}]+/gu) ?? [];
+        const requested = words(query);
+        const result = JSON.parse(stdout) as { entries?: Array<{
+          title?: string; webpage_url?: string; duration?: number; uploader?: string;
+          artists?: string[]; thumbnails?: { url?: string }[];
+        } | null> };
+        for (const entry of result.entries ?? []) {
+          if (!entry?.title || !entry.webpage_url || !/^(https:\/\/(?:www\.)?soundcloud\.com\/)[^/?#]+\/[^/?#]+\/?$/i.test(entry.webpage_url)) continue;
+          if (typeof entry.duration !== 'number' || !Number.isFinite(entry.duration) || entry.duration <= 0) continue;
+          const titleWords = words(entry.title);
+          const candidates = new Set([...titleWords, ...words([entry.uploader, ...(entry.artists ?? [])].join(' '))]);
+          if (!requested.some(word => titleWords.includes(word)) || !requested.every(word => candidates.has(word))) continue;
+          const thumbnail = entry.thumbnails?.find(item => /^https:\/\/i\d*\.sndcdn\.com\//i.test(item.url ?? ''))?.url;
+          return resolve({ title: entry.title, url: entry.webpage_url, seconds: entry.duration, thumbnail });
+        }
+      } catch {
+        // Search output can be empty or malformed when the provider is unavailable.
+      }
+      resolve(null);
+    });
+  });
+}
+
 export function warmUpYtDlp(): void {
   getCookiesFile();
   console.log(`[yt-dlp] cookies: ${cookiesStatus}`);
@@ -949,7 +986,9 @@ function runYtDlpOnce(
   url: string,
   kind: 'audio' | 'video',
   extraArgs: string[],
-  useJsRuntime: boolean
+  useJsRuntime: boolean,
+  timeout = 120_000,
+  useCookies = true,
 ): Promise<DownloadResult & { botCheck?: boolean; badFlag?: boolean }> {
   return new Promise((resolve) => {
     const outBase = path.join(os.tmpdir(), `dl-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`);
@@ -969,11 +1008,11 @@ function runYtDlpOnce(
     ];
     // Recent yt-dlp needs a JavaScript runtime to read YouTube; Node is already running this bot.
     if (useJsRuntime) args.push('--js-runtimes', `node:${process.execPath}`, '--remote-components', 'ejs:github');
-    const cookies = getCookiesFile();
+    const cookies = useCookies ? getCookiesFile() : undefined;
     if (cookies) args.push('--cookies', cookies);
     args.push(...extraArgs, url);
 
-    execFile(bin, args, { timeout: 120_000 }, (error, _stdout, stderr) => {
+    execFile(bin, args, { timeout }, (error, _stdout, stderr) => {
       const errText = (stderr || '').toString();
       const lastLine = errText.split('\n').map((l) => l.trim()).filter(Boolean).slice(-1)[0] || '';
       if (error) {
@@ -1368,8 +1407,36 @@ type IncomingParams = AiContext & {
 };
 export function handleIncomingMessage(params: IncomingParams): Promise<BotReplyPayload> {
   params.senderId = params.senderAccountIds?.find(id => Object.hasOwn(botState.players, id)) ?? params.senderId;
-  return serialize(params, params.senderId, () => handleIncomingMessageInternal(params));
+  return serialize(params, params.senderId, async () => {
+    const welcome = params.source === 'baileys' ? undefined : takeAfkReturn(params.senderId, params.text);
+    const reply = await handleIncomingMessageInternal(params);
+    return welcome ? { ...reply, text: `${welcome}\n\n${reply.text}`, hideText: false } : reply;
+  });
 }
+function clearAfk(player?: PlayerProfile): string | undefined {
+  if (!player?.afkReason) return undefined;
+  const reason = player.afkReason;
+  const startedAt = player.afkSince;
+  delete player.afkReason;
+  delete player.afkSince;
+  const elapsed = typeof startedAt === 'number' && Number.isFinite(startedAt) && startedAt > 0
+    ? formatDuration(Date.now() - startedAt)
+    : undefined;
+  return `👋 Welcome back, ${player.name}! You were AFK${elapsed ? ` for ${elapsed}` : ''}. Reason: ${reason}`;
+}
+
+export function takeAfkReturn(senderId: string, text: string): string | undefined {
+  const input = text.trim();
+  if (!input) return undefined;
+  const prefix = botState.config.prefix || '.';
+  if (input.startsWith(prefix) && findCommand(input.slice(prefix.length).trim().split(/\s+/)[0])?.name === 'afk') {
+    return undefined;
+  }
+  const message = clearAfk(botState.players[senderId]);
+  if (message) persistState();
+  return message;
+}
+
 async function handleIncomingMessageInternal(params: IncomingParams): Promise<BotReplyPayload> {
   const started = Date.now();
   const input = params.text.trim();
@@ -1528,7 +1595,7 @@ async function handleIncomingMessageInternal(params: IncomingParams): Promise<Bo
       'menu', 'help', 'p', 'profile', 'xp', 'level', 'rank', 'setpp', 'setcover',
       'edit', 'bio', 'setage', 'rename', 'setxp', 'bal', 'balance', 'inv', 'inventory',
       'rich', 'richg', 'lb', 'leaderboard', 'stlb', 'myshame', 'mycds', 'transactions',
-      'rules', 'support', 'community', 'addbot', 'ping', 'stats', 'bots', 'url', 'otp',
+      'rules', 'support', 'community', 'addbot', 'test', 'stats', 'bots', 'url', 'otp', 'owner', 'mods', 'mem', 'memories',
     ]);
 
     if (cmdDef.name === 'cb') {
@@ -1676,11 +1743,8 @@ async function executeBuiltInCommand(
     return { text: `*📜 ${botState.config.botName} Rules*\n\n${botState.config.rulesText}`, handler: 'General' };
   }
   if (cmd === 'support') {
-    const ticketId = `SUP-${Math.floor(1000 + Math.random() * 9000)}`;
     return {
-      text: argStr
-        ? `*🎫 Support Ticket Created (${ticketId})*\nIssue: _${argStr}_\nAssigned to: *${botState.config.creatorName}* & Moderators.`
-        : `*🎫 Support Desk*\n${botState.config.supportInfo}`,
+      text: `*🎫 Support Desk*\n${botState.config.supportInfo}`,
       handler: 'General',
     };
   }
@@ -1702,7 +1766,7 @@ async function executeBuiltInCommand(
         `*⚡ ${botState.config.botName} Online*`,
         `┣ Prefix: \`${p}\``,
         `┣ Community: ${botState.config.bannerTitle}`,
-        `┣ Groq AI: ${hasGroqKey() ? 'Connected' : 'Pending Secret'}`,
+        `┣ Groq AI: ${hasGroqKey() ? 'Key configured' : 'Key missing'}`,
         `┗━━━━━━━━━━━`,
       ].join('\n'),
       handler: 'Diagnostics',
@@ -1716,9 +1780,7 @@ async function executeBuiltInCommand(
         `*📊 ${botState.config.botName} Runtime Stats*`,
         `┣ Enabled Commands: *${enabledCount}/${botState.commands.length}*`,
         `┣ Registered Players: *${playerCount}*`,
-        `┣ Catalog Cards: *${botState.cards.length}*`,
         `┣ Commands Processed: *${botState.stats.totalCommands}*`,
-        `┣ Card Drops Spawned: *${botState.stats.totalCardDrops}*`,
         `┗━━━━━━━━━━━`,
       ].join('\n'),
       handler: 'Telemetry',
@@ -1730,8 +1792,7 @@ async function executeBuiltInCommand(
       text: [
         `*👑 Bot Creator*`,
         `┣ Name: *${botState.config.creatorName}*`,
-        `┣ WhatsApp: *+${cleanOwner}*`,
-        `┣ Chat: https://wa.me/${cleanOwner}`,
+        ...(cleanOwner ? [`┣ WhatsApp: *+${cleanOwner}*`, `┣ Chat: https://wa.me/${cleanOwner}`] : []),
         `┣ Bot: *${botState.config.botName}* (${botState.config.bannerTitle})`,
         `┣ Guild: Tempest Federation`,
         `┗━━━━━━━━━━━`,
@@ -1754,7 +1815,7 @@ async function executeBuiltInCommand(
   }
   if (cmd === 'addmod' || cmd === 'delmod' || cmd === 'unmod') {
     const number = argStr.replace(/[^\d]/g, '');
-    if (number.length < 7 || number.length > 15) {
+    if (!/^\+?[0-9 ()-]+$/.test(argStr) || number.length < 7 || number.length > 15) {
       return { text: `Usage: *${p}${cmd} <country-code phone number>*`, handler: 'Moderation', status: 'error' };
     }
     const current = new Set(botState.groupSettings.moderatorNumbers);
@@ -1781,15 +1842,14 @@ async function executeBuiltInCommand(
     };
   }
   if (cmd === 'otp') {
-    const code = Math.floor(100000 + Math.random() * 900000);
     return {
-      text: `*🔐 Pairing OTP Code*\nCode: \`${code}\`\nValid for single-session verification.`,
+      text: 'Request a WhatsApp pairing code from the Deploy & Webhook tab.',
       handler: 'General',
     };
   }
-  if (cmd === 'mem') {
+  if (cmd === 'mem' || cmd === 'memories') {
     const sub = args[0]?.toLowerCase();
-    if (sub === 'clear' || sub === 'reset') {
+    if ((sub === 'clear' || sub === 'reset') && args.length === 1) {
       botState.aiMemories[player.id] = [];
       clearThreads(botState.aiConversations, player.id);
       return {
@@ -1806,7 +1866,7 @@ async function executeBuiltInCommand(
       };
     }
     if ((sub === 'del' || sub === 'delete' || sub === 'remove') && args[1]) {
-      const idx = Number.parseInt(args[1], 10);
+      const idx = /^\d+$/.test(args[1]) && args.length === 2 ? Number(args[1]) : NaN;
       const list = botState.aiMemories[player.id] || [];
       if (!Number.isFinite(idx) || idx < 1 || idx > list.length) {
         return {
@@ -1821,6 +1881,7 @@ async function executeBuiltInCommand(
         handler: 'AI Memory',
       };
     }
+    if (sub) return { text: `Usage: *${p}${cmd} [add <note>|del <number>|clear]*`, handler: 'AI Memory', status: 'error' };
     const personal = botState.aiMemories[player.id] || [];
     if (personal.length === 0) {
       return {
@@ -1844,38 +1905,6 @@ async function executeBuiltInCommand(
       handler: 'AI Memory',
     };
   }
-  if (cmd === 'memories') {
-    const sub = args[0]?.toLowerCase();
-    if (sub === 'clear' || sub === 'reset') {
-      botState.aiMemories[player.id] = [];
-      clearThreads(botState.aiConversations, player.id);
-      return {
-        text: `🧹 Cleared all saved AI memories and recent conversation history for *${player.name}*.`,
-        handler: 'AI Memory',
-      };
-    }
-    if (sub === 'add' && args.slice(1).join(' ').trim()) {
-      const note = args.slice(1).join(' ').trim();
-      savePlayerMemory(player.id, note);
-      return {
-        text: `🧠 Saved to *${player.name}*'s AI memories:\n• _${note.slice(0, 160)}_`,
-        handler: 'AI Memory',
-      };
-    }
-    const personal = botState.aiMemories[player.id] || [];
-    const recent: typeof botState.logs = [];
-    const personalBlock = personal.length
-      ? `*🧠 What ${botState.config.botName} Remembers (${player.name})*\n${personal.slice(0, 8).map((m) => `• ${m}`).join('\n')}`
-      : `*🧠 AI Personal Memories (${player.name})*\n_None saved yet — mention facts in chat or use *${p}memories add <note>*._`;
-    const groupBlock = recent.length
-      ? `\n\n*🕰️ Recent Group Moments*\n${recent.map((l) => `• *${l.senderName}*: \`${l.input}\``).join('\n')}`
-      : '';
-    return {
-      text: `${personalBlock}${groupBlock}\n\nManage: *${p}memories add <note>* · *${p}memories clear*`,
-      handler: 'AI Memory',
-    };
-  }
-
   // ── CARDS ──
   if (cmd === 'card' || cmd === 'sc' || cmd === 'rc') {
     const useOrbsForRc = cmd === 'rc' && ['orb', 'orbs'].includes(argStr.trim().toLowerCase());
@@ -2908,10 +2937,10 @@ async function executeBuiltInCommand(
       };
     }
     if (cmd === 'setage') {
-      if (!argStr.trim()) {
-        return { text: `Usage: *${p}setage <age>*`, handler: 'Profile', status: 'error' };
+      const age = /^\d+$/.test(argStr) ? Number(argStr) : NaN;
+      if (!Number.isInteger(age) || age < 13 || age > 99) {
+        return { text: `Usage: *${p}setage <13–99>*`, handler: 'Profile', status: 'error' };
       }
-      const age = Math.min(99, Math.max(13, parseInt(argStr, 10) || player.age));
       player.age = age;
       return { text: `🎂 Profile age updated to *${age}*.`, handler: 'Profile' };
     }
@@ -3048,7 +3077,10 @@ async function executeBuiltInCommand(
   if (cmd === 'buy') {
     const lastToken = args[args.length - 1];
     const hasQty = args.length > 1 && /^\d+$/.test(lastToken || '');
-    const qty = hasQty ? Math.min(20, Math.max(1, parseInt(lastToken!, 10))) : 1;
+    const qty = hasQty ? Number(lastToken) : 1;
+    if (!Number.isSafeInteger(qty) || qty < 1 || qty > 20) {
+      return { text: `Choose a quantity from 1 to 20. Usage: *${p}buy <item> [qty]*.`, handler: 'Economy', status: 'error' };
+    }
     const itemQuery = (hasQty ? args.slice(0, -1).join(' ') : argStr).trim();
     const item = findShopItem(itemQuery);
     if (!item) {
@@ -3074,7 +3106,8 @@ async function executeBuiltInCommand(
   }
 
   if (cmd === 'use') {
-    const query = (argStr || 'ticket').trim().toLowerCase();
+    if (!argStr) return { text: `Usage: *${p}use <item>*.`, handler: 'Economy', status: 'error' };
+    const query = argStr.toLowerCase();
     const key = Object.keys(player.inventory).find(
       (k) => player.inventory[k] > 0 && k.toLowerCase().includes(query)
     );
@@ -3141,7 +3174,10 @@ async function executeBuiltInCommand(
     );
     if (!key) return { text: `Item "${itemQuery}" not found in your inventory.`, handler: 'Economy' };
     const owned = player.inventory[key];
-    const qty = isAll ? owned : hasQty ? Math.min(owned, Math.max(1, parseInt(lastToken!, 10))) : 1;
+    const qty = isAll ? owned : hasQty ? Number(lastToken) : 1;
+    if (!Number.isSafeInteger(qty) || qty < 1 || qty > owned) {
+      return { text: `Choose a quantity from 1 to ${owned}, or use all.`, handler: 'Economy', status: 'error' };
+    }
     const unitPrice = getItemSellPrice(key);
     const totalPayout = unitPrice * qty;
     player.inventory[key] -= qty;
@@ -3174,7 +3210,10 @@ async function executeBuiltInCommand(
         handler: 'Economy',
       };
     }
-    const count = Math.min(5, Math.max(1, parseInt(args[0] || '1', 10) || 1));
+    if (argStr && !/^[1-5]$/.test(argStr)) {
+      return { text: `Usage: *${p}lottery [1–5]*.`, handler: 'Economy', status: 'error' };
+    }
+    const count = Number(argStr || '1');
     const cost = count * LOTTERY_TICKET_PRICE;
     if (player.wallet < cost) {
       return {
@@ -3242,7 +3281,8 @@ async function executeBuiltInCommand(
       if (player.loan <= 0) {
         return { text: `You have no active Guild Bank debt!`, handler: 'Economy' };
       }
-      const rawAmt = cmd === 'repay' ? args[0] : args[1];
+      const amountIndex = cmd === 'repay' ? 0 : 1;
+      const rawAmt = args.length === amountIndex + 1 ? args[amountIndex] : undefined;
       const maxPayable = Math.min(player.wallet, player.loan);
       const amt = parseAmountToken(rawAmt, maxPayable);
       if (amt === null || amt <= 0) {
@@ -3265,7 +3305,7 @@ async function executeBuiltInCommand(
     }
 
     const cap = maxLoanCap(player);
-    const availableCredit = Math.max(0, cap - player.loan);
+    const availableCredit = Math.max(0, Math.floor((cap - player.loan) / (1 + LOAN_INTEREST_RATE)));
     if (availableCredit < 100) {
       return {
         text: `🏦 Loan limit reached (*${formatGold(player.loan)} / ${formatGold(cap)}*). Repay with *${p}repay all* first!`,
@@ -3273,14 +3313,14 @@ async function executeBuiltInCommand(
         status: 'blocked',
       };
     }
-    const requested = parseAmountToken(args[0], availableCredit);
-    if (requested === null || requested < 100) {
+    const requested = args.length === 1 ? parseAmountToken(args[0], availableCredit) : null;
+    if (requested === null || requested < 100 || requested > availableCredit) {
       return {
         text: `Usage: *${p}loan <amount>* (min 100 Gold, available credit: *${formatGold(availableCredit)}*, 10% guild fee) or *${p}repay <amount|all>*.`,
         handler: 'Economy',
       };
     }
-    const principal = Math.min(requested, availableCredit);
+    const principal = requested;
     const totalDebtAdded = Math.round(principal * (1 + LOAN_INTEREST_RATE));
     player.loan += totalDebtAdded;
     player.wallet += principal;
@@ -3311,8 +3351,12 @@ async function executeBuiltInCommand(
   }
 
   if (cmd === 'afk') {
-    player.afkReason = argStr || 'AFK watching anime';
-    return { text: `💤 *${player.name}* is now AFK: _${player.afkReason}_`, handler: 'General' };
+    if (argStr.toLowerCase() === 'clear') {
+      return { text: clearAfk(player) ?? 'You are already active.', handler: 'General' };
+    }
+    player.afkReason = argStr || 'No reason given';
+    player.afkSince = Date.now();
+    return { text: `💤 You are now AFK, ${player.name}. Reason: ${player.afkReason}`, handler: 'General' };
   }
 
   if (cmd === 'rob') {
@@ -3665,10 +3709,18 @@ async function executeBuiltInCommand(
 
   // ── GAMES ──
   if (cmd === 'aquiz') {
-    if (argStr && ['a', 'b', 'c', 'd'].includes(argStr.toLowerCase()) && botState.activeQuiz) {
-      const idx = ['a', 'b', 'c', 'd'].indexOf(argStr.toLowerCase());
-      const q = botState.activeQuiz;
-      botState.activeQuiz = null;
+    const scope = aiContext?.groupId
+      ? `group:${aiContext.groupId}`
+      : `${source}:${chatMode}:${player.id}`;
+    const quizzes = botState.activeQuizzes ??= {};
+    if (argStr) {
+      const answer = /^([a-d])(?: ([a-f0-9-]+))?$/i.exec(argStr);
+      const q = quizzes[scope];
+      if (!answer || !q || (answer[2] && answer[2] !== q.id)) {
+        return { text: `Use *${p}aquiz* to see the current question, then answer A–D.`, handler: 'Anime Quiz', status: 'error' };
+      }
+      const idx = 'abcd'.indexOf(answer[1].toLowerCase());
+      delete quizzes[scope];
       if (idx === q.answerIndex) {
         player.wallet += q.reward;
         player.orbs += 1;
@@ -3719,15 +3771,14 @@ async function executeBuiltInCommand(
         reward: 650,
       },
     ];
-    const picked = bank[Math.floor(Math.random() * bank.length)];
-    botState.activeQuiz = picked;
+    const picked = quizzes[scope] ??= { ...bank[Math.floor(Math.random() * bank.length)], id: crypto.randomBytes(4).toString('hex') };
     return {
       text: `*❓ Anime Trivia (${picked.anime})*\n${picked.question}\n\nA) ${picked.options[0]}\nB) ${picked.options[1]}\nC) ${picked.options[2]}\nD) ${picked.options[3]}\n\nReward: *${formatGold(picked.reward)}* + *1 Orb*`,
       handler: 'Anime Quiz',
       buttons: [
-        { id: 'quiz_a', label: 'A', command: `${p}aquiz a` },
-        { id: 'quiz_b', label: 'B', command: `${p}aquiz b` },
-        { id: 'quiz_c', label: 'C', command: `${p}aquiz c` },
+        ...['a', 'b', 'c', 'd'].map(letter => ({
+          id: `quiz_${letter}`, label: letter.toUpperCase(), command: `${p}aquiz ${letter} ${picked.id}`,
+        })),
       ],
     };
   }
@@ -3753,47 +3804,52 @@ async function executeBuiltInCommand(
   }
 
   if (cmd === 'c4') {
-    if (!botState.activeConnect4[player.id] || !argStr) {
-      botState.activeConnect4[player.id] = {
-        board: Array.from({ length: 6 }, () => Array(7).fill(0)),
-        turn: 1,
-      };
+    const reset = argStr.toLowerCase() === 'reset';
+    if (argStr && !reset && !/^[1-7]$/.test(argStr)) {
+      return { text: `Usage: *${p}c4 [1–7|reset]*.`, handler: 'Mini-Game', status: 'error' };
     }
-    const game = botState.activeConnect4[player.id];
-    const col = parseInt(args[0] || '0', 10) - 1;
-    if (col >= 0 && col < 7) {
-      for (let r = 5; r >= 0; r--) {
-        if (game.board[r][col] === 0) {
-          game.board[r][col] = 1;
-          break;
+    if (reset) delete botState.activeConnect4[player.id];
+    const game = botState.activeConnect4[player.id] ??= { board: Array.from({ length: 6 }, () => Array(7).fill(0)), turn: 1 };
+    const { board } = game;
+    const available = () => board[0].flatMap((cell, col) => cell === 0 ? [col] : []);
+    const drop = (col: number, side: number) => {
+      let row = board.length - 1;
+      while (board[row][col] !== 0) row--;
+      board[row][col] = side;
+      return [[0, 1], [1, 0], [1, 1], [1, -1]].some(([dr, dc]) => {
+        let count = 1;
+        for (const direction of [-1, 1]) {
+          for (let step = direction; board[row + dr * step]?.[col + dc * step] === side; step += direction) count++;
         }
+        return count >= 4;
+      });
+    };
+    let result = '';
+    if (argStr && !reset) {
+      const col = Number(argStr) - 1;
+      if (!available().includes(col)) return { text: 'That column is full. Choose another column.', handler: 'Mini-Game', status: 'error' };
+      if (drop(col, 1)) result = 'You win!';
+      const remaining = available();
+      if (!result && remaining.length && drop(remaining[Math.floor(Math.random() * remaining.length)], 2)) {
+        result = `${botState.config.botName} wins!`;
       }
-      const aiCol = Math.floor(Math.random() * 7);
-      for (let r = 5; r >= 0; r--) {
-        if (game.board[r][aiCol] === 0) {
-          game.board[r][aiCol] = 2;
-          break;
-        }
-      }
+      if (!result && !available().length) result = 'Draw!';
       awardXp(player, 15);
     }
-    const grid = game.board
-      .map((row) => row.map((cell) => (cell === 1 ? '🔴' : cell === 2 ? '🟡' : '⚪')).join(''))
-      .join('\n');
+    if (result) delete botState.activeConnect4[player.id];
+    const grid = board.map(row => row.map(cell => ['⚪', '🔴', '🟡'][cell]).join('')).join('\n');
     return {
-      text: `*🔴 Connect-4 vs ${botState.config.botName}*\n${grid}\n1️⃣2️⃣3️⃣4️⃣5️⃣6️⃣7️⃣\nDrop a disc with *${p}c4 <1-7>*${col >= 0 && col < 7 ? ' (+15 XP)' : ''}`,
+      text: `*🔴 Connect-4 vs ${botState.config.botName}*\n${grid}\n1️⃣2️⃣3️⃣4️⃣5️⃣6️⃣7️⃣\n${result || `Drop a disc with *${p}c4 <1–7>*`}`,
       handler: 'Mini-Game',
-      buttons: [
-        { id: 'c4_3', label: 'Drop Col 3', command: `${p}c4 3` },
-        { id: 'c4_4', label: 'Drop Col 4', command: `${p}c4 4` },
-        { id: 'c4_5', label: 'Drop Col 5', command: `${p}c4 5` },
-      ],
+      buttons: result ? [] : available().slice(0, 3).map(col => ({
+        id: `c4_${col + 1}`, label: `Column ${col + 1}`, command: `${p}c4 ${col + 1}`,
+      })),
     };
   }
 
   if (cmd === 'wcg') {
     const words = ['naruto', 'otaku', 'uchiha', 'akira', 'ramen', 'neko', 'okabe', 'elric', 'clannad', 'dazai'];
-    if (!botState.activeWordChain[player.id] || !argStr) {
+    if (!botState.activeWordChain[player.id] || argStr.toLowerCase() === 'reset') {
       botState.activeWordChain[player.id] = { lastWord: 'anime', used: ['anime'], score: 0 };
       return {
         text: `*🔤 Word Chain Started!*\nStarting word: *ANIME*\nReply with *${p}wcg <word starting with E>*`,
@@ -3801,7 +3857,11 @@ async function executeBuiltInCommand(
       };
     }
     const wc = botState.activeWordChain[player.id];
-    const next = argStr.toLowerCase().replace(/[^a-z]/g, '');
+    if (!argStr) return { text: `Last word: *${wc.lastWord}*. Streak: ${wc.score}. Use *${p}wcg <word>* or *${p}wcg reset*.`, handler: 'Word Chain' };
+    const next = argStr.toLowerCase();
+    if (!/^[a-z]{2,40}$/.test(next) || wc.used.includes(next)) {
+      return { text: 'Enter one unused word with 2–40 letters.', handler: 'Word Chain', status: 'error' };
+    }
     const expected = wc.lastWord.slice(-1);
     if (!next.startsWith(expected)) {
       return { text: `Word must start with *${expected.toUpperCase()}* (after _${wc.lastWord}_).`, handler: 'Word Chain' };
@@ -3811,6 +3871,7 @@ async function executeBuiltInCommand(
     const replyStart = next.slice(-1);
     const botPick = words.find((w) => w.startsWith(replyStart) && !wc.used.includes(w)) || `${replyStart}ren`;
     wc.lastWord = botPick;
+    wc.used.push(botPick);
     player.wallet += 120;
     awardXp(player, 20);
     addTransaction(player, `Word Chain (${next})`, 120);
@@ -3821,13 +3882,7 @@ async function executeBuiltInCommand(
   }
 
   if (cmd === 'chess') {
-    if (argStr) awardXp(player, 15);
-    return {
-      text: argStr
-        ? `*♟️ Chess Move Recorded:* \`${argStr}\` (+15 XP)\n${botState.config.botName} responds: \`Nf6\`\nSend next SAN move via *${p}chess <move>*.`
-        : `*♟️ ${botState.config.bannerTitle} Chess Board*\nNew match ready! Open with *${p}chess e4* or *${p}chess d4*.`,
-      handler: 'Chess',
-    };
+    return { text: 'Chess is unavailable. Play Connect-4 with ' + p + 'c4.', handler: 'Chess', status: 'error' };
   }
 
   // ── EVENTS & GUILDS ──
@@ -3852,7 +3907,9 @@ async function executeBuiltInCommand(
 
   if (cmd === 'guilds') {
     if (argStr.toLowerCase().startsWith('join ')) {
-      const gName = argStr.slice(5).trim();
+      const query = argStr.slice(5).trim().toLowerCase();
+      const gName = ['Tempest Federation', 'Jujutsu High', 'Survey Corps'].find(guild => guild.toLowerCase() === query);
+      if (!gName) return { text: `Unknown guild. Use *${p}guilds* for the list.`, handler: 'Guilds', status: 'error' };
       player.guild = gName;
       return { text: `🏰 *${player.name}* joined guild *${gName}*!`, handler: 'Guilds' };
     }
@@ -4005,9 +4062,30 @@ async function executeBuiltInCommand(
 
   if (cmd === 'play') {
     if (!argStr) {
-      return { text: `Usage: *${p}play <song title>*\nExample: *${p}play Gurenge LiSA*`, handler: 'YouTube Search' };
+      return { text: `Usage: *${p}play <song title>*\nExample: *${p}play Gurenge LiSA*`, handler: 'Music Search', status: 'error' };
     }
     try {
+      const bin = await ensureYtDlp().catch(() => null);
+      const soundCloud = bin ? await searchSoundCloud(bin, argStr.slice(0, 200)) : null;
+      if (bin && soundCloud) {
+        const sendAudio = source === 'baileys' && soundCloud.seconds <= MAX_PLAY_SECONDS;
+        const audio = sendAudio
+          ? await runYtDlpOnce(bin, soundCloud.url, 'audio', ['--ignore-config'], false, 25_000, false)
+          : undefined;
+        if (!sendAudio || audio?.path) {
+          const note = soundCloud.seconds > MAX_PLAY_SECONDS
+            ? `\nToo long to send as audio (limit ${Math.round(MAX_PLAY_SECONDS / 60)} min).`
+            : '';
+          const caption = `🎵 *${soundCloud.title}* · SoundCloud\n🔗 ${soundCloud.url}${note}`;
+          return {
+            text: caption, imageUrl: soundCloud.thumbnail, imageCaption: caption,
+            cardLink: soundCloud.url, pendingMedia: audio ? Promise.resolve(audio) : undefined,
+            pendingKind: 'audio', pendingLink: soundCloud.url,
+            handler: 'SoundCloud Search',
+          };
+        }
+      }
+
       let video: YtResult | null = null;
       try {
         video = await searchYouTube(argStr);
@@ -4019,10 +4097,10 @@ async function executeBuiltInCommand(
         // YouTube unreachable or no result: fall back to an iTunes preview so the command still works.
         const track = await searchSong(argStr).catch(() => null);
         if (!track) {
-          return { text: `🎵 No results found for *${argStr}*. Try adding the artist name.`, handler: 'YouTube Search', status: 'error' };
+          return { text: `🎵 No results for *${argStr}* on SoundCloud or YouTube. Try adding the artist name.`, handler: 'YouTube Search', status: 'error' };
         }
         return {
-          text: `*🎵 ${track.title}*\nArtist: *${track.artist}*\nAlbum: ${track.album} · ${track.year}\n\n_YouTube was unavailable, so this is a 30s preview._${track.link ? `\n🔗 ${track.link}` : ''}`,
+          text: `*🎵 ${track.title}*\nArtist: *${track.artist}*\nAlbum: ${track.album} · ${track.year}\n\n_SoundCloud and YouTube had no playable result. This is a 30-second preview._${track.link ? `\n🔗 ${track.link}` : ''}`,
           imageUrl: track.artwork,
           imageCaption: `🎵 ${track.title} — ${track.artist}`,
           audioUrl: track.previewUrl,
@@ -4042,9 +4120,9 @@ async function executeBuiltInCommand(
       }
 
       return {
-        text: pending ? `🎵 ${video.title}` : `🎵 *${video.title}*\n🔗 ${video.url}${note}`,
+        text: pending ? `🎵 ${video.title} · YouTube` : `🎵 *${video.title}* · YouTube\n🔗 ${video.url}${note}`,
         imageUrl: video.thumbnail,
-        imageCaption: `🎵 ${video.title}`,
+        imageCaption: `🎵 ${video.title} · YouTube`,
         cardLink: video.url,
         pendingMedia: pending,
         pendingKind: 'audio',
@@ -4240,6 +4318,9 @@ async function executeBuiltInCommand(
   }
 
   // ── ADMIN ──
+  if (['antilink', 'antism', 'antigs', 'welcome', 'leave'].includes(cmd) && argStr && !/^(on|off)$/i.test(argStr)) {
+    return { text: `Usage: *${p}${cmd} [on|off]*.`, handler: 'Admin', status: 'error' };
+  }
   const toggleFlag = (current: boolean, arg: string): boolean => {
     if (arg.toLowerCase() === 'on') return true;
     if (arg.toLowerCase() === 'off') return false;
@@ -4399,6 +4480,7 @@ async function executeBuiltInCommand(
     return { text: `Cleared warning records for *${warned.length}* members.`, handler: 'Admin' };
   }
   if (['kick', 'delete', 'promote', 'demote'].includes(cmd)) {
+    if (source !== 'baileys') return { text: 'This action requires a connected WhatsApp group.', handler: 'Admin', status: 'blocked' };
     return {
       text: `*${p}${cmd}* completed${argStr ? ` for ${argStr}` : ''}.`,
       handler: 'Admin',
@@ -4406,8 +4488,9 @@ async function executeBuiltInCommand(
   }
 
   return {
-    text: `Executed *${p}${cmd}*${argStr ? ` (${argStr})` : ''}.`,
+    text: `*${p}${cmd}* is currently unavailable.`,
     handler: 'Command Engine',
+    status: 'error',
   };
 }
 

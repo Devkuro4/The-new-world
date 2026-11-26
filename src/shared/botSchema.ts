@@ -81,6 +81,7 @@ export interface PlayerProfile {
   shamePoints: number;
   loan: number;
   afkReason?: string;
+  afkSince?: number;
   lastDaily?: number;
   lastFish?: number;
   lastWork?: number;
@@ -216,7 +217,7 @@ export const DEFAULT_BOT_CONFIG: BotConfig = {
   rulesText:
     '1. Be respectful in all anime discussions.\n2. Tag major manga/anime spoilers before posting.\n3. No spam links or scam promotions (Antilink enforced).\n4. Keep card auctions fair — no alt-account sniping.',
   supportInfo:
-    'Need help with Pieck? Use .support <issue> to open a ticket for Master Kaneki and the mod team.',
+    'Need help with Pieck? Contact Master Kaneki or a group moderator directly.',
   communityInfo:
     'Official *The new world* Community Hub: Anime Lounge, Card Trading Market & Tournament Arena.',
   addBotInfo:
@@ -269,20 +270,20 @@ export const DEFAULT_CARDS: AnimeCard[] = [
 export const DEFAULT_COMMANDS: BotCommandDef[] = [
   // General
   { name: 'menu', aliases: ['help'], category: 'General', description: 'Display the full The new world / Pieck command menu or a specific category', usage: '.menu [category]', role: 'everyone', enabled: true },
-  { name: 'support', category: 'General', description: 'Open a support ticket with kuro & moderators', usage: '.support <message>', role: 'everyone', enabled: true },
+  { name: 'support', category: 'General', description: 'Show the configured support contact', usage: '.support', role: 'everyone', enabled: true },
   { name: 'community', category: 'General', description: 'Show official The new world WhatsApp community groups', usage: '.community', role: 'everyone', enabled: true },
   { name: 'addbot', category: 'General', description: 'Instructions & invite link for adding Pieck to a group', usage: '.addbot', role: 'everyone', enabled: true },
   { name: 'rules', category: 'General', description: 'Show current group & bot rules', usage: '.rules', role: 'everyone', enabled: true },
   { name: 'test', category: 'General', description: 'Check Pieck response speed & runtime health', usage: '.test', role: 'everyone', enabled: true },
-  { name: 'stats', category: 'General', description: 'Show live bot telemetry, player count, and card drops', usage: '.stats', role: 'everyone', enabled: true },
+  { name: 'stats', category: 'General', description: 'Show command counts and registered players', usage: '.stats', role: 'everyone', enabled: true },
   { name: 'mods', category: 'General', description: 'List Pieck moderators and group admins', usage: '.mods', role: 'everyone', enabled: true },
   { name: 'addmod', category: 'Admin', description: 'Grant Pieck moderator access to a phone number', usage: '.addmod <country-code number>', role: 'admin', enabled: true },
   { name: 'delmod', aliases: ['unmod'], category: 'Admin', description: 'Remove Pieck moderator access from a phone number', usage: '.delmod <country-code number>', role: 'admin', enabled: true },
   { name: 'owner', category: 'General', description: 'Display bot creator profile (kuro)', usage: '.owner', role: 'everyone', enabled: true },
   { name: 'bots', category: 'General', description: 'Check linked The new world bot nodes', usage: '.bots', role: 'everyone', enabled: true },
   { name: 'url', category: 'General', description: 'Show active webhook endpoint or media URL helper', usage: '.url', role: 'everyone', enabled: true },
-  { name: 'otp', category: 'General', description: 'Generate a temporary 6-digit pairing/verification code', usage: '.otp', role: 'owner', enabled: true },
-  { name: 'memories', category: 'General', description: 'View or manage AI personal memories and recent group moments', usage: '.memories [add <note>|clear]', role: 'everyone', enabled: true },
+  { name: 'otp', category: 'General', description: 'Show where to request a WhatsApp pairing code', usage: '.otp', role: 'owner', enabled: true },
+  { name: 'memories', category: 'General', description: 'View or manage your saved AI memories', usage: '.memories [add <note>|del <number>|clear]', role: 'everyone', enabled: true },
 
   // Cards
   { name: 'cb', aliases: ['starter', 'cards', 'col', 'card', 'deck', 'wild', 'claim', 'pvp', 'tower', 'exped', 'move', 'switch', 'bag', 'heal', 'openpack', 'openspack', 'merge', 'learn', 'cmi', 'forfeit', 'cardshop'], category: 'Cards', description: 'Collect cards, build a deck and battle', usage: '.cb', role: 'everyone', enabled: true },
@@ -320,7 +321,7 @@ export const DEFAULT_COMMANDS: BotCommandDef[] = [
   { name: 'loan', category: 'Economy', description: 'Borrow Gold from the guild bank (10% fee, capped)', usage: '.loan <amount|repay <amt>>', role: 'everyone', enabled: true },
   { name: 'repay', category: 'Economy', description: 'Repay your guild bank Gold loan', usage: '.repay <amount|all>', role: 'everyone', enabled: true },
   { name: 'mycds', category: 'Economy', description: 'Check your live economy cooldowns & active buffs', usage: '.mycds', role: 'everyone', enabled: true },
-  { name: 'afk', category: 'Economy', description: 'Set an AFK auto-notice reason', usage: '.afk [reason]', role: 'everyone', enabled: true },
+  { name: 'afk', category: 'Economy', description: 'Set AFK status and announce your return when you next speak', usage: '.afk [reason|clear]', role: 'everyone', enabled: true },
   { name: 'rename', aliases: ['setname'], category: 'Economy', description: 'Change your RPG display name', usage: '.rename <newName>', role: 'everyone', enabled: true },
   { name: 'transactions', category: 'Economy', description: 'View your recent wallet & bank Gold ledger', usage: '.transactions', role: 'everyone', enabled: true },
   { name: 'rob', category: 'Economy', description: 'Attempt to pickpocket wallet Gold from a rival', usage: '.rob <@user>', role: 'everyone', enabled: true },
@@ -330,9 +331,9 @@ export const DEFAULT_COMMANDS: BotCommandDef[] = [
 
   // Games
   { name: 'startbattle', category: 'Games', description: 'Fight a Floor Boss in The new world with your active card deck', usage: '.startbattle', role: 'everyone', enabled: true },
-  { name: 'c4', category: 'Games', description: 'Play interactive Connect-4 against Pieck', usage: '.c4 [col 1-7]', role: 'everyone', enabled: true },
-  { name: 'wcg', category: 'Games', description: 'Start or play a Word Chain round', usage: '.wcg [word]', role: 'everyone', enabled: true },
-  { name: 'chess', category: 'Games', description: 'Start or make a move in mini-chess', usage: '.chess [move]', role: 'everyone', enabled: true },
+  { name: 'c4', category: 'Games', description: 'Play interactive Connect-4 against Pieck', usage: '.c4 [1–7|reset]', role: 'everyone', enabled: true },
+  { name: 'wcg', category: 'Games', description: 'Start or play a Word Chain round', usage: '.wcg [word|reset]', role: 'everyone', enabled: true },
+  { name: 'chess', category: 'Games', description: 'Show chess availability', usage: '.chess', role: 'everyone', enabled: true },
   { name: 'aquiz', category: 'Games', description: 'Start a live Anime Trivia challenge with button answers', usage: '.aquiz', role: 'everyone', enabled: true },
 
   // Events & Guilds
@@ -405,7 +406,7 @@ export const DEFAULT_COMMANDS: BotCommandDef[] = [
   { name: 'yt', category: 'Downloaders', description: "Download a YouTube video, or search by name. Add 'audio' for audio only", usage: '.yt <url|query> [audio]', role: 'everyone', enabled: false },
   { name: 'x', category: 'Downloaders', description: 'Download an X/Twitter video', usage: '.x <url>', role: 'everyone', enabled: false },
   { name: 'fb', category: 'Downloaders', description: 'Download a Facebook video', usage: '.fb <url>', role: 'everyone', enabled: false },
-  { name: 'play', category: 'Downloaders', description: 'Search YouTube for a song/video and get its details, link & audio', usage: '.play <song title>', role: 'everyone', enabled: true },
+  { name: 'play', category: 'Downloaders', description: 'Find a song on SoundCloud, with YouTube as the fallback', usage: '.play <song title>', role: 'everyone', enabled: true },
   { name: 'reddit', category: 'Downloaders', description: 'Fetch top SFW post metadata from an anime subreddit', usage: '.reddit <subreddit>', role: 'everyone', enabled: false },
 
   // Search

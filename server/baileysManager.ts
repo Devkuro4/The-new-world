@@ -17,7 +17,7 @@ import makeWASocket, {
   type WASocket,
 } from '@whiskeysockets/baileys';
 import pino from 'pino';
-import { botState, handleIncomingMessage, aiReplyThreads, tickCardBattle, findCommand } from './botEngine.ts';
+import { botState, handleIncomingMessage, aiReplyThreads, tickCardBattle, findCommand, takeAfkReturn } from './botEngine.ts';
 import { getCommandImageBuffer, resolveLocalAsset } from './assets.ts';
 import type { BotReplyPayload, CommandRole } from '../src/shared/botSchema.ts';
 
@@ -793,7 +793,8 @@ async function startSocket(): Promise<WASocket> {
         const isCommand = rawText.startsWith(prefix);
         if (msg.key.fromMe && !isCommand) continue;
         const taggedOrReplied = isBotTaggedOrReplied(sock, msg, rawText);
-        if (!isCommand && !taggedOrReplied && !mentionsName(rawText, botState.config.botName)) continue;
+        const respondNormally = isCommand || taggedOrReplied || mentionsName(rawText, botState.config.botName);
+        if (!respondNormally && !Object.values(botState.players).some(player => player.afkReason)) continue;
         const text = isCommand ? rawText : stripBotMention(sock, rawText);
 
         const senderJid = userJid(msg.key.participant) ?? userJid(msg.key.participantAlt);
@@ -802,6 +803,17 @@ async function startSocket(): Promise<WASocket> {
         const participants = meta?.participants ?? [];
         const senderJids = identityJids(senderJid, msg.key.participantAlt, participants);
         const senderIds = msg.key.fromMe ? ['owner-kuro'] : accountIds(senderJids, botState.config.ownerNumber || '');
+        const senderId = senderIds.find(id => Object.hasOwn(botState.players, id)) ?? senderIds[0];
+        const welcome = takeAfkReturn(senderId, rawText);
+        if (welcome) {
+          try {
+            const sent = await sock.sendMessage(remoteJid, { text: welcome }, { quoted: msg });
+            trackSentId(sent?.key?.id);
+          } catch (error) {
+            console.warn('[Baileys] AFK return notice could not be sent:', error);
+          }
+        }
+        if (!respondNormally) continue;
         const senderNumber = normalizeJidToNumber(senderJid);
         const senderName = senderIds[0] === 'owner-kuro'
           ? botState.config.creatorName
@@ -875,7 +887,7 @@ async function startSocket(): Promise<WASocket> {
           accountIds(identityJids(targetJid, senderJids.includes(targetJid || '') ?
             senderJids.find(jid => jid !== targetJid) : undefined, participants), botState.config.ownerNumber || '');
         const incoming = {
-          senderId: senderIds[0],
+          senderId,
           senderAccountIds: senderIds,
           targetAccountIds,
           hasTargetMention: mentions.length > 0,
