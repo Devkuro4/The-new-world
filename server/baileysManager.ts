@@ -1,3 +1,4 @@
+import { userJid, identityJids, accountIds, selectTarget } from './whatsappIdentity.ts';
 import { mentionsName, reactionVideo } from './animeReactions.ts';
 import { cloudEnabled } from './supabaseStore.ts';
 import { useCloudAuthState, clearCloudSession, inspectCloudSession, hasCloudSession } from './cloudAuth.ts';
@@ -16,7 +17,7 @@ import makeWASocket, {
   type WASocket,
 } from '@whiskeysockets/baileys';
 import pino from 'pino';
-import { botState, handleIncomingMessage, aiReplyThreads, tickCardBattle } from './botEngine.ts';
+import { botState, handleIncomingMessage, aiReplyThreads, tickCardBattle, findCommand } from './botEngine.ts';
 import { getCommandImageBuffer, resolveLocalAsset } from './assets.ts';
 import type { BotReplyPayload, CommandRole } from '../src/shared/botSchema.ts';
 
@@ -115,20 +116,29 @@ function sharesNumber(a: Set<string>, b: Set<string>): boolean {
   return false;
 }
 
+function unwrapMessage(message: WAMessage['message']) {
+  let inner = message;
+  for (let depth = 0; inner && depth < 8; depth++) {
+    const nested = inner.ephemeralMessage?.message || inner.viewOnceMessage?.message ||
+      inner.viewOnceMessageV2?.message || inner.viewOnceMessageV2Extension?.message ||
+      inner.documentWithCaptionMessage?.message;
+    if (!nested) break;
+    inner = nested;
+  }
+  return inner;
+}
+
 function extractMessageText(msg: WAMessage): string {
   const m = msg.message;
   if (!m) return '';
-  const inner =
-    m.ephemeralMessage?.message ||
-    m.viewOnceMessage?.message ||
-    m.viewOnceMessageV2?.message ||
-    m;
+  const inner = unwrapMessage(m) ?? m;
 
   return (
     inner.conversation ||
     inner.extendedTextMessage?.text ||
     inner.imageMessage?.caption ||
     inner.videoMessage?.caption ||
+    inner.documentMessage?.caption ||
     inner.buttonsResponseMessage?.selectedButtonId ||
     inner.templateButtonReplyMessage?.selectedId ||
     inner.listResponseMessage?.singleSelectReply?.selectedRowId ||
@@ -140,11 +150,7 @@ function extractQuotedText(msg: WAMessage): string {
   const ctx = extractContextInfo(msg);
   const q = ctx?.quotedMessage;
   if (!q) return '';
-  const inner =
-    q.ephemeralMessage?.message ||
-    q.viewOnceMessage?.message ||
-    q.viewOnceMessageV2?.message ||
-    q;
+  const inner = unwrapMessage(q) ?? q;
   return (
     inner.conversation ||
     inner.extendedTextMessage?.text ||
@@ -158,11 +164,7 @@ function extractQuotedText(msg: WAMessage): string {
 function extractContextInfo(msg: WAMessage) {
   const message = msg.message;
   if (!message) return undefined;
-  const inner =
-    message.ephemeralMessage?.message ||
-    message.viewOnceMessage?.message ||
-    message.viewOnceMessageV2?.message ||
-    message;
+  const inner = unwrapMessage(message) ?? message;
   return (
     inner.extendedTextMessage?.contextInfo ||
     inner.imageMessage?.contextInfo ||
@@ -570,11 +572,10 @@ async function handleBaileysGroupCommandSideEffects(
   const prefix = botState.config.prefix || '.';
   if (!text.startsWith(prefix)) return {};
   const [rawCmd = ''] = text.slice(prefix.length).trim().split(/\s+/);
-  const cmd = rawCmd.toLowerCase();
-  const command = botState.commands.find(
-    (item) => item.name === cmd || item.aliases?.includes(cmd)
-  );
-  if (!command || roleRank(senderRole) < roleRank(command.role)) return {};
+  const command = findCommand(rawCmd);
+  if (!command?.enabled || command.isCustom || roleRank(senderRole) < roleRank(command.role)) return {};
+  if (!botState.groupSettings.isOpen && roleRank(senderRole) < roleRank('moderator')) return {};
+  const cmd = command.name;
 
   const participants = meta?.participants || [];
   const mentions = participants.map((participant) => participant.id);
@@ -604,9 +605,9 @@ async function handleBaileysGroupCommandSideEffects(
   const mutating = new Set(['mute', 'close', 'unmute', 'open', 'kick', 'promote', 'demote', 'delete']);
   if (!mutating.has(cmd)) return {};
 
-  const botNums = jidNumbers(sock.user?.id, sock.user?.lid);
-  const botParticipant = participants.find((participant) =>
-    sharesNumber(participantNumbers(participant), botNums)
+  const botJids = [sock.user?.id, sock.user?.lid].map(userJid).filter(Boolean);
+  const botParticipant = participants.find(participant =>
+    identityJids(participant.id, undefined, [participant]).some(jid => botJids.includes(jid))
   );
   if (botParticipant?.admin !== 'admin' && botParticipant?.admin !== 'superadmin') {
     return { error: 'Pieck must be a WhatsApp group admin to run that command.' };
@@ -623,8 +624,8 @@ async function handleBaileysGroupCommandSideEffects(
       const action = cmd === 'kick' ? 'remove' : cmd;
       await sock.groupParticipantsUpdate(remoteJid, targets, action);
     } else if (cmd === 'delete') {
-      const context = msg.message?.extendedTextMessage?.contextInfo;
-      if (!context?.stanzaId) return { error: `Reply to the message you want Pieck to delete.` };
+      const context = extractContextInfo(msg);
+      if (!context?.stanzaId || (context.remoteJid && context.remoteJid !== remoteJid)) return { error: `Reply to the message you want Pieck to delete.` };
       await sock.sendMessage(remoteJid, {
         delete: {
           remoteJid,
@@ -795,37 +796,32 @@ async function startSocket(): Promise<WASocket> {
         if (!isCommand && !taggedOrReplied && !mentionsName(rawText, botState.config.botName)) continue;
         const text = isCommand ? rawText : stripBotMention(sock, rawText);
 
-        const senderJid = msg.key.participant || msg.key.participantAlt;
+        const senderJid = userJid(msg.key.participant) ?? userJid(msg.key.participantAlt);
         if (!senderJid) continue;
-        const phoneJid = [senderJid, msg.key.participantAlt].find(jid => jid?.endsWith("@s.whatsapp.net"));
-        const senderNumber = normalizeJidToNumber(phoneJid || senderJid);
-        const ownerDigits = (botState.config.ownerNumber || '').replace(/[^\d]/g, '');
-        const senderNums = jidNumbers(msg.key.participant, msg.key.participantAlt, senderJid);
-        const isOwnerNumber = Boolean(ownerDigits && senderNums.has(ownerDigits));
-        const senderName = isOwnerNumber
+        const meta = await getGroupMeta(sock, remoteJid);
+        const participants = meta?.participants ?? [];
+        const senderJids = identityJids(senderJid, msg.key.participantAlt, participants);
+        const senderIds = msg.key.fromMe ? ['owner-kuro'] : accountIds(senderJids, botState.config.ownerNumber || '');
+        const senderNumber = normalizeJidToNumber(senderJid);
+        const senderName = senderIds[0] === 'owner-kuro'
           ? botState.config.creatorName
           : msg.pushName || `WA-${senderNumber.slice(-4)}`;
-
+        const member = participants.find(row => userJid(row.id) === senderJid);
+        const mappedMember = member ?? participants.find(row =>
+          senderJids.length > 1 && senderJids.includes(userJid(row.id) ?? ''));
+        const verifiedPhone = senderJids.find(jid => jid.endsWith('@s.whatsapp.net'))?.split('@')[0];
         let senderRole: CommandRole = 'everyone';
-        let meta: GroupMetadata | null = null;
-
-        if (msg.key.fromMe || isOwnerNumber) {
+        if (senderIds[0] === 'owner-kuro') {
           senderRole = 'owner';
-        } else if (isGroup) {
-          meta = await getGroupMeta(sock, remoteJid);
-          const participant = meta?.participants.find((pt) =>
-            sharesNumber(participantNumbers(pt), senderNums)
-          );
-          if (participant?.admin === 'admin' || participant?.admin === 'superadmin') {
-            senderRole = 'admin';
-          } else if ([...senderNums].some((n) => botState.groupSettings.moderatorNumbers.includes(n))) {
-            senderRole = 'moderator';
-          }
+        } else if (mappedMember?.admin === 'admin' || mappedMember?.admin === 'superadmin') {
+          senderRole = 'admin';
+        } else if (verifiedPhone && botState.groupSettings.moderatorNumbers.includes(verifiedPhone)) {
+          senderRole = 'moderator';
         }
 
         if (isGroup && senderRole === 'everyone' && botState.groupSettings.antism) {
           const now = Date.now();
-          const key = `${remoteJid}:${senderNumber}`;
+          const key = `${remoteJid}:${senderIds[0]}`;
           const times = (recentMessages.get(key) || []).filter((time) => now - time < 10_000);
           times.push(now);
           recentMessages.set(key, times);
@@ -869,8 +865,20 @@ async function startSocket(): Promise<WASocket> {
             : undefined;
 
         const context = extractContextInfo(msg);
+        const mentions = context?.mentionedJid ?? [];
+        const argsText = isCommand ? text.slice(prefix.length).trim().split(/\s+/).slice(1).join(' ') : '';
+        const explicitProfileTarget = ['p', 'profile'].includes(cmdToken || '') && Boolean(argsText);
+        const targetJid = !mentions.length && (explicitProfileTarget || /(?:^|\s)@/.test(argsText)) ? null :
+          selectTarget(mentions, Boolean(context?.quotedMessage || context?.stanzaId),
+          context?.remoteJid && context.remoteJid !== remoteJid ? undefined : context?.participant);
+        const targetAccountIds = targetJid === undefined ? undefined :
+          accountIds(identityJids(targetJid, senderJids.includes(targetJid || '') ?
+            senderJids.find(jid => jid !== targetJid) : undefined, participants), botState.config.ownerNumber || '');
         const incoming = {
-          senderId: isOwnerNumber || msg.key.fromMe ? 'owner-kuro' : phoneJid ? `wa-${senderNumber}` : `wa-lid-${senderNumber}`,
+          senderId: senderIds[0],
+          senderAccountIds: senderIds,
+          targetAccountIds,
+          hasTargetMention: mentions.length > 0,
           senderName,
           senderRole,
           chatMode: 'group' as const,

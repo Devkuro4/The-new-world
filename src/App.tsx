@@ -7,7 +7,6 @@ import { LogsPanel } from './components/LogsPanel';
 import { WhatsAppSimulator, type SimMessage } from './components/WhatsAppSimulator';
 import {
   DEFAULT_BOT_CONFIG,
-  DEFAULT_CARDS,
   DEFAULT_COMMANDS,
   DEFAULT_GROUP_SETTINGS,
   type ActivityLogEntry,
@@ -90,8 +89,6 @@ export default function App() {
   const [config, setConfig] = useState<BotConfig>(DEFAULT_BOT_CONFIG);
   const [groupSettings, setGroupSettings] = useState<GroupSettings>(DEFAULT_GROUP_SETTINGS);
   const [commands, setCommands] = useState<BotCommandDef[]>(DEFAULT_COMMANDS);
-  const [cards, setCards] = useState<AnimeCard[]>(DEFAULT_CARDS);
-  const [auctions, setAuctions] = useState<AuctionItem[]>([]);
   const [players, setPlayers] = useState<PlayerProfile[]>([]);
   const [logs, setLogs] = useState<ActivityLogEntry[]>([]);
   const [stats, setStats] = useState({ totalCommands: 0, totalAiCalls: 0, totalCardDrops: 0, startedAt: '' });
@@ -125,8 +122,6 @@ export default function App() {
       setConfig(data.config);
       setGroupSettings(data.groupSettings);
       setCommands(data.commands);
-      setCards(data.cards);
-      setAuctions(data.auctions);
       setPlayers(data.players);
       setLogs(data.logs);
       setStats(data.stats);
@@ -193,7 +188,6 @@ export default function App() {
       setMessages((prev) => [...prev, botMsg]);
 
       if (data.players) setPlayers(data.players);
-      if (data.auctions) setAuctions(data.auctions);
       if (data.groupSettings) setGroupSettings(data.groupSettings);
       if (data.logs) setLogs(data.logs);
       if (data.stats) setStats(data.stats);
@@ -256,23 +250,7 @@ export default function App() {
     }
   };
 
-  const handleAddCard = async (card: {
-    name: string;
-    series: string;
-    tier: AnimeCard['tier'];
-    atk: number;
-    def: number;
-    price: number;
-    stardustValue: number;
-  }) => {
-    const res = await fetch('/api/cards', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(card),
-    });
-    const json = (await res.json()) as { card?: AnimeCard };
-    if (json.card) setCards((prev) => [json.card!, ...prev]);
-  };
+
 
   const handleSaveConfig = async (patch: Partial<BotConfig>) => {
     const res = await fetch('/api/config', {
@@ -393,10 +371,7 @@ export default function App() {
                 {activeTab === 'economy' && (
                   <EconomyCardsPanel
                     config={config}
-                    cards={cards}
                     players={players}
-                    auctions={auctions}
-                    onAddCard={handleAddCard}
                     onUpdateRates={handleSaveConfig}
                     onRunInSimulator={handleSendMessage}
                   />

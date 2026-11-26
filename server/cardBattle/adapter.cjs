@@ -4,33 +4,86 @@ const name=c=>R.getCard(c.id).name;
 const itemKeys=['healthPotion','purificationVial','xpBooster','energyElixir','antidote'];
 const cardLine=(c,i)=>`${String(i+1).padStart(2,'0')}. ${UI.rarity[R.getCard(c.id).rarity]} ${name(c)} · Lv. ${c.level}`;
 const num=s=>/^\d+$/.test(s||'')?Number(s):NaN;
-function services(s){for(const k of ['economy','wild','pvp','tower','exped','decks','shop','heals','nextSpawn','notices'])s[k]??={};s.settings??={};if(typeof s.settings.effectsEnabled!=='boolean')s.settings.effectsEnabled=false;const economy=new Economy({state:s.economy});let wild,pvp,tower,exped;const busy=p=>!!(pvp.active(p)||tower.active(p)||Object.values(wild.state.groups).some(e=>e.battle?.sides[0].id===p));const deck=p=>{const all=economy.collection(p);const ids=s.decks[p]??all.slice(0,6).map(c=>c.uid);return ids.map(id=>all.find(c=>c.uid===id)).filter(c=>c&&!exped.locked(p,c.uid));};wild=new WildEncounters({state:s.wild,canBattle:p=>!busy(p)});pvp=new PvP({state:s.pvp,canBattle:p=>!busy(p),getDeck:deck});tower=new CardTower({state:s.tower,canBattle:p=>!busy(p),getDeck:deck});exped=new Expeditions({state:s.exped,getCollection:p=>economy.collection(p),canAssign:p=>!busy(p)});return {economy,wild,pvp,tower,exped,busy,deck,state:s};}
+function services(s){for(const k of ['economy','wild','pvp','tower','exped','decks','shop','heals','nextSpawn','notices'])s[k]??={};s.settings??={};if(typeof s.settings.effectsEnabled!=='boolean')s.settings.effectsEnabled=false;const economy=new Economy({state:s.economy});let wild,pvp,tower,exped;const busy=p=>!!(pvp.active(p)||tower.active(p)||Object.values(wild.state.groups).some(e=>e.battle?.sides[0].id===p));const selected=p=>{
+  const all=economy.collection(p);
+  const byId=new Map(all.map(card=>[card.uid,card]));
+  const saved=[...new Set(s.decks[p]??[])].map(id=>byId.get(id)).filter(Boolean);
+  return saved.length?saved.slice(0,6):all.slice(0,6);
+};const deck=p=>selected(p).filter(c=>!exped.locked(p,c.uid));wild=new WildEncounters({state:s.wild,canBattle:p=>!busy(p)});pvp=new PvP({state:s.pvp,canBattle:p=>!busy(p),getDeck:deck});tower=new CardTower({state:s.tower,canBattle:p=>!busy(p),getDeck:deck});exped=new Expeditions({state:s.exped,getCollection:p=>economy.collection(p),canAssign:p=>!busy(p)});return {economy,wild,pvp,tower,exped,busy,deck,selected,state:s};}
 function settle(v){const {economy:e,wild,pvp,tower,exped}=v;for(const service of [wild,pvp,tower,exped]){service.sweep();for(const r of service.pending()){const grant=(p,credits,items={},cards=[],xp=[],hp=[])=>{const result=e.grant(p,r.id,{credits,items,cards,xp:xp.map(x=>({...x,xp:x.xp*e.xpMultiplier(p)}))});if(!result.duplicate&&hp.length)e.transaction(p,pl=>{for(const x of hp){const c=pl.cards.find(c=>c.uid===x.uid);if(c)c.hp=Math.min(x.hp,R.statsAt(c.id,c.level).HP);}});};if(service===wild){grant(r.player,r.credits,{},r.captured?[r.captured]:[],r.xp,r.cards);if(r.replace&&!wild.get(r.group))v.state.nextSpawn[r.group]=0;}else if(service===pvp){for(const p of r.players)grant(p.player,p.credits,{},[],p.xp,[]);}else if(r.kind==='floorXP')grant(r.player,0,{},[],r.xp);else if(r.kind==='towerResult')grant(r.player,r.rewards.credits,{super:r.rewards.superPacks,ascensionCores:r.rewards.ascensionCores},[],[],r.cards);else if(r.kind==='expeditionCompleted'){grant(r.player,r.rewards.credits,{trainingMaterials:r.rewards.trainingMaterials,ascensionCores:r.rewards.ascensionCores});}service.acknowledge(r.id);}}}
 const UI=require('./presentation.cjs');
 function battleReply(b,ctx,extra=''){return {text:UI.battleText(b,ctx,extra),battle:b};}
-function run(state,ctx,command,args){const v=services(state),{economy:e,wild,pvp,tower,exped,busy,deck}=v;settle(v);const p=ctx.player,g=ctx.group,pre=ctx.prefix+'cb ',a=args[0],n=num(a),info=()=>e.info(p),list=()=>e.collection(p),reply=text=>({text});const requireIdle=()=>{if(busy(p))throw Error('Finish your battle first');};const owned=i=>{const c=list()[i-1];if(!c)throw Error('Invalid collection index');return c;};const current=()=>{const m=pvp.active(p);if(m?.group===g)return {kind:'pvp',battle:m.battle};const w=wild.get(g);if(w?.battle?.sides[0].id===p)return {kind:'wild',battle:w.battle};const t=tower.active(p);if(t?.group===g)return {kind:'tower',battle:t.battle};throw Error('No active battle in this group');};let result;
-switch(command){case 'help':return reply(`*CARD BATTLE*\n${pre}start — free starter pack\n${pre}collection · ${pre}deck <indices> · ${pre}card <index> moves\n${pre}wild · ${pre}claim · ${pre}pvp @user · ${pre}tower start\n${pre}move <n> · ${pre}switch · ${pre}forfeit · ${pre}heal\n${pre}exped · ${pre}shop · ${pre}buy <n> · ${pre}openpack · ${pre}openspack · ${pre}bag\n${pre}merge <a> <b> <c> · ${pre}effects on|off`);
-case 'start':e.grant(p,'starter-v1',{credits:500,items:{universal:1}});if(!list().length&&info().items.universal>0){const r=e.open(p,'universal');return reply('Starter cards:\n'+r.cards.map(cardLine).join('\n'));}return reply('Your account is ready. '+pre+'collection');
+function run(state,ctx,command,args){const v=services(state),{economy:e,wild,pvp,tower,exped,busy,deck,selected}=v;settle(v);const p=ctx.player,g=ctx.group,pre=ctx.prefix+'cb ',a=args[0],n=num(a),info=()=>e.info(p),list=()=>e.collection(p),reply=text=>({text});const requireIdle=()=>{if(busy(p))throw Error('Finish your battle first');};const owned=i=>{const c=list()[i-1];if(!c)throw Error('Invalid collection index');return c;};const current=()=>{const m=pvp.active(p);if(m?.group===g)return {kind:'pvp',battle:m.battle};const w=wild.get(g);if(w?.battle?.sides[0].id===p)return {kind:'wild',battle:w.battle};const t=tower.active(p);if(t?.group===g)return {kind:'tower',battle:t.battle};throw Error('No active battle in this group');};let result;
+const requireDeck=(id)=>{
+  if(!e.collection(id).length)throw Error(id===p?`Claim your starter cards first with ${pre}start.`:`${ctx.label(id)} needs to claim starter cards with ${pre}start.`);
+  const available=deck(id);
+  if(!available.some(c=>(c.hp??1)>0))throw Error(`${ctx.label(id)} needs an available card. Check ${pre}deck, choose cards outside expeditions, or use ${pre}heal.`);
+  return available;
+};
+switch(command){
+case 'help':return reply([
+  '*CARD BATTLE*',`${list().length} cards · ${info().credits} Credits`,'',
+  '*Collection*',`${pre}start — Starter cards`,`${pre}collection · ${pre}deck · ${pre}card <number>`,'',
+  '*Battle*',`${ctx.prefix}wild — Spawn a Wild Card`,`${ctx.prefix}claim · ${ctx.prefix}pvp @user · ${ctx.prefix}tower start`,'',
+  '*Resources*',`${pre}shop · ${pre}bag · ${pre}exped`,`${pre}more — Controls and settings`
+].join('\n'));
+case 'more':return reply([
+  '*CARD BATTLE CONTROLS*',`${pre}move <n> · ${pre}switch · ${pre}forfeit · ${pre}heal`,
+  `${pre}buy <n> · ${pre}openpack · ${pre}openspack · ${pre}use <item>`,
+  `${pre}learn · ${pre}cmi · ${pre}merge <a> <b> <c>`,`${pre}effects on|off`
+].join('\n'));
+case 'start':{
+  const prior=info();
+  if(prior.receipts['starter-v1']||prior.receipts['starter-v2'])return reply('Your account is ready. '+pre+'collection');
+  const eligible=R.list().filter(c=>['Common','Uncommon'].includes(c.rarity));
+  const picks=[];
+  while(picks.length<4&&eligible.length){
+    picks.push(eligible.splice(e.roll(eligible.length),1)[0]);
+  }
+  if(picks.length===3)picks.push(picks[e.roll(picks.length)]);
+  if(picks.length!==4)throw Error('Starter roster is incomplete');
+  const cards=picks.map(c=>({id:c.id,level:5}));
+  e.grant(p,'starter-v2',{credits:500,cards});
+  return reply('Starter cards · 500 Credits\n'+cards.map(cardLine).join('\n'));
+}
 case 'collection':return reply(UI.title('YOUR COLLECTION')+`\n${list().length} cards · ${info().credits} Credits\n\n`+(list().map(cardLine).join('\n')||'No cards. '+pre+'start')+`\n\n${pre}card <number> — View card`);
-case 'deck':if(!args.length)return reply(UI.title('BATTLE DECK')+'\n\n'+deck(p).map(cardLine).join('\n'));requireIdle();if(args.length>6||new Set(args.map(num)).size!==args.length)throw Error('Select 1–6 distinct indices');{const cards=args.map(x=>owned(num(x)));if(cards.some(c=>exped.locked(p,c.uid)))throw Error('Card is on expedition');state.decks[p]=cards.map(c=>c.uid);return reply('Deck updated.');}
+case 'deck':if(!args.length)return reply(UI.title('BATTLE DECK')+'\n\n'+(selected(p).map((c,i)=>cardLine(c,i)+(exped.locked(p,c.uid)?' · On expedition':'')).join('\n')||'No cards. '+pre+'start'));requireIdle();if(args.length>6||new Set(args.map(num)).size!==args.length)throw Error('Select 1–6 distinct indices');{const cards=args.map(x=>owned(num(x)));if(cards.some(c=>exped.locked(p,c.uid)))throw Error('Card is on expedition');state.decks[p]=cards.map(c=>c.uid);return reply('Deck updated.');}
 case 'card':{const c=owned(n),m=R.getCard(c.id);if(args[1]==='moves'){return reply(UI.moveList(c,pre,n));}return {...reply(UI.cardInfo(c,pre,n)),imagePath:R.spritePath(c.id)};}
 case 'effects':{if(!a)return reply(`Battle effects are currently ${state.settings.effectsEnabled?'ON':'OFF'}. Use ${pre}effects on or ${pre}effects off.`);if(!['on','off'].includes(a))throw Error(`Use ${pre}effects on or ${pre}effects off.`);state.settings.effectsEnabled=a==='on';return reply(`Battle effects ${state.settings.effectsEnabled?'enabled':'disabled'}.`);}
 case 'cmi':{const c=owned(n),m=M.available(c.id,c.level)[num(args[1])-1];if(!m)throw Error('Use cmi <card index> <move index>');return reply(`${m.name} [${m.category}]\nUnlock Lv.${m.level} · Cooldown ${m.cooldown} turns\n${m.category==='healing'?`Healing: ${Math.round(m.heal*100)}% max HP`:`Power: ${m.power}× · ${m.kind}`}`);}
 case 'learn':{requireIdle();const c=owned(n);if(exped.locked(p,c.uid))throw Error('Card on expedition');const pool=M.available(c.id,c.level),learn=pool[num(args[1])-1],forget=num(args[2]);if(!learn||!Number.isInteger(forget)||forget<0||(forget>0&&!pool[forget-1]))throw Error('Invalid move indices');const loadout=M.equip(c.id,c.level,c.loadout||M.initial(c.id,c.level),learn.id,forget===0?null:pool[forget-1].id);e.transaction(p,pl=>{pl.cards.find(x=>x.uid===c.uid).loadout=loadout;});return reply('Move equipped.');}
-case 'wild':{let w=wild.get(g);const existing=!!w;if(!w){if(Date.now()<(state.nextSpawn[g]||0))return reply('No wild card available yet.');wild.spawn(g);state.nextSpawn[g]=Date.now()+1800000;w=wild.get(g);}const c=R.getCard(w.card.id);const heading=existing?'*CURRENT WILD CARD*':'*WILD CARD SPOTTED*';return {...reply(`${heading}\n\n${c.name}\nLv. ${w.card.level} · ${c.rarity} · ${c.type}\n\n${pre}claim — Challenge`),imagePath:R.spritePath(c.id)};}
-case 'claim':result=wild.claim(g,p,deck(p));break;
-case 'pvp':if(!a)return reply(`${pre}pvp @user · accept · decline`);if(a==='accept'){result=pvp.accept(g,p);break;}if(a==='decline'){pvp.decline(g,p);return reply('PvP challenge declined.');}if(!ctx.target)throw Error('Mention a registered player');pvp.challenge(g,p,ctx.target);return reply(`⚔️ ${ctx.label(p)} challenged ${ctx.label(ctx.target)}!\n${pre}pvp accept / decline · expires in 60s`);
-case 'tower':if(a==='start'){result=tower.start(g,p);break;}return reply(UI.title('CARD TOWER')+'\n\n'+tower.info(p).floors.map(f=>`Floor ${f.floor}: ${f.count} enemies · ${f.difficulty}`).join('\n')+`\n${pre}tower start`);
+case 'wild':{
+  const previous=wild.get(g);
+  const active=Boolean(previous?.battle);
+  if(!active){wild.replaceIdle(g);state.nextSpawn[g]=Date.now()+1800000;}
+  const w=wild.get(g),c=R.getCard(w.card.id);
+  const heading=active?'*WILD CARD BATTLE IN PROGRESS*':'*WILD CARD SPOTTED*';
+  return {...reply(`${heading}\n\n${c.name}\nLv. ${w.card.level} · ${c.rarity} · ${c.type}\n\n${pre}claim — Challenge`),imagePath:R.spritePath(c.id)};
+}
+case 'claim':result=wild.claim(g,p,requireDeck(p));break;
+case 'pvp':
+  if(a?.toLowerCase()==='accept'){result=pvp.accept(g,p);break;}
+  if(a?.toLowerCase()==='decline'){pvp.decline(g,p);return reply('PvP challenge declined.');}
+  if(!a&&!ctx.target)return reply(`${pre}pvp @user · accept · decline`);
+  if(!ctx.target)throw Error('Mention one player or reply to their message');
+  if(ctx.target===p)throw Error('Cannot challenge yourself');
+  requireDeck(p);
+  requireDeck(ctx.target);
+  pvp.challenge(g,p,ctx.target);
+  return reply(`⚔️ ${ctx.label(p)} challenged ${ctx.label(ctx.target)}!\n${pre}pvp accept / decline · expires in 60s`);
+case 'tower':if(a==='start'){requireDeck(p);result=tower.start(g,p);break;}return reply(UI.title('CARD TOWER')+'\n\n'+tower.info(p).floors.map(f=>`Floor ${f.floor}: ${f.count} enemies · ${f.difficulty}`).join('\n')+`\n${pre}tower start`);
 case 'move':case 'switch':case 'desperate':case 'pass':{const cur=current();if(command==='switch'&&!a){if(cur.battle.sides[cur.battle.turn].id!==p)throw Error('Not your turn');return reply(B.options(cur.battle).switches.map(x=>`${x.index}. ${R.getCard(x.id).name} · HP ${x.hp}`).join('\n')||'No available switches');}const cmd={type:command,index:n};result=cur.kind==='pvp'?pvp.act(g,p,cmd):cur.kind==='wild'?wild.act(g,p,cmd):tower.act(g,p,cmd);break;}
 case 'forfeit':{const cur=current();const match=cur.kind==='pvp'?pvp.active(p):cur.kind==='wild'?wild.get(g):tower.active(p);const b=match.battle;b.phase='ended';b.winner=b.sides.find(side=>side.id!==p).id;b.lastActivity=Date.now();b.events=[{type:'forfeit',player:p}];if(cur.kind==='pvp')pvp.finish(match);else if(cur.kind==='wild')wild.finish(g,match);else tower.finish(match,false);settle(v);return battleReply(b,ctx,`${ctx.label(p)} forfeited the battle!`);}
 case 'heal':requireIdle();if(Date.now()<(state.heals[p]||0))throw Error('Healing is on cooldown');e.transaction(p,pl=>{for(const c of pl.cards)if(!exped.locked(p,c.uid))c.hp=R.statsAt(c.id,c.level).HP;});state.heals[p]=Date.now()+1800000;return reply('Cards healed.');
 case 'exped':if(!a){const i=exped.info(p);return reply(i.active?`${i.difficulty.name} Expedition · ${Math.ceil(i.remainingMs/60000)} minutes remaining`:DIFFICULTIES.map(x=>`${x.id}. ${x.name} · Lv.${x.minLevel}+ · ${x.hours}h`).join('\n')+`\n${pre}exped <number>`);}if(a==='select'){const r=exped.select(p,args.slice(1).map(num));return reply(r.cards.map(cardLine).join('\n')+`\n${pre}exped confirm`);}if(a==='confirm'){const r=exped.confirm(g,p);return reply(`Expedition started: ${r.difficulty.name}.`);}return reply(`Selected ${exped.choose(p,n).name}. ${pre}exped select <a> <b> <c>`);
-case 'shop':if(!a)return reply(`${pre}shop 1 — Packs\n${pre}shop 2 — Consumables`);state.shop[p]=n;return reply(e.shop(n).map(x=>`${x.index}. ${x.name} — ${x.price} Credits`).join('\n')+`\n${pre}buy <number>`);
+case 'shop':if(!a)return reply(`${pre}shop 1 — Packs\n${pre}shop 2 — Consumables`);const items=e.shop(n);state.shop[p]=n;return reply(items.map(x=>`${x.index}. ${x.name} — ${x.price} Credits`).join('\n')+`\n${pre}buy <number>`);
 case 'buy':{const r=e.buy(p,state.shop[p]||1,n);return reply(`Purchased ${r.name}. Balance: ${r.balance} Credits.`);}
 case 'openpack':case 'openspack':{const r=e.open(p,command==='openpack'?'universal':'super');return reply(UI.title('PACK OPENED')+'\n\n'+r.cards.map(cardLine).join('\n'));}
 case 'bag':return reply(`Credits: ${info().credits}\n`+itemKeys.map((k,i)=>`${i+1}. ${k}: ${info().items[k]||0}`).join('\n')+`\n${pre}use <number> [move index]`);
-case 'use':{const key=itemKeys[n-1]||a;if(key==='xpBooster'){requireIdle();e.activateBooster(p);return reply('XP Booster active for 10 minutes.');}if(!itemKeys.includes(key))throw Error('Unknown item');const cur=current();if(cur.kind==='pvp')throw Error('Consumables disabled in PvP');e.transaction(p,pl=>e.spend(pl,key));const cmd={type:'item',key,index:num(args[1])};result=cur.kind==='wild'?wild.act(g,p,cmd):tower.act(g,p,cmd);break;}
-case 'merge':{requireIdle();if(args.length!==3||new Set(args.map(num)).size!==3)throw Error('Select three distinct card indices');const cards=args.map(x=>owned(num(x)));if(cards.some(c=>c.id!==cards[0].id||exped.locked(p,c.uid)))throw Error('Cards must be identical and available');const target=R.getCard(cards[0].id).mergeTarget;if(!target)throw Error('No higher-rarity version available');const best=cards.sort((a,b)=>b.level-a.level||b.xp-a.xp)[0];e.transaction(p,pl=>{pl.cards=pl.cards.filter(c=>!cards.some(x=>x.uid===c.uid));pl.cards.push({id:target,uid:randomUUID(),level:best.level,xp:best.xp});});delete state.decks[p];return reply('Merged into '+R.getCard(target).name);}
+case 'use':{const key=itemKeys[n-1]||a;if(key==='xpBooster'){requireIdle();e.activateBooster(p);return reply('XP Booster active for 10 minutes.');}if(!itemKeys.includes(key))throw Error('Unknown item');const cur=current();if(cur.kind==='pvp')throw Error('Consumables disabled in PvP');if(!(info().items[key]>0))throw Error('Insufficient inventory');const cmd={type:'item',key,index:num(args[1])};result=cur.kind==='wild'?wild.act(g,p,cmd):tower.act(g,p,cmd);if(result.battle.phase!=='cancelled')e.transaction(p,pl=>e.spend(pl,key));break;}
+case 'merge':{requireIdle();if(args.length!==3||new Set(args.map(num)).size!==3)throw Error('Select three distinct card indices');const cards=args.map(x=>owned(num(x)));if(cards.some(c=>c.id!==cards[0].id||exped.locked(p,c.uid)))throw Error('Cards must be identical and available');const target=R.getCard(cards[0].id).mergeTarget;if(!target)throw Error('No higher-rarity version available');const selectedIds=new Set(cards.map(c=>c.uid));const uid=randomUUID();const best=cards.sort((a,b)=>b.level-a.level||b.xp-a.xp)[0];e.transaction(p,pl=>{pl.cards=pl.cards.filter(c=>!cards.some(x=>x.uid===c.uid));pl.cards.push({id:target,uid,level:best.level,xp:best.xp});});if(state.decks[p]?.some(id=>selectedIds.has(id))){
+  state.decks[p]=[...new Set(state.decks[p].map(id=>selectedIds.has(id)?uid:id))];
+}return reply('Merged into '+R.getCard(target).name);}
 default:throw Error('Unknown Card Battle command. '+pre+'help');}
 settle(v);if(result.playerEvents)result.battle.events=[...result.playerEvents,...result.battle.events.filter(x=>!result.playerEvents.some(y=>JSON.stringify(x)===JSON.stringify(y)))];if(result.events)result.battle.events=result.events;const outcome=result.outcome;return battleReply(result.battle,ctx,[result.dialogue,result.floor?`Floor ${result.floor}`:'',outcome?JSON.stringify(outcome.rewards||{credits:outcome.credits,captured:outcome.captured?.id}):''].filter(Boolean).join('\n'));}
 function tick(state){const v=services(state),notices=[];for(const r of v.exped.sweep())notices.push({group:r.group,text:`🏕️ Expedition completed for ${r.player}. Rewards: ${r.rewards.credits} Credits, ${r.rewards.trainingMaterials} training materials.`});settle(v);for(const [group,due] of Object.entries(state.nextSpawn)){if(!group.endsWith('@g.us')||Date.now()<due||v.wild.get(group))continue;const r=v.wild.spawn(group);state.nextSpawn[group]=Date.now()+1800000;const c=v.wild.get(group).card;notices.push({group,text:`*WILD CARD SPOTTED*\n\n${r.name}\nLv. ${r.level} · ${r.rarity} · ${r.type}\n\n.cb claim — Challenge`,imagePath:R.spritePath(c.id)});}return notices;}

@@ -75,6 +75,7 @@ export interface BotState {
   commands: BotCommandDef[];
   cards: AnimeCard[];
   auctions: AuctionItem[];
+  archivedAuctions?: AuctionItem[];
   players: Record<string, PlayerProfile>;
   activeDrop: ActiveDrop | null;
   activeQuiz: ActiveQuiz | null;
@@ -187,21 +188,7 @@ function createInitialState(): BotState {
     groupSettings: { ...DEFAULT_GROUP_SETTINGS, blacklist: [...DEFAULT_GROUP_SETTINGS.blacklist] },
     commands: DEFAULT_COMMANDS.map((c) => ({ ...c, aliases: c.aliases ? [...c.aliases] : undefined })),
     cards: DEFAULT_CARDS.map((c) => ({ ...c })),
-    auctions: [
-      {
-        id: 'AUC-401',
-        cardId: 'C-113',
-        cardName: 'Spike Spiegel',
-        series: 'Cowboy Bebop',
-        tier: 'S',
-        sellerId: 'admin-rem',
-        sellerName: 'Rem',
-        highestBid: 5200,
-        highestBidderId: 'member-sora',
-        highestBidderName: 'Sora',
-        endsAt: '2026-11-24T23:59:00Z',
-      },
-    ],
+    auctions: [],
     players: structuredClone(SEED_PLAYERS),
     activeDrop: null,
     activeQuiz: null,
@@ -235,7 +222,7 @@ function loadState(cloudRaw?: string): BotState {
       const raw = cloudRaw ?? fs.readFileSync(STATE_FILE, 'utf8');
       const parsed = JSON.parse(raw) as Partial<BotState>;
       const base = createInitialState();
-      return {
+      const loaded: BotState = {
         ...base,
         ...parsed,
         config: { ...base.config, ...(parsed.config || {}) },
@@ -271,6 +258,8 @@ function loadState(cloudRaw?: string): BotState {
         aiMemories: parsed.aiMemories && typeof parsed.aiMemories === 'object' ? parsed.aiMemories : {},
         stats: { ...base.stats, ...(parsed.stats || {}) },
       };
+      retireLegacyAuctions(loaded);
+      return loaded;
     }
   } catch {
     // Fall back to fresh initial state if state file is unreadable
@@ -483,7 +472,7 @@ function parseAmountToken(raw: string | undefined, maxAvailable: number): number
   if (!Number.isFinite(base) || base <= 0) return null;
   const mult = match[2] === 'm' ? 1_000_000 : match[2] === 'k' ? 1_000 : 1;
   const val = Math.floor(base * mult);
-  return val > 0 ? val : null;
+  return Number.isSafeInteger(val) && val > 0 ? val : null;
 }
 
 function findPlayerTarget(raw: string): PlayerProfile | undefined {
@@ -516,6 +505,30 @@ function getItemSellPrice(itemName: string): number {
   const lootEntry = Object.entries(LOOT_SELL_PRICES).find(([k]) => k.toLowerCase() === itemName.toLowerCase());
   if (lootEntry) return lootEntry[1];
   return 150;
+}
+
+function retireLegacyAuctions(state: BotState): void {
+  if (!state.auctions?.length) return;
+  const archived = state.archivedAuctions ??= [];
+  state.auctions = state.auctions.filter(auction => {
+    // AUC-401 was sample UI data and never held a real bid or card in escrow.
+    const sample = auction.id === 'AUC-401' && auction.sellerId === 'admin-rem' &&
+      auction.highestBidderId === 'member-sora' && auction.endsAt === '2026-11-24T23:59:00Z';
+    if (!sample) {
+      const seller = state.players[auction.sellerId];
+      const bidder = auction.highestBidderId ? state.players[auction.highestBidderId] : undefined;
+      const amount = auction.highestBid;
+      if (!seller || (auction.highestBidderId && (!bidder ||
+          !Number.isSafeInteger(amount) || amount < 0 || !Number.isSafeInteger(bidder.wallet + amount)))) return true;
+      seller.cards.push(auction.cardId);
+      if (bidder && amount > 0) {
+        bidder.wallet += amount;
+        addTransaction(bidder, `Retired auction refund (${auction.id})`, amount);
+      }
+    }
+    archived.push(auction);
+    return false;
+  });
 }
 
 function settleExpiredAuctions(): void {
@@ -619,7 +632,7 @@ function formatMemberSince(joinedAt?: string): string {
 
 function buildProfileTextUi(player: PlayerProfile): string {
   const rank = getPlayerRank(player.level);
-  const displayName = player.customName ? player.name.trim() : '';
+  const displayName = player.name.trim() || 'Unnamed player';
   const bio = (player.bio || '').replace(/\s+/g, ' ').trim();
   const affiliation = formatRoleAffiliation(player.role);
   const guild = player.guild || 'None';
@@ -1232,11 +1245,11 @@ function buildMenu(categoryFilter?: string): { caption: string; body: string } {
   });
 }
 
-function findCommand(rawName: string): BotCommandDef | undefined {
+export function findCommand(rawName: string): BotCommandDef | undefined {
   const lower = rawName.toLowerCase();
-  return botState.commands.find(
-    (c) => c.name.toLowerCase() === lower || (c.aliases && c.aliases.some((a) => a.toLowerCase() === lower))
-  );
+  return botState.commands.find(c => !c.isCustom && (c.name.toLowerCase() === lower ||
+    c.aliases?.some(a => a.toLowerCase() === lower))) ??
+    botState.commands.find(c => c.name.toLowerCase() === lower || c.aliases?.some(a => a.toLowerCase() === lower));
 }
 
 function buildSystemInstruction(): string {
@@ -1349,8 +1362,12 @@ type IncomingParams = AiContext & {
   mediaBuffer?: Buffer;
   reactionSenderJid?: string;
   reactionTargetJid?: string;
+  senderAccountIds?: string[];
+  targetAccountIds?: string[];
+  hasTargetMention?: boolean;
 };
 export function handleIncomingMessage(params: IncomingParams): Promise<BotReplyPayload> {
+  params.senderId = params.senderAccountIds?.find(id => Object.hasOwn(botState.players, id)) ?? params.senderId;
   return serialize(params, params.senderId, () => handleIncomingMessageInternal(params));
 }
 async function handleIncomingMessageInternal(params: IncomingParams): Promise<BotReplyPayload> {
@@ -1447,7 +1464,7 @@ async function handleIncomingMessageInternal(params: IncomingParams): Promise<Bo
         handler: 'Command Router',
         buttons: [
           { id: 'menu', label: 'Open .menu', command: `${prefix}menu` },
-          { id: 'card', label: 'Spawn .card', command: `${prefix}card` },
+          { id: 'cb', label: 'Card Battle', command: `${prefix}cb` },
         ],
       };
       recordLog(params, input, reply, Date.now() - started);
@@ -1482,6 +1499,10 @@ async function handleIncomingMessageInternal(params: IncomingParams): Promise<Bo
       return reply;
     }
 
+    if (params.chatMode !== 'group' && (cmdDef.name === 'cb' || (cmdDef.category === 'Admin' && cmdDef.name !== 'setxp'))) {
+      return { text: 'This command is group-only.', handler: 'Command Router', status: 'blocked' };
+    }
+
     botState.stats.totalCommands += 1;
 
     if (cmdDef.isCustom && cmdDef.customReply) {
@@ -1511,15 +1532,18 @@ async function handleIncomingMessageInternal(params: IncomingParams): Promise<Bo
     ]);
 
     if (cmdDef.name === 'cb') {
-      if (params.chatMode !== 'group') return { text: 'Card Battle is group-only.', handler: 'Card Battle', status: 'blocked' };
       const draft = structuredClone(botState.cardBattle || {});
-      const targetJid = params.reactionTargetJid || '';
-      const targetNumber = targetJid.split('@')[0].split(':')[0].replace(/\D/g, '');
-      const target = targetNumber ? (targetNumber === (botState.config.ownerNumber || '').replace(/\D/g, '') ? 'owner-kuro' : targetJid.endsWith('@lid') ? `wa-lid-${targetNumber}` : `wa-${targetNumber}`) : undefined;
+      const accountForBattle = (ids: string[]) =>
+        ids.find(id => draft.economy?.players?.[id]?.cards?.length) ??
+        ids.find(id => Object.hasOwn(draft.economy?.players ?? {}, id)) ?? ids[0];
+      const target = accountForBattle(params.targetAccountIds ?? []);
+      const aliases: Record<string, string> = { starter: 'start', cards: 'collection', col: 'collection', cardshop: 'shop' };
+      const token = rawCmd.toLowerCase();
+      const subcommand = token === 'cb' ? (restTokens[0] || 'help').toLowerCase() : token;
       const result = cardBattleAdapter.run(draft, {
-        player: player.id, group: params.groupId || `simulator:${botState.groupSettings.groupName}`, prefix,
+        player: accountForBattle(params.senderAccountIds ?? [player.id]), group: params.groupId || `simulator:${botState.groupSettings.groupName}`, prefix,
         target, label: (id: string) => botState.players[id]?.name || (id.startsWith('wild:') ? 'Wild Card' : id.startsWith('tower:') ? 'Tower' : id),
-      }, rawCmd.toLowerCase() === 'cb' ? (restTokens[0] || 'help').toLowerCase() : rawCmd.toLowerCase(), rawCmd.toLowerCase() === 'cb' ? restTokens.slice(1) : restTokens);
+      }, aliases[subcommand] || subcommand, token === 'cb' ? restTokens.slice(1) : restTokens);
       botState.cardBattle = draft;
       persistState();
       reply = { text: result.text, handler: 'Card Battle' };
@@ -2694,22 +2718,27 @@ async function executeBuiltInCommand(
 
   if (cmd === 'donate' || cmd === 'pay') {
     const [targetRaw = '', amtRaw = ''] = args;
-    const recipient = findPlayerTarget(targetRaw);
+    const recipient = source === 'baileys'
+      ? (aiContext?.hasTargetMention ? aiContext.targetAccountIds?.map(id => botState.players[id]).find(Boolean) : undefined)
+      : findPlayerTarget(targetRaw);
     if (!recipient) {
       return {
         text: `Recipient not found. Usage: *${p}${cmd} @user <amount>* (max ${formatGold(player.wallet)}).`,
-        handler: 'Economy',
+        handler: 'Economy', status: 'error',
       };
     }
     if (recipient.id === player.id) {
-      return { text: `You cannot send Gold to yourself.`, handler: 'Economy' };
+      return { text: `You cannot send Gold to yourself.`, handler: 'Economy', status: 'error' };
     }
-    const amt = parseAmountToken(amtRaw, player.wallet);
+    const amt = args.length === 2 ? parseAmountToken(amtRaw, player.wallet) : null;
     if (amt === null || amt <= 0 || amt > player.wallet) {
       return {
         text: `Specify a valid Gold amount up to *${formatGold(player.wallet)}*. Usage: *${p}${cmd} @${recipient.name} <amount>*`,
-        handler: 'Economy',
+        handler: 'Economy', status: 'error',
       };
+    }
+    if (!Number.isSafeInteger(recipient.wallet + amt)) {
+      return { text: 'The recipient cannot hold that much Gold.', handler: 'Economy', status: 'error' };
     }
     player.wallet -= amt;
     recipient.wallet += amt;
@@ -2917,11 +2946,17 @@ async function executeBuiltInCommand(
       };
     }
 
-    const profileText = buildProfileTextUi(player);
-    const cardBuf = await renderProfileCardBuffer(player).catch(() => null);
+    const targetIds = aiContext?.targetAccountIds;
+    const target = targetIds === undefined && !argStr ? player :
+      targetIds?.map(id => botState.players[id]).find(Boolean);
+    if (!target) {
+      return { text: `Profile not found. Mention one person, reply to their message, or use ${p}p for your own profile.`, handler: 'Profile', status: 'error' };
+    }
+    const profileText = buildProfileTextUi(target);
+    const cardBuf = await renderProfileCardBuffer(target).catch(() => null);
     return {
       text: profileText,
-      imageUrl: cardBuf ? `/api/profile-card/${encodeURIComponent(player.id)}?v=${Date.now()}` : undefined,
+      imageUrl: cardBuf ? `/api/profile-card/${encodeURIComponent(target.id)}?v=${Date.now()}` : undefined,
       imageBuffer: cardBuf ?? undefined,
       imageCaption: profileText,
       hideText: Boolean(cardBuf) && profileText.length <= 1000,
@@ -3285,7 +3320,9 @@ async function executeBuiltInCommand(
     if (remaining > 0) {
       return { text: `Lay low for *${formatDuration(remaining)}* before attempting another *${p}rob*.`, handler: 'Economy', status: 'blocked' };
     }
-    const target = findPlayerTarget(argStr);
+    const target = source === 'baileys'
+      ? aiContext?.targetAccountIds?.map(id => botState.players[id]).find(Boolean)
+      : findPlayerTarget(argStr);
     if (!target) {
       return { text: `Target not found. Usage: *${p}rob @user*`, handler: 'Economy' };
     }
@@ -4262,13 +4299,12 @@ async function executeBuiltInCommand(
     };
   }
   if (cmd === 'warn' || cmd === 'resetwarn') {
-    const targetName = argStr.replace(/^@/, '') || 'Sora';
-    const targetDigits = targetName.replace(/[^\d]/g, '');
-    const target = Object.values(botState.players).find((user) =>
-      user.name.toLowerCase() === targetName.toLowerCase() ||
-      Boolean(targetDigits && user.id.replace(/[^\d]/g, '').endsWith(targetDigits))
-    );
-    if (!target) return { text: `Member *${targetName}* not found.`, handler: 'Admin' };
+    const targetName = argStr.replace(/^@/, '').trim();
+    const target = source === 'baileys'
+      ? aiContext?.targetAccountIds?.map(id => botState.players[id]).find(Boolean)
+      : Object.values(botState.players).find(user => user.id === targetName ||
+        user.name.toLowerCase() === targetName.toLowerCase());
+    if (!target) return { text: `Mention one member or reply to their message. Usage: *${p}${cmd} @user*.`, handler: 'Admin', status: 'error' };
     target.warnings = cmd === 'resetwarn' ? 0 : target.warnings + 1;
     return {
       text: cmd === 'resetwarn' ? `✅ Cleared warnings for *${target.name}*.` : `⚠️ Warned *${target.name}* (${target.warnings}/3).`,
@@ -4333,7 +4369,10 @@ async function executeBuiltInCommand(
         status: 'error',
       };
     }
-    const target = targetToken ? findPlayerTarget(targetToken) : player;
+    const target = source === 'baileys'
+      ? aiContext?.targetAccountIds === undefined && !targetToken ? player :
+        aiContext?.targetAccountIds?.map(id => botState.players[id]).find(Boolean)
+      : targetToken ? findPlayerTarget(targetToken) : player;
     if (!target) {
       return {
         text: `Player *${targetToken}* was not found. Usage: *${p}setxp <xp> [@user]*`,
@@ -4434,7 +4473,7 @@ function renderMenu() {
     '',
     '┏━━━「 *MENU* 」',
     '┃',
-    '┃ ▸ ' + PREFIX + 'card',
+    '┃ ▸ ' + PREFIX + 'cb',
     '┃ ▸ ' + PREFIX + 'bal',
     '┃ ▸ ' + PREFIX + 'daily',
     '┃ ▸ ' + PREFIX + 'anime <title>',

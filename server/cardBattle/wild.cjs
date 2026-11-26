@@ -36,6 +36,13 @@ class WildEncounters {
  constructor({state={},random=Math.random,now=Date.now,credits=level=>50+level*5,canBattle=()=>true}={}){this.state=state;this.state.groups??={};this.state.outbox??={};this.state.previous??={};this.random=random;this.now=now;this.credits=credits;this.canBattle=canBattle;}
  get(group){return Object.hasOwn(this.state.groups,group)?this.state.groups[group]:null;}
  spawn(group,{id,level}={}){this.sweep();if(this.get(group))throw Error('Wild Card already active');const roster=R.list();id??=randomCharacterId(this.random,roster,this.state.previous[group]);level??=rollWildLevel(this.random);const c=R.getCard(id);R.statsAt(id,level);const e={id:randomUUID(),card:{id,level},expires:this.now()+TTL,failed:[],battle:null};Object.defineProperty(this.state.groups,group,{value:e,writable:true,enumerable:true,configurable:true});return {heading:'WILD CARD SPOTTED!',encounter:e.id,name:c.name,level,type:c.type,rarity:c.rarity,command:'.claim'};}
+ replaceIdle(group){
+  this.sweep();
+  const current=this.get(group);
+  if(current?.battle)throw Error('Wild Card already challenged');
+  if(current){this.state.previous[group]=current.card.id;delete this.state.groups[group];}
+  return this.spawn(group);
+ }
  claim(group,player,cards){this.sweep();const e=this.get(group);if(!e||this.now()>=e.expires)throw Error('No Wild Card available');if(e.failed.includes(player))throw Error('Stay down, weakling.');if(e.battle)throw Error('Wild Card already challenged');if(!this.canBattle(player)||Object.values(this.state.groups).some(x=>x.battle?.sides[0].id===player))throw Error('Already in battle');const enemy='wild:'+e.id;const b=B.createBattle([{id:player,cards},{id:enemy,ai:true,cards:[{...e.card,uid:enemy}]}],{mode:'wild',now:this.now()});e.battle=b;this.advance(e);return {dialogue:dialogues[Math.floor(this.random()*dialogues.length)],battle:structuredClone(e.battle),encounter:e.id,outcome:this.finish(group,e)};}
  advance(e){let n=0;while(e.battle.phase!=='ended'&&e.battle.phase!=='cancelled'&&e.battle.sides[e.battle.turn].ai){if(++n>12)throw Error('AI loop limit');e.battle=B.action(e.battle,e.battle.sides[e.battle.turn].id,B.aiAction(e.battle),{random:this.random,now:this.now()});}}
  act(group,player,cmd){this.sweep();const e=this.get(group);if(!e?.battle||e.battle.sides[0].id!==player)throw Error('No active challenge');e.battle=B.action(e.battle,player,cmd,{random:this.random,now:this.now()});const events=[...e.battle.events];this.advance(e);const battle=structuredClone(e.battle);const outcome=this.finish(group,e);return {battle,playerEvents:events,outcome};}

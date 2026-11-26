@@ -439,7 +439,7 @@ export async function renderProfileCardBuffer(player: PlayerProfile): Promise<Bu
   ctx.restore();
 
   // 3) Center Username (blank until user sets one with `.setname` / `.rename`).
-  const displayName = player.customName ? (player.name || '').trim().slice(0, 24) : '';
+  const displayName = ((player.name || '').trim() || 'Unnamed player').slice(0, 24);
   if (displayName) {
     const nameFontSize = displayName.length > 18 ? 44 : displayName.length > 13 ? 52 : 64;
     ctx.save();
