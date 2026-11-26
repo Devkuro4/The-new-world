@@ -285,7 +285,7 @@ export const DEFAULT_COMMANDS: BotCommandDef[] = [
   { name: 'memories', category: 'General', description: 'View or manage AI personal memories and recent group moments', usage: '.memories [add <note>|clear]', role: 'everyone', enabled: true },
 
   // Cards
-  { name: 'cb', aliases: ['pvp', 'tower', 'exped', 'move', 'switch', 'bag', 'heal', 'openpack', 'openspack', 'merge', 'learn', 'cmi', 'wild'], category: 'Cards', description: 'Anime Card Battle beta: collect, battle, tower and expeditions', usage: '.cb help', role: 'everyone', enabled: true },
+  { name: 'cb', aliases: ['pvp', 'tower', 'exped', 'move', 'switch', 'bag', 'heal', 'openpack', 'openspack', 'merge', 'learn', 'cmi', 'wild', 'forfeit'], category: 'Cards', description: 'Anime Card Battle beta: collect, battle, tower and expeditions', usage: '.cb help', role: 'everyone', enabled: true },
   { name: 'card', category: 'Cards', description: 'Spawn a collectible anime character card in chat', usage: '.card', role: 'everyone', enabled: true },
   { name: 'claim', category: 'Cards', description: 'Claim an active dropped anime card', usage: '.claim [code]', role: 'everyone', enabled: true },
   { name: 'ci', category: 'Cards', description: 'View a card by character name and Shoob tier, including its owners', usage: '.ci <card name> <tier>', role: 'everyone', enabled: true },

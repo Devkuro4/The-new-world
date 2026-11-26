@@ -7,7 +7,13 @@
       "level": 1,
       "power": 0.9,
       "cooldown": 0,
-      "kind": "arcane"
+      "kind": "arcane",
+      "visual": {
+        "style": "hammer",
+        "color": "#e9c4a0",
+        "intensity": 1,
+        "variant": 1
+      }
     },
     {
       "id": "hiromi-higuruma-base:2",
@@ -16,7 +22,13 @@
       "level": 1,
       "power": 1.2,
       "cooldown": 1,
-      "kind": "arcane"
+      "kind": "arcane",
+      "visual": {
+        "style": "hammer",
+        "color": "#e9c4a0",
+        "intensity": 1,
+        "variant": 2
+      }
     },
     {
       "id": "hiromi-higuruma-base:3",
@@ -25,7 +37,13 @@
       "level": 1,
       "power": 1.5,
       "cooldown": 2,
-      "kind": "arcane"
+      "kind": "arcane",
+      "visual": {
+        "style": "wave",
+        "color": "#e9c4a0",
+        "intensity": 1,
+        "variant": 3
+      }
     },
     {
       "id": "hiromi-higuruma-base:4",
@@ -34,7 +52,13 @@
       "level": 12,
       "power": 1.65,
       "cooldown": 2,
-      "kind": "arcane"
+      "kind": "arcane",
+      "visual": {
+        "style": "seal",
+        "color": "#e9c4a0",
+        "intensity": 2,
+        "variant": 4
+      }
     },
     {
       "id": "hiromi-higuruma-base:5",
@@ -43,7 +67,13 @@
       "level": 30,
       "power": 1.85,
       "cooldown": 3,
-      "kind": "arcane"
+      "kind": "arcane",
+      "visual": {
+        "style": "hammer",
+        "color": "#e9c4a0",
+        "intensity": 2,
+        "variant": 5
+      }
     },
     {
       "id": "hiromi-higuruma-base:6",
@@ -52,7 +82,13 @@
       "level": 20,
       "power": 2.6,
       "cooldown": 5,
-      "kind": "arcane"
+      "kind": "arcane",
+      "visual": {
+        "style": "slash",
+        "color": "#e9c4a0",
+        "intensity": 3,
+        "variant": 6
+      }
     },
     {
       "id": "hiromi-higuruma-base:7",
@@ -60,7 +96,13 @@
       "category": "healing",
       "level": 1,
       "heal": 0.18,
-      "cooldown": 3
+      "cooldown": 3,
+      "visual": {
+        "style": "heal",
+        "color": "#70f4b1",
+        "intensity": 1,
+        "variant": 7
+      }
     },
     {
       "id": "hiromi-higuruma-base:8",
@@ -68,16 +110,28 @@
       "category": "healing",
       "level": 40,
       "heal": 0.3,
-      "cooldown": 4
+      "cooldown": 4,
+      "visual": {
+        "style": "heal",
+        "color": "#70f4b1",
+        "intensity": 2,
+        "variant": 8
+      }
     },
     {
       "id": "hiromi-higuruma-base:9",
-      "name": "Verdict Blow — Mastery",
+      "name": "Verdict Blow \u2014 Mastery",
       "category": "attack",
       "level": 80,
       "power": 2.1,
       "cooldown": 4,
-      "kind": "arcane"
+      "kind": "arcane",
+      "visual": {
+        "style": "hammer",
+        "color": "#e9c4a0",
+        "intensity": 3,
+        "variant": 9
+      }
     }
   ],
   "light-yagami-base": [
@@ -88,7 +142,13 @@
       "level": 1,
       "power": 0.9,
       "cooldown": 0,
-      "kind": "arcane"
+      "kind": "arcane",
+      "visual": {
+        "style": "seal",
+        "color": "#9e8bda",
+        "intensity": 1,
+        "variant": 1
+      }
     },
     {
       "id": "light-yagami-base:2",
@@ -97,7 +157,13 @@
       "level": 1,
       "power": 1.2,
       "cooldown": 1,
-      "kind": "arcane"
+      "kind": "arcane",
+      "visual": {
+        "style": "dash",
+        "color": "#9e8bda",
+        "intensity": 1,
+        "variant": 2
+      }
     },
     {
       "id": "light-yagami-base:3",
@@ -106,7 +172,13 @@
       "level": 1,
       "power": 1.5,
       "cooldown": 2,
-      "kind": "arcane"
+      "kind": "arcane",
+      "visual": {
+        "style": "seal",
+        "color": "#9e8bda",
+        "intensity": 1,
+        "variant": 3
+      }
     },
     {
       "id": "light-yagami-base:4",
@@ -115,7 +187,13 @@
       "level": 12,
       "power": 1.65,
       "cooldown": 2,
-      "kind": "arcane"
+      "kind": "arcane",
+      "visual": {
+        "style": "seal",
+        "color": "#9e8bda",
+        "intensity": 2,
+        "variant": 4
+      }
     },
     {
       "id": "light-yagami-base:5",
@@ -124,7 +202,13 @@
       "level": 30,
       "power": 1.85,
       "cooldown": 3,
-      "kind": "arcane"
+      "kind": "arcane",
+      "visual": {
+        "style": "seal",
+        "color": "#9e8bda",
+        "intensity": 2,
+        "variant": 5
+      }
     },
     {
       "id": "light-yagami-base:6",
@@ -133,7 +217,13 @@
       "level": 20,
       "power": 2.6,
       "cooldown": 5,
-      "kind": "arcane"
+      "kind": "arcane",
+      "visual": {
+        "style": "seal",
+        "color": "#9e8bda",
+        "intensity": 3,
+        "variant": 6
+      }
     },
     {
       "id": "light-yagami-base:7",
@@ -141,7 +231,13 @@
       "category": "healing",
       "level": 1,
       "heal": 0.18,
-      "cooldown": 3
+      "cooldown": 3,
+      "visual": {
+        "style": "heal",
+        "color": "#70f4b1",
+        "intensity": 1,
+        "variant": 7
+      }
     },
     {
       "id": "light-yagami-base:8",
@@ -149,16 +245,28 @@
       "category": "healing",
       "level": 40,
       "heal": 0.3,
-      "cooldown": 4
+      "cooldown": 4,
+      "visual": {
+        "style": "heal",
+        "color": "#70f4b1",
+        "intensity": 2,
+        "variant": 8
+      }
     },
     {
       "id": "light-yagami-base:9",
-      "name": "Final Deduction — Mastery",
+      "name": "Final Deduction \u2014 Mastery",
       "category": "attack",
       "level": 80,
       "power": 2.1,
       "cooldown": 4,
-      "kind": "arcane"
+      "kind": "arcane",
+      "visual": {
+        "style": "seal",
+        "color": "#9e8bda",
+        "intensity": 3,
+        "variant": 9
+      }
     }
   ],
   "choso-base": [
@@ -169,7 +277,13 @@
       "level": 1,
       "power": 0.9,
       "cooldown": 0,
-      "kind": "arcane"
+      "kind": "arcane",
+      "visual": {
+        "style": "beam",
+        "color": "#f34464",
+        "intensity": 1,
+        "variant": 1
+      }
     },
     {
       "id": "choso-base:2",
@@ -178,7 +292,13 @@
       "level": 1,
       "power": 1.2,
       "cooldown": 1,
-      "kind": "arcane"
+      "kind": "arcane",
+      "visual": {
+        "style": "slash",
+        "color": "#f34464",
+        "intensity": 1,
+        "variant": 2
+      }
     },
     {
       "id": "choso-base:3",
@@ -187,7 +307,13 @@
       "level": 1,
       "power": 1.5,
       "cooldown": 2,
-      "kind": "arcane"
+      "kind": "arcane",
+      "visual": {
+        "style": "slash",
+        "color": "#f34464",
+        "intensity": 1,
+        "variant": 3
+      }
     },
     {
       "id": "choso-base:4",
@@ -196,7 +322,13 @@
       "level": 12,
       "power": 1.65,
       "cooldown": 2,
-      "kind": "arcane"
+      "kind": "arcane",
+      "visual": {
+        "style": "burst",
+        "color": "#f34464",
+        "intensity": 2,
+        "variant": 4
+      }
     },
     {
       "id": "choso-base:5",
@@ -205,7 +337,13 @@
       "level": 30,
       "power": 1.85,
       "cooldown": 3,
-      "kind": "arcane"
+      "kind": "arcane",
+      "visual": {
+        "style": "orb",
+        "color": "#f34464",
+        "intensity": 2,
+        "variant": 5
+      }
     },
     {
       "id": "choso-base:6",
@@ -214,7 +352,13 @@
       "level": 20,
       "power": 2.6,
       "cooldown": 5,
-      "kind": "arcane"
+      "kind": "arcane",
+      "visual": {
+        "style": "burst",
+        "color": "#f34464",
+        "intensity": 3,
+        "variant": 6
+      }
     },
     {
       "id": "choso-base:7",
@@ -222,7 +366,13 @@
       "category": "healing",
       "level": 1,
       "heal": 0.18,
-      "cooldown": 3
+      "cooldown": 3,
+      "visual": {
+        "style": "heal",
+        "color": "#70f4b1",
+        "intensity": 1,
+        "variant": 7
+      }
     },
     {
       "id": "choso-base:8",
@@ -230,16 +380,28 @@
       "category": "healing",
       "level": 40,
       "heal": 0.3,
-      "cooldown": 4
+      "cooldown": 4,
+      "visual": {
+        "style": "heal",
+        "color": "#70f4b1",
+        "intensity": 2,
+        "variant": 8
+      }
     },
     {
       "id": "choso-base:9",
-      "name": "Blood Meteor — Mastery",
+      "name": "Blood Meteor \u2014 Mastery",
       "category": "attack",
       "level": 80,
       "power": 2.1,
       "cooldown": 4,
-      "kind": "arcane"
+      "kind": "arcane",
+      "visual": {
+        "style": "orb",
+        "color": "#f34464",
+        "intensity": 3,
+        "variant": 9
+      }
     }
   ],
   "toji-fushiguro-base": [
@@ -250,7 +412,13 @@
       "level": 1,
       "power": 0.9,
       "cooldown": 0,
-      "kind": "physical"
+      "kind": "physical",
+      "visual": {
+        "style": "slash",
+        "color": "#c3b8a8",
+        "intensity": 1,
+        "variant": 1
+      }
     },
     {
       "id": "toji-fushiguro-base:2",
@@ -259,7 +427,13 @@
       "level": 1,
       "power": 1.2,
       "cooldown": 1,
-      "kind": "physical"
+      "kind": "physical",
+      "visual": {
+        "style": "punch",
+        "color": "#c3b8a8",
+        "intensity": 1,
+        "variant": 2
+      }
     },
     {
       "id": "toji-fushiguro-base:3",
@@ -268,7 +442,13 @@
       "level": 1,
       "power": 1.5,
       "cooldown": 2,
-      "kind": "physical"
+      "kind": "physical",
+      "visual": {
+        "style": "chain",
+        "color": "#c3b8a8",
+        "intensity": 1,
+        "variant": 3
+      }
     },
     {
       "id": "toji-fushiguro-base:4",
@@ -277,7 +457,13 @@
       "level": 12,
       "power": 1.65,
       "cooldown": 2,
-      "kind": "physical"
+      "kind": "physical",
+      "visual": {
+        "style": "dash",
+        "color": "#c3b8a8",
+        "intensity": 2,
+        "variant": 4
+      }
     },
     {
       "id": "toji-fushiguro-base:5",
@@ -286,7 +472,13 @@
       "level": 30,
       "power": 1.85,
       "cooldown": 3,
-      "kind": "physical"
+      "kind": "physical",
+      "visual": {
+        "style": "barrage",
+        "color": "#c3b8a8",
+        "intensity": 2,
+        "variant": 5
+      }
     },
     {
       "id": "toji-fushiguro-base:6",
@@ -295,7 +487,13 @@
       "level": 20,
       "power": 2.6,
       "cooldown": 5,
-      "kind": "physical"
+      "kind": "physical",
+      "visual": {
+        "style": "slash",
+        "color": "#c3b8a8",
+        "intensity": 3,
+        "variant": 6
+      }
     },
     {
       "id": "toji-fushiguro-base:7",
@@ -303,7 +501,13 @@
       "category": "healing",
       "level": 1,
       "heal": 0.18,
-      "cooldown": 3
+      "cooldown": 3,
+      "visual": {
+        "style": "heal",
+        "color": "#70f4b1",
+        "intensity": 1,
+        "variant": 7
+      }
     },
     {
       "id": "toji-fushiguro-base:8",
@@ -311,16 +515,28 @@
       "category": "healing",
       "level": 40,
       "heal": 0.3,
-      "cooldown": 4
+      "cooldown": 4,
+      "visual": {
+        "style": "heal",
+        "color": "#70f4b1",
+        "intensity": 2,
+        "variant": 8
+      }
     },
     {
       "id": "toji-fushiguro-base:9",
-      "name": "Weapon Barrage — Mastery",
+      "name": "Weapon Barrage \u2014 Mastery",
       "category": "attack",
       "level": 80,
       "power": 2.1,
       "cooldown": 4,
-      "kind": "physical"
+      "kind": "physical",
+      "visual": {
+        "style": "barrage",
+        "color": "#c3b8a8",
+        "intensity": 3,
+        "variant": 9
+      }
     }
   ],
   "toge-inumaki-base": [
@@ -331,7 +547,13 @@
       "level": 1,
       "power": 0.9,
       "cooldown": 0,
-      "kind": "arcane"
+      "kind": "arcane",
+      "visual": {
+        "style": "wave",
+        "color": "#b8a3ff",
+        "intensity": 1,
+        "variant": 1
+      }
     },
     {
       "id": "toge-inumaki-base:2",
@@ -340,7 +562,13 @@
       "level": 1,
       "power": 1.2,
       "cooldown": 1,
-      "kind": "arcane"
+      "kind": "arcane",
+      "visual": {
+        "style": "wave",
+        "color": "#b8a3ff",
+        "intensity": 1,
+        "variant": 2
+      }
     },
     {
       "id": "toge-inumaki-base:3",
@@ -349,7 +577,13 @@
       "level": 1,
       "power": 1.5,
       "cooldown": 2,
-      "kind": "arcane"
+      "kind": "arcane",
+      "visual": {
+        "style": "wave",
+        "color": "#b8a3ff",
+        "intensity": 1,
+        "variant": 3
+      }
     },
     {
       "id": "toge-inumaki-base:4",
@@ -358,7 +592,13 @@
       "level": 12,
       "power": 1.65,
       "cooldown": 2,
-      "kind": "arcane"
+      "kind": "arcane",
+      "visual": {
+        "style": "burst",
+        "color": "#b8a3ff",
+        "intensity": 2,
+        "variant": 4
+      }
     },
     {
       "id": "toge-inumaki-base:5",
@@ -367,7 +607,13 @@
       "level": 30,
       "power": 1.85,
       "cooldown": 3,
-      "kind": "arcane"
+      "kind": "arcane",
+      "visual": {
+        "style": "wave",
+        "color": "#b8a3ff",
+        "intensity": 2,
+        "variant": 5
+      }
     },
     {
       "id": "toge-inumaki-base:6",
@@ -376,7 +622,13 @@
       "level": 20,
       "power": 2.6,
       "cooldown": 5,
-      "kind": "arcane"
+      "kind": "arcane",
+      "visual": {
+        "style": "seal",
+        "color": "#b8a3ff",
+        "intensity": 3,
+        "variant": 6
+      }
     },
     {
       "id": "toge-inumaki-base:7",
@@ -384,7 +636,13 @@
       "category": "healing",
       "level": 1,
       "heal": 0.18,
-      "cooldown": 3
+      "cooldown": 3,
+      "visual": {
+        "style": "heal",
+        "color": "#70f4b1",
+        "intensity": 1,
+        "variant": 7
+      }
     },
     {
       "id": "toge-inumaki-base:8",
@@ -392,16 +650,28 @@
       "category": "healing",
       "level": 40,
       "heal": 0.3,
-      "cooldown": 4
+      "cooldown": 4,
+      "visual": {
+        "style": "heal",
+        "color": "#70f4b1",
+        "intensity": 2,
+        "variant": 8
+      }
     },
     {
       "id": "toge-inumaki-base:9",
-      "name": "Crushing Voice — Mastery",
+      "name": "Crushing Voice \u2014 Mastery",
       "category": "attack",
       "level": 80,
       "power": 2.1,
       "cooldown": 4,
-      "kind": "arcane"
+      "kind": "arcane",
+      "visual": {
+        "style": "wave",
+        "color": "#b8a3ff",
+        "intensity": 3,
+        "variant": 9
+      }
     }
   ],
   "panda-base": [
@@ -412,7 +682,13 @@
       "level": 1,
       "power": 0.9,
       "cooldown": 0,
-      "kind": "physical"
+      "kind": "physical",
+      "visual": {
+        "style": "punch",
+        "color": "#e0c9a9",
+        "intensity": 1,
+        "variant": 1
+      }
     },
     {
       "id": "panda-base:2",
@@ -421,7 +697,13 @@
       "level": 1,
       "power": 1.2,
       "cooldown": 1,
-      "kind": "physical"
+      "kind": "physical",
+      "visual": {
+        "style": "dash",
+        "color": "#e0c9a9",
+        "intensity": 1,
+        "variant": 2
+      }
     },
     {
       "id": "panda-base:3",
@@ -430,7 +712,13 @@
       "level": 1,
       "power": 1.5,
       "cooldown": 2,
-      "kind": "physical"
+      "kind": "physical",
+      "visual": {
+        "style": "punch",
+        "color": "#e0c9a9",
+        "intensity": 1,
+        "variant": 3
+      }
     },
     {
       "id": "panda-base:4",
@@ -439,7 +727,13 @@
       "level": 12,
       "power": 1.65,
       "cooldown": 2,
-      "kind": "physical"
+      "kind": "physical",
+      "visual": {
+        "style": "punch",
+        "color": "#e0c9a9",
+        "intensity": 2,
+        "variant": 4
+      }
     },
     {
       "id": "panda-base:5",
@@ -448,7 +742,13 @@
       "level": 30,
       "power": 1.85,
       "cooldown": 3,
-      "kind": "physical"
+      "kind": "physical",
+      "visual": {
+        "style": "barrage",
+        "color": "#e0c9a9",
+        "intensity": 2,
+        "variant": 5
+      }
     },
     {
       "id": "panda-base:6",
@@ -457,7 +757,13 @@
       "level": 20,
       "power": 2.6,
       "cooldown": 5,
-      "kind": "physical"
+      "kind": "physical",
+      "visual": {
+        "style": "burst",
+        "color": "#e0c9a9",
+        "intensity": 3,
+        "variant": 6
+      }
     },
     {
       "id": "panda-base:7",
@@ -465,7 +771,13 @@
       "category": "healing",
       "level": 1,
       "heal": 0.18,
-      "cooldown": 3
+      "cooldown": 3,
+      "visual": {
+        "style": "heal",
+        "color": "#70f4b1",
+        "intensity": 1,
+        "variant": 7
+      }
     },
     {
       "id": "panda-base:8",
@@ -473,16 +785,28 @@
       "category": "healing",
       "level": 40,
       "heal": 0.3,
-      "cooldown": 4
+      "cooldown": 4,
+      "visual": {
+        "style": "heal",
+        "color": "#70f4b1",
+        "intensity": 2,
+        "variant": 8
+      }
     },
     {
       "id": "panda-base:9",
-      "name": "Heavy Barrage — Mastery",
+      "name": "Heavy Barrage \u2014 Mastery",
       "category": "attack",
       "level": 80,
       "power": 2.1,
       "cooldown": 4,
-      "kind": "physical"
+      "kind": "physical",
+      "visual": {
+        "style": "barrage",
+        "color": "#e0c9a9",
+        "intensity": 3,
+        "variant": 9
+      }
     }
   ],
   "mei-mei-base": [
@@ -493,7 +817,13 @@
       "level": 1,
       "power": 0.9,
       "cooldown": 0,
-      "kind": "physical"
+      "kind": "physical",
+      "visual": {
+        "style": "slash",
+        "color": "#c9c3e9",
+        "intensity": 1,
+        "variant": 1
+      }
     },
     {
       "id": "mei-mei-base:2",
@@ -502,7 +832,13 @@
       "level": 1,
       "power": 1.2,
       "cooldown": 1,
-      "kind": "physical"
+      "kind": "physical",
+      "visual": {
+        "style": "swarm",
+        "color": "#c9c3e9",
+        "intensity": 1,
+        "variant": 2
+      }
     },
     {
       "id": "mei-mei-base:3",
@@ -511,7 +847,13 @@
       "level": 1,
       "power": 1.5,
       "cooldown": 2,
-      "kind": "physical"
+      "kind": "physical",
+      "visual": {
+        "style": "slash",
+        "color": "#c9c3e9",
+        "intensity": 1,
+        "variant": 3
+      }
     },
     {
       "id": "mei-mei-base:4",
@@ -520,7 +862,13 @@
       "level": 12,
       "power": 1.65,
       "cooldown": 2,
-      "kind": "physical"
+      "kind": "physical",
+      "visual": {
+        "style": "swarm",
+        "color": "#c9c3e9",
+        "intensity": 2,
+        "variant": 4
+      }
     },
     {
       "id": "mei-mei-base:5",
@@ -529,7 +877,13 @@
       "level": 30,
       "power": 1.85,
       "cooldown": 3,
-      "kind": "physical"
+      "kind": "physical",
+      "visual": {
+        "style": "slash",
+        "color": "#c9c3e9",
+        "intensity": 2,
+        "variant": 5
+      }
     },
     {
       "id": "mei-mei-base:6",
@@ -538,7 +892,13 @@
       "level": 20,
       "power": 2.6,
       "cooldown": 5,
-      "kind": "physical"
+      "kind": "physical",
+      "visual": {
+        "style": "swarm",
+        "color": "#c9c3e9",
+        "intensity": 3,
+        "variant": 6
+      }
     },
     {
       "id": "mei-mei-base:7",
@@ -546,7 +906,13 @@
       "category": "healing",
       "level": 1,
       "heal": 0.18,
-      "cooldown": 3
+      "cooldown": 3,
+      "visual": {
+        "style": "heal",
+        "color": "#70f4b1",
+        "intensity": 1,
+        "variant": 7
+      }
     },
     {
       "id": "mei-mei-base:8",
@@ -554,16 +920,28 @@
       "category": "healing",
       "level": 40,
       "heal": 0.3,
-      "cooldown": 4
+      "cooldown": 4,
+      "visual": {
+        "style": "heal",
+        "color": "#70f4b1",
+        "intensity": 2,
+        "variant": 8
+      }
     },
     {
       "id": "mei-mei-base:9",
-      "name": "Aerial Cleave — Mastery",
+      "name": "Aerial Cleave \u2014 Mastery",
       "category": "attack",
       "level": 80,
       "power": 2.1,
       "cooldown": 4,
-      "kind": "physical"
+      "kind": "physical",
+      "visual": {
+        "style": "slash",
+        "color": "#c9c3e9",
+        "intensity": 3,
+        "variant": 9
+      }
     }
   ],
   "yuta-okkotsu-base": [
@@ -574,7 +952,13 @@
       "level": 1,
       "power": 0.9,
       "cooldown": 0,
-      "kind": "arcane"
+      "kind": "arcane",
+      "visual": {
+        "style": "slash",
+        "color": "#bda6ff",
+        "intensity": 1,
+        "variant": 1
+      }
     },
     {
       "id": "yuta-okkotsu-base:2",
@@ -583,7 +967,13 @@
       "level": 1,
       "power": 1.2,
       "cooldown": 1,
-      "kind": "arcane"
+      "kind": "arcane",
+      "visual": {
+        "style": "burst",
+        "color": "#bda6ff",
+        "intensity": 1,
+        "variant": 2
+      }
     },
     {
       "id": "yuta-okkotsu-base:3",
@@ -592,7 +982,13 @@
       "level": 1,
       "power": 1.5,
       "cooldown": 2,
-      "kind": "arcane"
+      "kind": "arcane",
+      "visual": {
+        "style": "orb",
+        "color": "#bda6ff",
+        "intensity": 1,
+        "variant": 3
+      }
     },
     {
       "id": "yuta-okkotsu-base:4",
@@ -601,7 +997,13 @@
       "level": 12,
       "power": 1.65,
       "cooldown": 2,
-      "kind": "arcane"
+      "kind": "arcane",
+      "visual": {
+        "style": "swarm",
+        "color": "#bda6ff",
+        "intensity": 2,
+        "variant": 4
+      }
     },
     {
       "id": "yuta-okkotsu-base:5",
@@ -610,7 +1012,13 @@
       "level": 30,
       "power": 1.85,
       "cooldown": 3,
-      "kind": "arcane"
+      "kind": "arcane",
+      "visual": {
+        "style": "wave",
+        "color": "#bda6ff",
+        "intensity": 2,
+        "variant": 5
+      }
     },
     {
       "id": "yuta-okkotsu-base:6",
@@ -619,7 +1027,13 @@
       "level": 20,
       "power": 2.6,
       "cooldown": 5,
-      "kind": "arcane"
+      "kind": "arcane",
+      "visual": {
+        "style": "beam",
+        "color": "#bda6ff",
+        "intensity": 3,
+        "variant": 6
+      }
     },
     {
       "id": "yuta-okkotsu-base:7",
@@ -627,7 +1041,13 @@
       "category": "healing",
       "level": 1,
       "heal": 0.18,
-      "cooldown": 3
+      "cooldown": 3,
+      "visual": {
+        "style": "heal",
+        "color": "#70f4b1",
+        "intensity": 1,
+        "variant": 7
+      }
     },
     {
       "id": "yuta-okkotsu-base:8",
@@ -635,16 +1055,28 @@
       "category": "healing",
       "level": 40,
       "heal": 0.3,
-      "cooldown": 4
+      "cooldown": 4,
+      "visual": {
+        "style": "heal",
+        "color": "#70f4b1",
+        "intensity": 2,
+        "variant": 8
+      }
     },
     {
       "id": "yuta-okkotsu-base:9",
-      "name": "Copied Technique — Mastery",
+      "name": "Copied Technique \u2014 Mastery",
       "category": "attack",
       "level": 80,
       "power": 2.1,
       "cooldown": 4,
-      "kind": "arcane"
+      "kind": "arcane",
+      "visual": {
+        "style": "wave",
+        "color": "#bda6ff",
+        "intensity": 3,
+        "variant": 9
+      }
     }
   ],
   "yuji-itadori-base": [
@@ -655,7 +1087,13 @@
       "level": 1,
       "power": 0.9,
       "cooldown": 0,
-      "kind": "physical"
+      "kind": "physical",
+      "visual": {
+        "style": "punch",
+        "color": "#ff536d",
+        "intensity": 1,
+        "variant": 1
+      }
     },
     {
       "id": "yuji-itadori-base:2",
@@ -664,7 +1102,13 @@
       "level": 1,
       "power": 1.2,
       "cooldown": 1,
-      "kind": "physical"
+      "kind": "physical",
+      "visual": {
+        "style": "punch",
+        "color": "#ff536d",
+        "intensity": 1,
+        "variant": 2
+      }
     },
     {
       "id": "yuji-itadori-base:3",
@@ -673,7 +1117,13 @@
       "level": 1,
       "power": 1.5,
       "cooldown": 2,
-      "kind": "physical"
+      "kind": "physical",
+      "visual": {
+        "style": "barrage",
+        "color": "#ff536d",
+        "intensity": 1,
+        "variant": 3
+      }
     },
     {
       "id": "yuji-itadori-base:4",
@@ -682,7 +1132,13 @@
       "level": 12,
       "power": 1.65,
       "cooldown": 2,
-      "kind": "physical"
+      "kind": "physical",
+      "visual": {
+        "style": "burst",
+        "color": "#ff536d",
+        "intensity": 2,
+        "variant": 4
+      }
     },
     {
       "id": "yuji-itadori-base:5",
@@ -691,7 +1147,13 @@
       "level": 30,
       "power": 1.85,
       "cooldown": 3,
-      "kind": "physical"
+      "kind": "physical",
+      "visual": {
+        "style": "barrage",
+        "color": "#ff536d",
+        "intensity": 2,
+        "variant": 5
+      }
     },
     {
       "id": "yuji-itadori-base:6",
@@ -700,7 +1162,13 @@
       "level": 20,
       "power": 2.6,
       "cooldown": 5,
-      "kind": "physical"
+      "kind": "physical",
+      "visual": {
+        "style": "burst",
+        "color": "#ff536d",
+        "intensity": 3,
+        "variant": 6
+      }
     },
     {
       "id": "yuji-itadori-base:7",
@@ -708,7 +1176,13 @@
       "category": "healing",
       "level": 1,
       "heal": 0.18,
-      "cooldown": 3
+      "cooldown": 3,
+      "visual": {
+        "style": "heal",
+        "color": "#70f4b1",
+        "intensity": 1,
+        "variant": 7
+      }
     },
     {
       "id": "yuji-itadori-base:8",
@@ -716,16 +1190,28 @@
       "category": "healing",
       "level": 40,
       "heal": 0.3,
-      "cooldown": 4
+      "cooldown": 4,
+      "visual": {
+        "style": "heal",
+        "color": "#70f4b1",
+        "intensity": 2,
+        "variant": 8
+      }
     },
     {
       "id": "yuji-itadori-base:9",
-      "name": "Impact Barrage — Mastery",
+      "name": "Impact Barrage \u2014 Mastery",
       "category": "attack",
       "level": 80,
       "power": 2.1,
       "cooldown": 4,
-      "kind": "physical"
+      "kind": "physical",
+      "visual": {
+        "style": "barrage",
+        "color": "#ff536d",
+        "intensity": 3,
+        "variant": 9
+      }
     }
   ],
   "rias-gremory-base": [
@@ -736,7 +1222,13 @@
       "level": 1,
       "power": 0.9,
       "cooldown": 0,
-      "kind": "arcane"
+      "kind": "arcane",
+      "visual": {
+        "style": "orb",
+        "color": "#ed395b",
+        "intensity": 1,
+        "variant": 1
+      }
     },
     {
       "id": "rias-gremory-base:2",
@@ -745,7 +1237,13 @@
       "level": 1,
       "power": 1.2,
       "cooldown": 1,
-      "kind": "arcane"
+      "kind": "arcane",
+      "visual": {
+        "style": "wave",
+        "color": "#ed395b",
+        "intensity": 1,
+        "variant": 2
+      }
     },
     {
       "id": "rias-gremory-base:3",
@@ -754,7 +1252,13 @@
       "level": 1,
       "power": 1.5,
       "cooldown": 2,
-      "kind": "arcane"
+      "kind": "arcane",
+      "visual": {
+        "style": "wave",
+        "color": "#ed395b",
+        "intensity": 1,
+        "variant": 3
+      }
     },
     {
       "id": "rias-gremory-base:4",
@@ -763,7 +1267,13 @@
       "level": 12,
       "power": 1.65,
       "cooldown": 2,
-      "kind": "arcane"
+      "kind": "arcane",
+      "visual": {
+        "style": "burst",
+        "color": "#ed395b",
+        "intensity": 2,
+        "variant": 4
+      }
     },
     {
       "id": "rias-gremory-base:5",
@@ -772,7 +1282,13 @@
       "level": 30,
       "power": 1.85,
       "cooldown": 3,
-      "kind": "arcane"
+      "kind": "arcane",
+      "visual": {
+        "style": "barrage",
+        "color": "#ed395b",
+        "intensity": 2,
+        "variant": 5
+      }
     },
     {
       "id": "rias-gremory-base:6",
@@ -781,7 +1297,13 @@
       "level": 20,
       "power": 2.6,
       "cooldown": 5,
-      "kind": "arcane"
+      "kind": "arcane",
+      "visual": {
+        "style": "beam",
+        "color": "#ed395b",
+        "intensity": 3,
+        "variant": 6
+      }
     },
     {
       "id": "rias-gremory-base:7",
@@ -789,7 +1311,13 @@
       "category": "healing",
       "level": 1,
       "heal": 0.18,
-      "cooldown": 3
+      "cooldown": 3,
+      "visual": {
+        "style": "heal",
+        "color": "#70f4b1",
+        "intensity": 1,
+        "variant": 7
+      }
     },
     {
       "id": "rias-gremory-base:8",
@@ -797,16 +1325,28 @@
       "category": "healing",
       "level": 40,
       "heal": 0.3,
-      "cooldown": 4
+      "cooldown": 4,
+      "visual": {
+        "style": "heal",
+        "color": "#70f4b1",
+        "intensity": 2,
+        "variant": 8
+      }
     },
     {
       "id": "rias-gremory-base:9",
-      "name": "Ruin Barrage — Mastery",
+      "name": "Ruin Barrage \u2014 Mastery",
       "category": "attack",
       "level": 80,
       "power": 2.1,
       "cooldown": 4,
-      "kind": "arcane"
+      "kind": "arcane",
+      "visual": {
+        "style": "barrage",
+        "color": "#ed395b",
+        "intensity": 3,
+        "variant": 9
+      }
     }
   ],
   "suguru-geto-base": [
@@ -817,7 +1357,13 @@
       "level": 1,
       "power": 0.9,
       "cooldown": 0,
-      "kind": "arcane"
+      "kind": "arcane",
+      "visual": {
+        "style": "orb",
+        "color": "#a9a0ef",
+        "intensity": 1,
+        "variant": 1
+      }
     },
     {
       "id": "suguru-geto-base:2",
@@ -826,7 +1372,13 @@
       "level": 1,
       "power": 1.2,
       "cooldown": 1,
-      "kind": "arcane"
+      "kind": "arcane",
+      "visual": {
+        "style": "swarm",
+        "color": "#a9a0ef",
+        "intensity": 1,
+        "variant": 2
+      }
     },
     {
       "id": "suguru-geto-base:3",
@@ -835,7 +1387,13 @@
       "level": 1,
       "power": 1.5,
       "cooldown": 2,
-      "kind": "arcane"
+      "kind": "arcane",
+      "visual": {
+        "style": "slash",
+        "color": "#a9a0ef",
+        "intensity": 1,
+        "variant": 3
+      }
     },
     {
       "id": "suguru-geto-base:4",
@@ -844,7 +1402,13 @@
       "level": 12,
       "power": 1.65,
       "cooldown": 2,
-      "kind": "arcane"
+      "kind": "arcane",
+      "visual": {
+        "style": "swarm",
+        "color": "#a9a0ef",
+        "intensity": 2,
+        "variant": 4
+      }
     },
     {
       "id": "suguru-geto-base:5",
@@ -853,7 +1417,13 @@
       "level": 30,
       "power": 1.85,
       "cooldown": 3,
-      "kind": "arcane"
+      "kind": "arcane",
+      "visual": {
+        "style": "barrage",
+        "color": "#a9a0ef",
+        "intensity": 2,
+        "variant": 5
+      }
     },
     {
       "id": "suguru-geto-base:6",
@@ -862,7 +1432,13 @@
       "level": 20,
       "power": 2.6,
       "cooldown": 5,
-      "kind": "arcane"
+      "kind": "arcane",
+      "visual": {
+        "style": "vortex",
+        "color": "#a9a0ef",
+        "intensity": 3,
+        "variant": 6
+      }
     },
     {
       "id": "suguru-geto-base:7",
@@ -870,7 +1446,13 @@
       "category": "healing",
       "level": 1,
       "heal": 0.18,
-      "cooldown": 3
+      "cooldown": 3,
+      "visual": {
+        "style": "heal",
+        "color": "#70f4b1",
+        "intensity": 1,
+        "variant": 7
+      }
     },
     {
       "id": "suguru-geto-base:8",
@@ -878,16 +1460,28 @@
       "category": "healing",
       "level": 40,
       "heal": 0.3,
-      "cooldown": 4
+      "cooldown": 4,
+      "visual": {
+        "style": "heal",
+        "color": "#70f4b1",
+        "intensity": 2,
+        "variant": 8
+      }
     },
     {
       "id": "suguru-geto-base:9",
-      "name": "Spirit Barrage — Mastery",
+      "name": "Spirit Barrage \u2014 Mastery",
       "category": "attack",
       "level": 80,
       "power": 2.1,
       "cooldown": 4,
-      "kind": "arcane"
+      "kind": "arcane",
+      "visual": {
+        "style": "barrage",
+        "color": "#a9a0ef",
+        "intensity": 3,
+        "variant": 9
+      }
     }
   ],
   "jogo-base": [
@@ -898,7 +1492,13 @@
       "level": 1,
       "power": 0.9,
       "cooldown": 0,
-      "kind": "arcane"
+      "kind": "arcane",
+      "visual": {
+        "style": "orb",
+        "color": "#ff8436",
+        "intensity": 1,
+        "variant": 1
+      }
     },
     {
       "id": "jogo-base:2",
@@ -907,7 +1507,13 @@
       "level": 1,
       "power": 1.2,
       "cooldown": 1,
-      "kind": "arcane"
+      "kind": "arcane",
+      "visual": {
+        "style": "burst",
+        "color": "#ff8645",
+        "intensity": 1,
+        "variant": 2
+      }
     },
     {
       "id": "jogo-base:3",
@@ -916,7 +1522,13 @@
       "level": 1,
       "power": 1.5,
       "cooldown": 2,
-      "kind": "arcane"
+      "kind": "arcane",
+      "visual": {
+        "style": "flame",
+        "color": "#ff8436",
+        "intensity": 1,
+        "variant": 3
+      }
     },
     {
       "id": "jogo-base:4",
@@ -925,7 +1537,13 @@
       "level": 12,
       "power": 1.65,
       "cooldown": 2,
-      "kind": "arcane"
+      "kind": "arcane",
+      "visual": {
+        "style": "flame",
+        "color": "#ff8436",
+        "intensity": 2,
+        "variant": 4
+      }
     },
     {
       "id": "jogo-base:5",
@@ -934,7 +1552,13 @@
       "level": 30,
       "power": 1.85,
       "cooldown": 3,
-      "kind": "arcane"
+      "kind": "arcane",
+      "visual": {
+        "style": "barrage",
+        "color": "#ff8645",
+        "intensity": 2,
+        "variant": 5
+      }
     },
     {
       "id": "jogo-base:6",
@@ -943,7 +1567,13 @@
       "level": 20,
       "power": 2.6,
       "cooldown": 5,
-      "kind": "arcane"
+      "kind": "arcane",
+      "visual": {
+        "style": "meteor",
+        "color": "#ff8436",
+        "intensity": 3,
+        "variant": 6
+      }
     },
     {
       "id": "jogo-base:7",
@@ -951,7 +1581,13 @@
       "category": "healing",
       "level": 1,
       "heal": 0.18,
-      "cooldown": 3
+      "cooldown": 3,
+      "visual": {
+        "style": "heal",
+        "color": "#70f4b1",
+        "intensity": 1,
+        "variant": 7
+      }
     },
     {
       "id": "jogo-base:8",
@@ -959,16 +1595,28 @@
       "category": "healing",
       "level": 40,
       "heal": 0.3,
-      "cooldown": 4
+      "cooldown": 4,
+      "visual": {
+        "style": "heal",
+        "color": "#70f4b1",
+        "intensity": 2,
+        "variant": 8
+      }
     },
     {
       "id": "jogo-base:9",
-      "name": "Fire Barrage — Mastery",
+      "name": "Fire Barrage \u2014 Mastery",
       "category": "attack",
       "level": 80,
       "power": 2.1,
       "cooldown": 4,
-      "kind": "arcane"
+      "kind": "arcane",
+      "visual": {
+        "style": "barrage",
+        "color": "#ff8645",
+        "intensity": 3,
+        "variant": 9
+      }
     }
   ],
   "nobara-kugisaki-base": [
@@ -979,7 +1627,13 @@
       "level": 1,
       "power": 0.9,
       "cooldown": 0,
-      "kind": "arcane"
+      "kind": "arcane",
+      "visual": {
+        "style": "hammer",
+        "color": "#f0b0c4",
+        "intensity": 1,
+        "variant": 1
+      }
     },
     {
       "id": "nobara-kugisaki-base:2",
@@ -988,7 +1642,13 @@
       "level": 1,
       "power": 1.2,
       "cooldown": 1,
-      "kind": "arcane"
+      "kind": "arcane",
+      "visual": {
+        "style": "projectile",
+        "color": "#f0b0c4",
+        "intensity": 1,
+        "variant": 2
+      }
     },
     {
       "id": "nobara-kugisaki-base:3",
@@ -997,7 +1657,13 @@
       "level": 1,
       "power": 1.5,
       "cooldown": 2,
-      "kind": "arcane"
+      "kind": "arcane",
+      "visual": {
+        "style": "hammer",
+        "color": "#f0b0c4",
+        "intensity": 1,
+        "variant": 3
+      }
     },
     {
       "id": "nobara-kugisaki-base:4",
@@ -1006,7 +1672,13 @@
       "level": 12,
       "power": 1.65,
       "cooldown": 2,
-      "kind": "arcane"
+      "kind": "arcane",
+      "visual": {
+        "style": "burst",
+        "color": "#f0b0c4",
+        "intensity": 2,
+        "variant": 4
+      }
     },
     {
       "id": "nobara-kugisaki-base:5",
@@ -1015,7 +1687,13 @@
       "level": 30,
       "power": 1.85,
       "cooldown": 3,
-      "kind": "arcane"
+      "kind": "arcane",
+      "visual": {
+        "style": "wave",
+        "color": "#f0b0c4",
+        "intensity": 2,
+        "variant": 5
+      }
     },
     {
       "id": "nobara-kugisaki-base:6",
@@ -1024,7 +1702,13 @@
       "level": 20,
       "power": 2.6,
       "cooldown": 5,
-      "kind": "arcane"
+      "kind": "arcane",
+      "visual": {
+        "style": "barrage",
+        "color": "#f0b0c4",
+        "intensity": 3,
+        "variant": 6
+      }
     },
     {
       "id": "nobara-kugisaki-base:7",
@@ -1032,7 +1716,13 @@
       "category": "healing",
       "level": 1,
       "heal": 0.18,
-      "cooldown": 3
+      "cooldown": 3,
+      "visual": {
+        "style": "heal",
+        "color": "#70f4b1",
+        "intensity": 1,
+        "variant": 7
+      }
     },
     {
       "id": "nobara-kugisaki-base:8",
@@ -1040,16 +1730,28 @@
       "category": "healing",
       "level": 40,
       "heal": 0.3,
-      "cooldown": 4
+      "cooldown": 4,
+      "visual": {
+        "style": "heal",
+        "color": "#70f4b1",
+        "intensity": 2,
+        "variant": 8
+      }
     },
     {
       "id": "nobara-kugisaki-base:9",
-      "name": "Resonance — Mastery",
+      "name": "Resonance \u2014 Mastery",
       "category": "attack",
       "level": 80,
       "power": 2.1,
       "cooldown": 4,
-      "kind": "arcane"
+      "kind": "arcane",
+      "visual": {
+        "style": "wave",
+        "color": "#f0b0c4",
+        "intensity": 3,
+        "variant": 9
+      }
     }
   ],
   "satoru-gojo-base": [
@@ -1060,7 +1762,13 @@
       "level": 1,
       "power": 0.9,
       "cooldown": 0,
-      "kind": "arcane"
+      "kind": "arcane",
+      "visual": {
+        "style": "orb",
+        "color": "#4dbbff",
+        "intensity": 1,
+        "variant": 1
+      }
     },
     {
       "id": "satoru-gojo-base:2",
@@ -1069,7 +1777,13 @@
       "level": 1,
       "power": 1.2,
       "cooldown": 1,
-      "kind": "arcane"
+      "kind": "arcane",
+      "visual": {
+        "style": "punch",
+        "color": "#a879ff",
+        "intensity": 1,
+        "variant": 2
+      }
     },
     {
       "id": "satoru-gojo-base:3",
@@ -1078,7 +1792,13 @@
       "level": 1,
       "power": 1.5,
       "cooldown": 2,
-      "kind": "arcane"
+      "kind": "arcane",
+      "visual": {
+        "style": "orb",
+        "color": "#ff5268",
+        "intensity": 1,
+        "variant": 3
+      }
     },
     {
       "id": "satoru-gojo-base:4",
@@ -1087,7 +1807,13 @@
       "level": 12,
       "power": 1.65,
       "cooldown": 2,
-      "kind": "arcane"
+      "kind": "arcane",
+      "visual": {
+        "style": "vortex",
+        "color": "#4dbbff",
+        "intensity": 2,
+        "variant": 4
+      }
     },
     {
       "id": "satoru-gojo-base:5",
@@ -1096,7 +1822,13 @@
       "level": 30,
       "power": 1.85,
       "cooldown": 3,
-      "kind": "arcane"
+      "kind": "arcane",
+      "visual": {
+        "style": "burst",
+        "color": "#ff5268",
+        "intensity": 2,
+        "variant": 5
+      }
     },
     {
       "id": "satoru-gojo-base:6",
@@ -1105,7 +1837,13 @@
       "level": 20,
       "power": 2.6,
       "cooldown": 5,
-      "kind": "arcane"
+      "kind": "arcane",
+      "visual": {
+        "style": "orb",
+        "color": "#a879ff",
+        "intensity": 3,
+        "variant": 6
+      }
     },
     {
       "id": "satoru-gojo-base:7",
@@ -1113,7 +1851,13 @@
       "category": "healing",
       "level": 1,
       "heal": 0.18,
-      "cooldown": 3
+      "cooldown": 3,
+      "visual": {
+        "style": "heal",
+        "color": "#70f4b1",
+        "intensity": 1,
+        "variant": 7
+      }
     },
     {
       "id": "satoru-gojo-base:8",
@@ -1121,16 +1865,28 @@
       "category": "healing",
       "level": 40,
       "heal": 0.3,
-      "cooldown": 4
+      "cooldown": 4,
+      "visual": {
+        "style": "heal",
+        "color": "#70f4b1",
+        "intensity": 2,
+        "variant": 8
+      }
     },
     {
       "id": "satoru-gojo-base:9",
-      "name": "Red Reversal — Mastery",
+      "name": "Red Reversal \u2014 Mastery",
       "category": "attack",
       "level": 80,
       "power": 2.1,
       "cooldown": 4,
-      "kind": "arcane"
+      "kind": "arcane",
+      "visual": {
+        "style": "burst",
+        "color": "#ff5268",
+        "intensity": 3,
+        "variant": 9
+      }
     }
   ],
   "kento-nanami-base": [
@@ -1141,7 +1897,13 @@
       "level": 1,
       "power": 0.9,
       "cooldown": 0,
-      "kind": "physical"
+      "kind": "physical",
+      "visual": {
+        "style": "slash",
+        "color": "#e9d7a2",
+        "intensity": 1,
+        "variant": 1
+      }
     },
     {
       "id": "kento-nanami-base:2",
@@ -1150,7 +1912,13 @@
       "level": 1,
       "power": 1.2,
       "cooldown": 1,
-      "kind": "physical"
+      "kind": "physical",
+      "visual": {
+        "style": "slash",
+        "color": "#e9d7a2",
+        "intensity": 1,
+        "variant": 2
+      }
     },
     {
       "id": "kento-nanami-base:3",
@@ -1159,7 +1927,13 @@
       "level": 1,
       "power": 1.5,
       "cooldown": 2,
-      "kind": "physical"
+      "kind": "physical",
+      "visual": {
+        "style": "punch",
+        "color": "#e9d7a2",
+        "intensity": 1,
+        "variant": 3
+      }
     },
     {
       "id": "kento-nanami-base:4",
@@ -1168,7 +1942,13 @@
       "level": 12,
       "power": 1.65,
       "cooldown": 2,
-      "kind": "physical"
+      "kind": "physical",
+      "visual": {
+        "style": "burst",
+        "color": "#e9d7a2",
+        "intensity": 2,
+        "variant": 4
+      }
     },
     {
       "id": "kento-nanami-base:5",
@@ -1177,7 +1957,13 @@
       "level": 30,
       "power": 1.85,
       "cooldown": 3,
-      "kind": "physical"
+      "kind": "physical",
+      "visual": {
+        "style": "slash",
+        "color": "#e9d7a2",
+        "intensity": 2,
+        "variant": 5
+      }
     },
     {
       "id": "kento-nanami-base:6",
@@ -1186,7 +1972,13 @@
       "level": 20,
       "power": 2.6,
       "cooldown": 5,
-      "kind": "physical"
+      "kind": "physical",
+      "visual": {
+        "style": "burst",
+        "color": "#e9d7a2",
+        "intensity": 3,
+        "variant": 6
+      }
     },
     {
       "id": "kento-nanami-base:7",
@@ -1194,7 +1986,13 @@
       "category": "healing",
       "level": 1,
       "heal": 0.18,
-      "cooldown": 3
+      "cooldown": 3,
+      "visual": {
+        "style": "heal",
+        "color": "#70f4b1",
+        "intensity": 1,
+        "variant": 7
+      }
     },
     {
       "id": "kento-nanami-base:8",
@@ -1202,16 +2000,28 @@
       "category": "healing",
       "level": 40,
       "heal": 0.3,
-      "cooldown": 4
+      "cooldown": 4,
+      "visual": {
+        "style": "heal",
+        "color": "#70f4b1",
+        "intensity": 2,
+        "variant": 8
+      }
     },
     {
       "id": "kento-nanami-base:9",
-      "name": "Overtime Strike — Mastery",
+      "name": "Overtime Strike \u2014 Mastery",
       "category": "attack",
       "level": 80,
       "power": 2.1,
       "cooldown": 4,
-      "kind": "physical"
+      "kind": "physical",
+      "visual": {
+        "style": "slash",
+        "color": "#e9d7a2",
+        "intensity": 3,
+        "variant": 9
+      }
     }
   ],
   "mahito-base": [
@@ -1222,7 +2032,13 @@
       "level": 1,
       "power": 0.9,
       "cooldown": 0,
-      "kind": "physical"
+      "kind": "physical",
+      "visual": {
+        "style": "punch",
+        "color": "#a8a4e8",
+        "intensity": 1,
+        "variant": 1
+      }
     },
     {
       "id": "mahito-base:2",
@@ -1231,7 +2047,13 @@
       "level": 1,
       "power": 1.2,
       "cooldown": 1,
-      "kind": "physical"
+      "kind": "physical",
+      "visual": {
+        "style": "punch",
+        "color": "#a8a4e8",
+        "intensity": 1,
+        "variant": 2
+      }
     },
     {
       "id": "mahito-base:3",
@@ -1240,7 +2062,13 @@
       "level": 1,
       "power": 1.5,
       "cooldown": 2,
-      "kind": "physical"
+      "kind": "physical",
+      "visual": {
+        "style": "spike",
+        "color": "#a8a4e8",
+        "intensity": 1,
+        "variant": 3
+      }
     },
     {
       "id": "mahito-base:4",
@@ -1249,7 +2077,13 @@
       "level": 12,
       "power": 1.65,
       "cooldown": 2,
-      "kind": "physical"
+      "kind": "physical",
+      "visual": {
+        "style": "wave",
+        "color": "#a8a4e8",
+        "intensity": 2,
+        "variant": 4
+      }
     },
     {
       "id": "mahito-base:5",
@@ -1258,7 +2092,13 @@
       "level": 30,
       "power": 1.85,
       "cooldown": 3,
-      "kind": "physical"
+      "kind": "physical",
+      "visual": {
+        "style": "swarm",
+        "color": "#a8a4e8",
+        "intensity": 2,
+        "variant": 5
+      }
     },
     {
       "id": "mahito-base:6",
@@ -1267,7 +2107,13 @@
       "level": 20,
       "power": 2.6,
       "cooldown": 5,
-      "kind": "physical"
+      "kind": "physical",
+      "visual": {
+        "style": "vortex",
+        "color": "#a8a4e8",
+        "intensity": 3,
+        "variant": 6
+      }
     },
     {
       "id": "mahito-base:7",
@@ -1275,7 +2121,13 @@
       "category": "healing",
       "level": 1,
       "heal": 0.18,
-      "cooldown": 3
+      "cooldown": 3,
+      "visual": {
+        "style": "heal",
+        "color": "#70f4b1",
+        "intensity": 1,
+        "variant": 7
+      }
     },
     {
       "id": "mahito-base:8",
@@ -1283,16 +2135,28 @@
       "category": "healing",
       "level": 40,
       "heal": 0.3,
-      "cooldown": 4
+      "cooldown": 4,
+      "visual": {
+        "style": "heal",
+        "color": "#70f4b1",
+        "intensity": 2,
+        "variant": 8
+      }
     },
     {
       "id": "mahito-base:9",
-      "name": "Transfigured Barrage — Mastery",
+      "name": "Transfigured Barrage \u2014 Mastery",
       "category": "attack",
       "level": 80,
       "power": 2.1,
       "cooldown": 4,
-      "kind": "physical"
+      "kind": "physical",
+      "visual": {
+        "style": "swarm",
+        "color": "#a8a4e8",
+        "intensity": 3,
+        "variant": 9
+      }
     }
   ],
   "maki-zenin-base": [
@@ -1303,7 +2167,13 @@
       "level": 1,
       "power": 0.9,
       "cooldown": 0,
-      "kind": "physical"
+      "kind": "physical",
+      "visual": {
+        "style": "slash",
+        "color": "#b4ded8",
+        "intensity": 1,
+        "variant": 1
+      }
     },
     {
       "id": "maki-zenin-base:2",
@@ -1312,7 +2182,13 @@
       "level": 1,
       "power": 1.2,
       "cooldown": 1,
-      "kind": "physical"
+      "kind": "physical",
+      "visual": {
+        "style": "slash",
+        "color": "#b4ded8",
+        "intensity": 1,
+        "variant": 2
+      }
     },
     {
       "id": "maki-zenin-base:3",
@@ -1321,7 +2197,13 @@
       "level": 1,
       "power": 1.5,
       "cooldown": 2,
-      "kind": "physical"
+      "kind": "physical",
+      "visual": {
+        "style": "punch",
+        "color": "#b4ded8",
+        "intensity": 1,
+        "variant": 3
+      }
     },
     {
       "id": "maki-zenin-base:4",
@@ -1330,7 +2212,13 @@
       "level": 12,
       "power": 1.65,
       "cooldown": 2,
-      "kind": "physical"
+      "kind": "physical",
+      "visual": {
+        "style": "dash",
+        "color": "#b4ded8",
+        "intensity": 2,
+        "variant": 4
+      }
     },
     {
       "id": "maki-zenin-base:5",
@@ -1339,7 +2227,13 @@
       "level": 30,
       "power": 1.85,
       "cooldown": 3,
-      "kind": "physical"
+      "kind": "physical",
+      "visual": {
+        "style": "slash",
+        "color": "#b4ded8",
+        "intensity": 2,
+        "variant": 5
+      }
     },
     {
       "id": "maki-zenin-base:6",
@@ -1348,7 +2242,13 @@
       "level": 20,
       "power": 2.6,
       "cooldown": 5,
-      "kind": "physical"
+      "kind": "physical",
+      "visual": {
+        "style": "barrage",
+        "color": "#b4ded8",
+        "intensity": 3,
+        "variant": 6
+      }
     },
     {
       "id": "maki-zenin-base:7",
@@ -1356,7 +2256,13 @@
       "category": "healing",
       "level": 1,
       "heal": 0.18,
-      "cooldown": 3
+      "cooldown": 3,
+      "visual": {
+        "style": "heal",
+        "color": "#70f4b1",
+        "intensity": 1,
+        "variant": 7
+      }
     },
     {
       "id": "maki-zenin-base:8",
@@ -1364,16 +2270,28 @@
       "category": "healing",
       "level": 40,
       "heal": 0.3,
-      "cooldown": 4
+      "cooldown": 4,
+      "visual": {
+        "style": "heal",
+        "color": "#70f4b1",
+        "intensity": 2,
+        "variant": 8
+      }
     },
     {
       "id": "maki-zenin-base:9",
-      "name": "Split Soul Slash — Mastery",
+      "name": "Split Soul Slash \u2014 Mastery",
       "category": "attack",
       "level": 80,
       "power": 2.1,
       "cooldown": 4,
-      "kind": "physical"
+      "kind": "physical",
+      "visual": {
+        "style": "slash",
+        "color": "#b4ded8",
+        "intensity": 3,
+        "variant": 9
+      }
     }
   ],
   "yoriichi-tsugikuni-base": [
@@ -1384,7 +2302,13 @@
       "level": 1,
       "power": 0.9,
       "cooldown": 0,
-      "kind": "physical"
+      "kind": "physical",
+      "visual": {
+        "style": "slash",
+        "color": "#ffb04c",
+        "intensity": 1,
+        "variant": 1
+      }
     },
     {
       "id": "yoriichi-tsugikuni-base:2",
@@ -1393,7 +2317,13 @@
       "level": 1,
       "power": 1.2,
       "cooldown": 1,
-      "kind": "physical"
+      "kind": "physical",
+      "visual": {
+        "style": "slash",
+        "color": "#ffb04c",
+        "intensity": 1,
+        "variant": 2
+      }
     },
     {
       "id": "yoriichi-tsugikuni-base:3",
@@ -1402,7 +2332,13 @@
       "level": 1,
       "power": 1.5,
       "cooldown": 2,
-      "kind": "physical"
+      "kind": "physical",
+      "visual": {
+        "style": "flame",
+        "color": "#ff8645",
+        "intensity": 1,
+        "variant": 3
+      }
     },
     {
       "id": "yoriichi-tsugikuni-base:4",
@@ -1411,7 +2347,13 @@
       "level": 12,
       "power": 1.65,
       "cooldown": 2,
-      "kind": "physical"
+      "kind": "physical",
+      "visual": {
+        "style": "vortex",
+        "color": "#ffb04c",
+        "intensity": 2,
+        "variant": 4
+      }
     },
     {
       "id": "yoriichi-tsugikuni-base:5",
@@ -1420,7 +2362,13 @@
       "level": 30,
       "power": 1.85,
       "cooldown": 3,
-      "kind": "physical"
+      "kind": "physical",
+      "visual": {
+        "style": "flame",
+        "color": "#ffb04c",
+        "intensity": 2,
+        "variant": 5
+      }
     },
     {
       "id": "yoriichi-tsugikuni-base:6",
@@ -1429,7 +2377,13 @@
       "level": 20,
       "power": 2.6,
       "cooldown": 5,
-      "kind": "physical"
+      "kind": "physical",
+      "visual": {
+        "style": "barrage",
+        "color": "#ffb04c",
+        "intensity": 3,
+        "variant": 6
+      }
     },
     {
       "id": "yoriichi-tsugikuni-base:7",
@@ -1437,7 +2391,13 @@
       "category": "healing",
       "level": 1,
       "heal": 0.18,
-      "cooldown": 3
+      "cooldown": 3,
+      "visual": {
+        "style": "heal",
+        "color": "#70f4b1",
+        "intensity": 1,
+        "variant": 7
+      }
     },
     {
       "id": "yoriichi-tsugikuni-base:8",
@@ -1445,16 +2405,28 @@
       "category": "healing",
       "level": 40,
       "heal": 0.3,
-      "cooldown": 4
+      "cooldown": 4,
+      "visual": {
+        "style": "heal",
+        "color": "#70f4b1",
+        "intensity": 2,
+        "variant": 8
+      }
     },
     {
       "id": "yoriichi-tsugikuni-base:9",
-      "name": "Sun Halo — Mastery",
+      "name": "Sun Halo \u2014 Mastery",
       "category": "attack",
       "level": 80,
       "power": 2.1,
       "cooldown": 4,
-      "kind": "physical"
+      "kind": "physical",
+      "visual": {
+        "style": "flame",
+        "color": "#ffb04c",
+        "intensity": 3,
+        "variant": 9
+      }
     }
   ],
   "kyoko-hori-base": [
@@ -1465,7 +2437,13 @@
       "level": 1,
       "power": 0.9,
       "cooldown": 0,
-      "kind": "physical"
+      "kind": "physical",
+      "visual": {
+        "style": "punch",
+        "color": "#f4b4ac",
+        "intensity": 1,
+        "variant": 1
+      }
     },
     {
       "id": "kyoko-hori-base:2",
@@ -1474,7 +2452,13 @@
       "level": 1,
       "power": 1.2,
       "cooldown": 1,
-      "kind": "physical"
+      "kind": "physical",
+      "visual": {
+        "style": "punch",
+        "color": "#f4b4ac",
+        "intensity": 1,
+        "variant": 2
+      }
     },
     {
       "id": "kyoko-hori-base:3",
@@ -1483,7 +2467,13 @@
       "level": 1,
       "power": 1.5,
       "cooldown": 2,
-      "kind": "physical"
+      "kind": "physical",
+      "visual": {
+        "style": "punch",
+        "color": "#f4b4ac",
+        "intensity": 1,
+        "variant": 3
+      }
     },
     {
       "id": "kyoko-hori-base:4",
@@ -1492,7 +2482,13 @@
       "level": 12,
       "power": 1.65,
       "cooldown": 2,
-      "kind": "physical"
+      "kind": "physical",
+      "visual": {
+        "style": "dash",
+        "color": "#f4b4ac",
+        "intensity": 2,
+        "variant": 4
+      }
     },
     {
       "id": "kyoko-hori-base:5",
@@ -1501,7 +2497,13 @@
       "level": 30,
       "power": 1.85,
       "cooldown": 3,
-      "kind": "physical"
+      "kind": "physical",
+      "visual": {
+        "style": "barrage",
+        "color": "#f4b4ac",
+        "intensity": 2,
+        "variant": 5
+      }
     },
     {
       "id": "kyoko-hori-base:6",
@@ -1510,7 +2512,13 @@
       "level": 20,
       "power": 2.6,
       "cooldown": 5,
-      "kind": "physical"
+      "kind": "physical",
+      "visual": {
+        "style": "burst",
+        "color": "#f4b4ac",
+        "intensity": 3,
+        "variant": 6
+      }
     },
     {
       "id": "kyoko-hori-base:7",
@@ -1518,7 +2526,13 @@
       "category": "healing",
       "level": 1,
       "heal": 0.18,
-      "cooldown": 3
+      "cooldown": 3,
+      "visual": {
+        "style": "heal",
+        "color": "#70f4b1",
+        "intensity": 1,
+        "variant": 7
+      }
     },
     {
       "id": "kyoko-hori-base:8",
@@ -1526,16 +2540,28 @@
       "category": "healing",
       "level": 40,
       "heal": 0.3,
-      "cooldown": 4
+      "cooldown": 4,
+      "visual": {
+        "style": "heal",
+        "color": "#70f4b1",
+        "intensity": 2,
+        "variant": 8
+      }
     },
     {
       "id": "kyoko-hori-base:9",
-      "name": "Fierce Combo — Mastery",
+      "name": "Fierce Combo \u2014 Mastery",
       "category": "attack",
       "level": 80,
       "power": 2.1,
       "cooldown": 4,
-      "kind": "physical"
+      "kind": "physical",
+      "visual": {
+        "style": "barrage",
+        "color": "#f4b4ac",
+        "intensity": 3,
+        "variant": 9
+      }
     }
   ],
   "ryomen-sukuna-base": [
@@ -1546,7 +2572,13 @@
       "level": 1,
       "power": 0.9,
       "cooldown": 0,
-      "kind": "arcane"
+      "kind": "arcane",
+      "visual": {
+        "style": "slash",
+        "color": "#ff6370",
+        "intensity": 1,
+        "variant": 1
+      }
     },
     {
       "id": "ryomen-sukuna-base:2",
@@ -1555,7 +2587,13 @@
       "level": 1,
       "power": 1.2,
       "cooldown": 1,
-      "kind": "arcane"
+      "kind": "arcane",
+      "visual": {
+        "style": "slash",
+        "color": "#ff6370",
+        "intensity": 1,
+        "variant": 2
+      }
     },
     {
       "id": "ryomen-sukuna-base:3",
@@ -1564,7 +2602,13 @@
       "level": 1,
       "power": 1.5,
       "cooldown": 2,
-      "kind": "arcane"
+      "kind": "arcane",
+      "visual": {
+        "style": "punch",
+        "color": "#ff6370",
+        "intensity": 1,
+        "variant": 3
+      }
     },
     {
       "id": "ryomen-sukuna-base:4",
@@ -1573,7 +2617,13 @@
       "level": 12,
       "power": 1.65,
       "cooldown": 2,
-      "kind": "arcane"
+      "kind": "arcane",
+      "visual": {
+        "style": "flame",
+        "color": "#ff8645",
+        "intensity": 2,
+        "variant": 4
+      }
     },
     {
       "id": "ryomen-sukuna-base:5",
@@ -1582,7 +2632,13 @@
       "level": 30,
       "power": 1.85,
       "cooldown": 3,
-      "kind": "arcane"
+      "kind": "arcane",
+      "visual": {
+        "style": "barrage",
+        "color": "#ff6370",
+        "intensity": 2,
+        "variant": 5
+      }
     },
     {
       "id": "ryomen-sukuna-base:6",
@@ -1591,7 +2647,13 @@
       "level": 20,
       "power": 2.6,
       "cooldown": 5,
-      "kind": "arcane"
+      "kind": "arcane",
+      "visual": {
+        "style": "seal",
+        "color": "#ff6370",
+        "intensity": 3,
+        "variant": 6
+      }
     },
     {
       "id": "ryomen-sukuna-base:7",
@@ -1599,7 +2661,13 @@
       "category": "healing",
       "level": 1,
       "heal": 0.18,
-      "cooldown": 3
+      "cooldown": 3,
+      "visual": {
+        "style": "heal",
+        "color": "#70f4b1",
+        "intensity": 1,
+        "variant": 7
+      }
     },
     {
       "id": "ryomen-sukuna-base:8",
@@ -1607,16 +2675,28 @@
       "category": "healing",
       "level": 40,
       "heal": 0.3,
-      "cooldown": 4
+      "cooldown": 4,
+      "visual": {
+        "style": "heal",
+        "color": "#70f4b1",
+        "intensity": 2,
+        "variant": 8
+      }
     },
     {
       "id": "ryomen-sukuna-base:9",
-      "name": "Slashing Storm — Mastery",
+      "name": "Slashing Storm \u2014 Mastery",
       "category": "attack",
       "level": 80,
       "power": 2.1,
       "cooldown": 4,
-      "kind": "arcane"
+      "kind": "arcane",
+      "visual": {
+        "style": "barrage",
+        "color": "#ff6370",
+        "intensity": 3,
+        "variant": 9
+      }
     }
   ],
   "megumi-fushiguro-base": [
@@ -1627,7 +2707,13 @@
       "level": 1,
       "power": 0.9,
       "cooldown": 0,
-      "kind": "arcane"
+      "kind": "arcane",
+      "visual": {
+        "style": "swarm",
+        "color": "#8b9bcf",
+        "intensity": 1,
+        "variant": 1
+      }
     },
     {
       "id": "megumi-fushiguro-base:2",
@@ -1636,7 +2722,13 @@
       "level": 1,
       "power": 1.2,
       "cooldown": 1,
-      "kind": "arcane"
+      "kind": "arcane",
+      "visual": {
+        "style": "slash",
+        "color": "#8b9bcf",
+        "intensity": 1,
+        "variant": 2
+      }
     },
     {
       "id": "megumi-fushiguro-base:3",
@@ -1645,7 +2737,13 @@
       "level": 1,
       "power": 1.5,
       "cooldown": 2,
-      "kind": "arcane"
+      "kind": "arcane",
+      "visual": {
+        "style": "chain",
+        "color": "#8b9bcf",
+        "intensity": 1,
+        "variant": 3
+      }
     },
     {
       "id": "megumi-fushiguro-base:4",
@@ -1654,7 +2752,13 @@
       "level": 12,
       "power": 1.65,
       "cooldown": 2,
-      "kind": "arcane"
+      "kind": "arcane",
+      "visual": {
+        "style": "lightning",
+        "color": "#8b9bcf",
+        "intensity": 2,
+        "variant": 4
+      }
     },
     {
       "id": "megumi-fushiguro-base:5",
@@ -1663,7 +2767,13 @@
       "level": 30,
       "power": 1.85,
       "cooldown": 3,
-      "kind": "arcane"
+      "kind": "arcane",
+      "visual": {
+        "style": "swarm",
+        "color": "#8b9bcf",
+        "intensity": 2,
+        "variant": 5
+      }
     },
     {
       "id": "megumi-fushiguro-base:6",
@@ -1672,7 +2782,13 @@
       "level": 20,
       "power": 2.6,
       "cooldown": 5,
-      "kind": "arcane"
+      "kind": "arcane",
+      "visual": {
+        "style": "vortex",
+        "color": "#8b9bcf",
+        "intensity": 3,
+        "variant": 6
+      }
     },
     {
       "id": "megumi-fushiguro-base:7",
@@ -1680,7 +2796,13 @@
       "category": "healing",
       "level": 1,
       "heal": 0.18,
-      "cooldown": 3
+      "cooldown": 3,
+      "visual": {
+        "style": "heal",
+        "color": "#70f4b1",
+        "intensity": 1,
+        "variant": 7
+      }
     },
     {
       "id": "megumi-fushiguro-base:8",
@@ -1688,16 +2810,28 @@
       "category": "healing",
       "level": 40,
       "heal": 0.3,
-      "cooldown": 4
+      "cooldown": 4,
+      "visual": {
+        "style": "heal",
+        "color": "#70f4b1",
+        "intensity": 2,
+        "variant": 8
+      }
     },
     {
       "id": "megumi-fushiguro-base:9",
-      "name": "Shadow Swarm — Mastery",
+      "name": "Shadow Swarm \u2014 Mastery",
       "category": "attack",
       "level": 80,
       "power": 2.1,
       "cooldown": 4,
-      "kind": "arcane"
+      "kind": "arcane",
+      "visual": {
+        "style": "swarm",
+        "color": "#8b9bcf",
+        "intensity": 3,
+        "variant": 9
+      }
     }
   ],
   "shoto-todoroki-base": [
@@ -1708,7 +2842,13 @@
       "level": 1,
       "power": 0.9,
       "cooldown": 0,
-      "kind": "arcane"
+      "kind": "arcane",
+      "visual": {
+        "style": "spike",
+        "color": "#8bdcff",
+        "intensity": 1,
+        "variant": 1
+      }
     },
     {
       "id": "shoto-todoroki-base:2",
@@ -1717,7 +2857,13 @@
       "level": 1,
       "power": 1.2,
       "cooldown": 1,
-      "kind": "arcane"
+      "kind": "arcane",
+      "visual": {
+        "style": "flame",
+        "color": "#ff8645",
+        "intensity": 1,
+        "variant": 2
+      }
     },
     {
       "id": "shoto-todoroki-base:3",
@@ -1726,7 +2872,13 @@
       "level": 1,
       "power": 1.5,
       "cooldown": 2,
-      "kind": "arcane"
+      "kind": "arcane",
+      "visual": {
+        "style": "wave",
+        "color": "#8bdcff",
+        "intensity": 1,
+        "variant": 3
+      }
     },
     {
       "id": "shoto-todoroki-base:4",
@@ -1735,7 +2887,13 @@
       "level": 12,
       "power": 1.65,
       "cooldown": 2,
-      "kind": "arcane"
+      "kind": "arcane",
+      "visual": {
+        "style": "spike",
+        "color": "#8bdcff",
+        "intensity": 2,
+        "variant": 4
+      }
     },
     {
       "id": "shoto-todoroki-base:5",
@@ -1744,7 +2902,13 @@
       "level": 30,
       "power": 1.85,
       "cooldown": 3,
-      "kind": "arcane"
+      "kind": "arcane",
+      "visual": {
+        "style": "burst",
+        "color": "#8bdcff",
+        "intensity": 2,
+        "variant": 5
+      }
     },
     {
       "id": "shoto-todoroki-base:6",
@@ -1753,7 +2917,13 @@
       "level": 20,
       "power": 2.6,
       "cooldown": 5,
-      "kind": "arcane"
+      "kind": "arcane",
+      "visual": {
+        "style": "burst",
+        "color": "#8bdcff",
+        "intensity": 3,
+        "variant": 6
+      }
     },
     {
       "id": "shoto-todoroki-base:7",
@@ -1761,7 +2931,13 @@
       "category": "healing",
       "level": 1,
       "heal": 0.18,
-      "cooldown": 3
+      "cooldown": 3,
+      "visual": {
+        "style": "heal",
+        "color": "#70f4b1",
+        "intensity": 1,
+        "variant": 7
+      }
     },
     {
       "id": "shoto-todoroki-base:8",
@@ -1769,16 +2945,28 @@
       "category": "healing",
       "level": 40,
       "heal": 0.3,
-      "cooldown": 4
+      "cooldown": 4,
+      "visual": {
+        "style": "heal",
+        "color": "#70f4b1",
+        "intensity": 2,
+        "variant": 8
+      }
     },
     {
       "id": "shoto-todoroki-base:9",
-      "name": "Flashfreeze Heatwave — Mastery",
+      "name": "Flashfreeze Heatwave \u2014 Mastery",
       "category": "attack",
       "level": 80,
       "power": 2.1,
       "cooldown": 4,
-      "kind": "arcane"
+      "kind": "arcane",
+      "visual": {
+        "style": "burst",
+        "color": "#8bdcff",
+        "intensity": 3,
+        "variant": 9
+      }
     }
   ],
   "izumi-miyamura-base": [
@@ -1789,7 +2977,13 @@
       "level": 1,
       "power": 0.9,
       "cooldown": 0,
-      "kind": "physical"
+      "kind": "physical",
+      "visual": {
+        "style": "punch",
+        "color": "#b3d0f2",
+        "intensity": 1,
+        "variant": 1
+      }
     },
     {
       "id": "izumi-miyamura-base:2",
@@ -1798,7 +2992,13 @@
       "level": 1,
       "power": 1.2,
       "cooldown": 1,
-      "kind": "physical"
+      "kind": "physical",
+      "visual": {
+        "style": "punch",
+        "color": "#b3d0f2",
+        "intensity": 1,
+        "variant": 2
+      }
     },
     {
       "id": "izumi-miyamura-base:3",
@@ -1807,7 +3007,13 @@
       "level": 1,
       "power": 1.5,
       "cooldown": 2,
-      "kind": "physical"
+      "kind": "physical",
+      "visual": {
+        "style": "punch",
+        "color": "#b3d0f2",
+        "intensity": 1,
+        "variant": 3
+      }
     },
     {
       "id": "izumi-miyamura-base:4",
@@ -1816,7 +3022,13 @@
       "level": 12,
       "power": 1.65,
       "cooldown": 2,
-      "kind": "physical"
+      "kind": "physical",
+      "visual": {
+        "style": "barrage",
+        "color": "#b3d0f2",
+        "intensity": 2,
+        "variant": 4
+      }
     },
     {
       "id": "izumi-miyamura-base:5",
@@ -1825,7 +3037,13 @@
       "level": 30,
       "power": 1.85,
       "cooldown": 3,
-      "kind": "physical"
+      "kind": "physical",
+      "visual": {
+        "style": "dash",
+        "color": "#b3d0f2",
+        "intensity": 2,
+        "variant": 5
+      }
     },
     {
       "id": "izumi-miyamura-base:6",
@@ -1834,7 +3052,13 @@
       "level": 20,
       "power": 2.6,
       "cooldown": 5,
-      "kind": "physical"
+      "kind": "physical",
+      "visual": {
+        "style": "burst",
+        "color": "#b3d0f2",
+        "intensity": 3,
+        "variant": 6
+      }
     },
     {
       "id": "izumi-miyamura-base:7",
@@ -1842,7 +3066,13 @@
       "category": "healing",
       "level": 1,
       "heal": 0.18,
-      "cooldown": 3
+      "cooldown": 3,
+      "visual": {
+        "style": "heal",
+        "color": "#70f4b1",
+        "intensity": 1,
+        "variant": 7
+      }
     },
     {
       "id": "izumi-miyamura-base:8",
@@ -1850,16 +3080,28 @@
       "category": "healing",
       "level": 40,
       "heal": 0.3,
-      "cooldown": 4
+      "cooldown": 4,
+      "visual": {
+        "style": "heal",
+        "color": "#70f4b1",
+        "intensity": 2,
+        "variant": 8
+      }
     },
     {
       "id": "izumi-miyamura-base:9",
-      "name": "Determined Rush — Mastery",
+      "name": "Determined Rush \u2014 Mastery",
       "category": "attack",
       "level": 80,
       "power": 2.1,
       "cooldown": 4,
-      "kind": "physical"
+      "kind": "physical",
+      "visual": {
+        "style": "dash",
+        "color": "#b3d0f2",
+        "intensity": 3,
+        "variant": 9
+      }
     }
   ],
   "edward-elric-base": [
@@ -1870,7 +3112,13 @@
       "level": 1,
       "power": 0.9,
       "cooldown": 0,
-      "kind": "arcane"
+      "kind": "arcane",
+      "visual": {
+        "style": "spike",
+        "color": "#e8bc69",
+        "intensity": 1,
+        "variant": 1
+      }
     },
     {
       "id": "edward-elric-base:2",
@@ -1879,7 +3127,13 @@
       "level": 1,
       "power": 1.2,
       "cooldown": 1,
-      "kind": "arcane"
+      "kind": "arcane",
+      "visual": {
+        "style": "slash",
+        "color": "#e8bc69",
+        "intensity": 1,
+        "variant": 2
+      }
     },
     {
       "id": "edward-elric-base:3",
@@ -1888,7 +3142,13 @@
       "level": 1,
       "power": 1.5,
       "cooldown": 2,
-      "kind": "arcane"
+      "kind": "arcane",
+      "visual": {
+        "style": "burst",
+        "color": "#e8bc69",
+        "intensity": 1,
+        "variant": 3
+      }
     },
     {
       "id": "edward-elric-base:4",
@@ -1897,7 +3157,13 @@
       "level": 12,
       "power": 1.65,
       "cooldown": 2,
-      "kind": "arcane"
+      "kind": "arcane",
+      "visual": {
+        "style": "spike",
+        "color": "#e8bc69",
+        "intensity": 2,
+        "variant": 4
+      }
     },
     {
       "id": "edward-elric-base:5",
@@ -1906,7 +3172,13 @@
       "level": 30,
       "power": 1.85,
       "cooldown": 3,
-      "kind": "arcane"
+      "kind": "arcane",
+      "visual": {
+        "style": "wave",
+        "color": "#e8bc69",
+        "intensity": 2,
+        "variant": 5
+      }
     },
     {
       "id": "edward-elric-base:6",
@@ -1915,7 +3187,13 @@
       "level": 20,
       "power": 2.6,
       "cooldown": 5,
-      "kind": "arcane"
+      "kind": "arcane",
+      "visual": {
+        "style": "barrage",
+        "color": "#e8bc69",
+        "intensity": 3,
+        "variant": 6
+      }
     },
     {
       "id": "edward-elric-base:7",
@@ -1923,7 +3201,13 @@
       "category": "healing",
       "level": 1,
       "heal": 0.18,
-      "cooldown": 3
+      "cooldown": 3,
+      "visual": {
+        "style": "heal",
+        "color": "#70f4b1",
+        "intensity": 1,
+        "variant": 7
+      }
     },
     {
       "id": "edward-elric-base:8",
@@ -1931,16 +3215,28 @@
       "category": "healing",
       "level": 40,
       "heal": 0.3,
-      "cooldown": 4
+      "cooldown": 4,
+      "visual": {
+        "style": "heal",
+        "color": "#70f4b1",
+        "intensity": 2,
+        "variant": 8
+      }
     },
     {
       "id": "edward-elric-base:9",
-      "name": "Transmutation Wave — Mastery",
+      "name": "Transmutation Wave \u2014 Mastery",
       "category": "attack",
       "level": 80,
       "power": 2.1,
       "cooldown": 4,
-      "kind": "arcane"
+      "kind": "arcane",
+      "visual": {
+        "style": "wave",
+        "color": "#e8bc69",
+        "intensity": 3,
+        "variant": 9
+      }
     }
   ],
   "katsuki-bakugo-base": [
@@ -1951,7 +3247,13 @@
       "level": 1,
       "power": 0.9,
       "cooldown": 0,
-      "kind": "physical"
+      "kind": "physical",
+      "visual": {
+        "style": "burst",
+        "color": "#ffb13d",
+        "intensity": 1,
+        "variant": 1
+      }
     },
     {
       "id": "katsuki-bakugo-base:2",
@@ -1960,7 +3262,13 @@
       "level": 1,
       "power": 1.2,
       "cooldown": 1,
-      "kind": "physical"
+      "kind": "physical",
+      "visual": {
+        "style": "projectile",
+        "color": "#ffb13d",
+        "intensity": 1,
+        "variant": 2
+      }
     },
     {
       "id": "katsuki-bakugo-base:3",
@@ -1969,7 +3277,13 @@
       "level": 1,
       "power": 1.5,
       "cooldown": 2,
-      "kind": "physical"
+      "kind": "physical",
+      "visual": {
+        "style": "burst",
+        "color": "#ffb13d",
+        "intensity": 1,
+        "variant": 3
+      }
     },
     {
       "id": "katsuki-bakugo-base:4",
@@ -1978,7 +3292,13 @@
       "level": 12,
       "power": 1.65,
       "cooldown": 2,
-      "kind": "physical"
+      "kind": "physical",
+      "visual": {
+        "style": "beam",
+        "color": "#ffb13d",
+        "intensity": 2,
+        "variant": 4
+      }
     },
     {
       "id": "katsuki-bakugo-base:5",
@@ -1987,7 +3307,13 @@
       "level": 30,
       "power": 1.85,
       "cooldown": 3,
-      "kind": "physical"
+      "kind": "physical",
+      "visual": {
+        "style": "burst",
+        "color": "#ffb13d",
+        "intensity": 2,
+        "variant": 5
+      }
     },
     {
       "id": "katsuki-bakugo-base:6",
@@ -1996,7 +3322,13 @@
       "level": 20,
       "power": 2.6,
       "cooldown": 5,
-      "kind": "physical"
+      "kind": "physical",
+      "visual": {
+        "style": "burst",
+        "color": "#ffb13d",
+        "intensity": 3,
+        "variant": 6
+      }
     },
     {
       "id": "katsuki-bakugo-base:7",
@@ -2004,7 +3336,13 @@
       "category": "healing",
       "level": 1,
       "heal": 0.18,
-      "cooldown": 3
+      "cooldown": 3,
+      "visual": {
+        "style": "heal",
+        "color": "#70f4b1",
+        "intensity": 1,
+        "variant": 7
+      }
     },
     {
       "id": "katsuki-bakugo-base:8",
@@ -2012,16 +3350,28 @@
       "category": "healing",
       "level": 40,
       "heal": 0.3,
-      "cooldown": 4
+      "cooldown": 4,
+      "visual": {
+        "style": "heal",
+        "color": "#70f4b1",
+        "intensity": 2,
+        "variant": 8
+      }
     },
     {
       "id": "katsuki-bakugo-base:9",
-      "name": "Stun Grenade — Mastery",
+      "name": "Stun Grenade \u2014 Mastery",
       "category": "attack",
       "level": 80,
       "power": 2.1,
       "cooldown": 4,
-      "kind": "physical"
+      "kind": "physical",
+      "visual": {
+        "style": "burst",
+        "color": "#ffb13d",
+        "intensity": 3,
+        "variant": 9
+      }
     }
   ],
   "sailor-moon-base": [
@@ -2032,7 +3382,13 @@
       "level": 1,
       "power": 0.9,
       "cooldown": 0,
-      "kind": "arcane"
+      "kind": "arcane",
+      "visual": {
+        "style": "projectile",
+        "color": "#ffda91",
+        "intensity": 1,
+        "variant": 1
+      }
     },
     {
       "id": "sailor-moon-base:2",
@@ -2041,7 +3397,13 @@
       "level": 1,
       "power": 1.2,
       "cooldown": 1,
-      "kind": "arcane"
+      "kind": "arcane",
+      "visual": {
+        "style": "beam",
+        "color": "#ffda91",
+        "intensity": 1,
+        "variant": 2
+      }
     },
     {
       "id": "sailor-moon-base:3",
@@ -2050,7 +3412,13 @@
       "level": 1,
       "power": 1.5,
       "cooldown": 2,
-      "kind": "arcane"
+      "kind": "arcane",
+      "visual": {
+        "style": "wave",
+        "color": "#ffda91",
+        "intensity": 1,
+        "variant": 3
+      }
     },
     {
       "id": "sailor-moon-base:4",
@@ -2059,7 +3427,13 @@
       "level": 12,
       "power": 1.65,
       "cooldown": 2,
-      "kind": "arcane"
+      "kind": "arcane",
+      "visual": {
+        "style": "vortex",
+        "color": "#ffda91",
+        "intensity": 2,
+        "variant": 4
+      }
     },
     {
       "id": "sailor-moon-base:5",
@@ -2068,7 +3442,13 @@
       "level": 30,
       "power": 1.85,
       "cooldown": 3,
-      "kind": "arcane"
+      "kind": "arcane",
+      "visual": {
+        "style": "burst",
+        "color": "#ffda91",
+        "intensity": 2,
+        "variant": 5
+      }
     },
     {
       "id": "sailor-moon-base:6",
@@ -2077,7 +3457,13 @@
       "level": 20,
       "power": 2.6,
       "cooldown": 5,
-      "kind": "arcane"
+      "kind": "arcane",
+      "visual": {
+        "style": "beam",
+        "color": "#ffda91",
+        "intensity": 3,
+        "variant": 6
+      }
     },
     {
       "id": "sailor-moon-base:7",
@@ -2085,7 +3471,13 @@
       "category": "healing",
       "level": 1,
       "heal": 0.18,
-      "cooldown": 3
+      "cooldown": 3,
+      "visual": {
+        "style": "heal",
+        "color": "#70f4b1",
+        "intensity": 1,
+        "variant": 7
+      }
     },
     {
       "id": "sailor-moon-base:8",
@@ -2093,16 +3485,28 @@
       "category": "healing",
       "level": 40,
       "heal": 0.3,
-      "cooldown": 4
+      "cooldown": 4,
+      "visual": {
+        "style": "heal",
+        "color": "#70f4b1",
+        "intensity": 2,
+        "variant": 8
+      }
     },
     {
       "id": "sailor-moon-base:9",
-      "name": "Silver Flash — Mastery",
+      "name": "Silver Flash \u2014 Mastery",
       "category": "attack",
       "level": 80,
       "power": 2.1,
       "cooldown": 4,
-      "kind": "arcane"
+      "kind": "arcane",
+      "visual": {
+        "style": "burst",
+        "color": "#ffda91",
+        "intensity": 3,
+        "variant": 9
+      }
     }
   ],
   "izuku-midoriya-base": [
@@ -2113,7 +3517,13 @@
       "level": 1,
       "power": 0.9,
       "cooldown": 0,
-      "kind": "physical"
+      "kind": "physical",
+      "visual": {
+        "style": "punch",
+        "color": "#48f1ae",
+        "intensity": 1,
+        "variant": 1
+      }
     },
     {
       "id": "izuku-midoriya-base:2",
@@ -2122,7 +3532,13 @@
       "level": 1,
       "power": 1.2,
       "cooldown": 1,
-      "kind": "physical"
+      "kind": "physical",
+      "visual": {
+        "style": "wave",
+        "color": "#48f1ae",
+        "intensity": 1,
+        "variant": 2
+      }
     },
     {
       "id": "izuku-midoriya-base:3",
@@ -2131,7 +3547,13 @@
       "level": 1,
       "power": 1.5,
       "cooldown": 2,
-      "kind": "physical"
+      "kind": "physical",
+      "visual": {
+        "style": "punch",
+        "color": "#48f1ae",
+        "intensity": 1,
+        "variant": 3
+      }
     },
     {
       "id": "izuku-midoriya-base:4",
@@ -2140,7 +3562,13 @@
       "level": 12,
       "power": 1.65,
       "cooldown": 2,
-      "kind": "physical"
+      "kind": "physical",
+      "visual": {
+        "style": "burst",
+        "color": "#48f1ae",
+        "intensity": 2,
+        "variant": 4
+      }
     },
     {
       "id": "izuku-midoriya-base:5",
@@ -2149,7 +3577,13 @@
       "level": 30,
       "power": 1.85,
       "cooldown": 3,
-      "kind": "physical"
+      "kind": "physical",
+      "visual": {
+        "style": "punch",
+        "color": "#48f1ae",
+        "intensity": 2,
+        "variant": 5
+      }
     },
     {
       "id": "izuku-midoriya-base:6",
@@ -2158,7 +3592,13 @@
       "level": 20,
       "power": 2.6,
       "cooldown": 5,
-      "kind": "physical"
+      "kind": "physical",
+      "visual": {
+        "style": "burst",
+        "color": "#48f1ae",
+        "intensity": 3,
+        "variant": 6
+      }
     },
     {
       "id": "izuku-midoriya-base:7",
@@ -2166,7 +3606,13 @@
       "category": "healing",
       "level": 1,
       "heal": 0.18,
-      "cooldown": 3
+      "cooldown": 3,
+      "visual": {
+        "style": "heal",
+        "color": "#70f4b1",
+        "intensity": 1,
+        "variant": 7
+      }
     },
     {
       "id": "izuku-midoriya-base:8",
@@ -2174,16 +3620,28 @@
       "category": "healing",
       "level": 40,
       "heal": 0.3,
-      "cooldown": 4
+      "cooldown": 4,
+      "visual": {
+        "style": "heal",
+        "color": "#70f4b1",
+        "intensity": 2,
+        "variant": 8
+      }
     },
     {
       "id": "izuku-midoriya-base:9",
-      "name": "Manchester Smash — Mastery",
+      "name": "Manchester Smash \u2014 Mastery",
       "category": "attack",
       "level": 80,
       "power": 2.1,
       "cooldown": 4,
-      "kind": "physical"
+      "kind": "physical",
+      "visual": {
+        "style": "punch",
+        "color": "#48f1ae",
+        "intensity": 3,
+        "variant": 9
+      }
     }
   ],
   "all-might-base": [
@@ -2194,7 +3652,13 @@
       "level": 1,
       "power": 0.9,
       "cooldown": 0,
-      "kind": "physical"
+      "kind": "physical",
+      "visual": {
+        "style": "punch",
+        "color": "#f9d14c",
+        "intensity": 1,
+        "variant": 1
+      }
     },
     {
       "id": "all-might-base:2",
@@ -2203,7 +3667,13 @@
       "level": 1,
       "power": 1.2,
       "cooldown": 1,
-      "kind": "physical"
+      "kind": "physical",
+      "visual": {
+        "style": "punch",
+        "color": "#f9d14c",
+        "intensity": 1,
+        "variant": 2
+      }
     },
     {
       "id": "all-might-base:3",
@@ -2212,7 +3682,13 @@
       "level": 1,
       "power": 1.5,
       "cooldown": 2,
-      "kind": "physical"
+      "kind": "physical",
+      "visual": {
+        "style": "burst",
+        "color": "#f9d14c",
+        "intensity": 1,
+        "variant": 3
+      }
     },
     {
       "id": "all-might-base:4",
@@ -2221,7 +3697,13 @@
       "level": 12,
       "power": 1.65,
       "cooldown": 2,
-      "kind": "physical"
+      "kind": "physical",
+      "visual": {
+        "style": "burst",
+        "color": "#f9d14c",
+        "intensity": 2,
+        "variant": 4
+      }
     },
     {
       "id": "all-might-base:5",
@@ -2230,7 +3712,13 @@
       "level": 30,
       "power": 1.85,
       "cooldown": 3,
-      "kind": "physical"
+      "kind": "physical",
+      "visual": {
+        "style": "punch",
+        "color": "#f9d14c",
+        "intensity": 2,
+        "variant": 5
+      }
     },
     {
       "id": "all-might-base:6",
@@ -2239,7 +3727,13 @@
       "level": 20,
       "power": 2.6,
       "cooldown": 5,
-      "kind": "physical"
+      "kind": "physical",
+      "visual": {
+        "style": "burst",
+        "color": "#f9d14c",
+        "intensity": 3,
+        "variant": 6
+      }
     },
     {
       "id": "all-might-base:7",
@@ -2247,7 +3741,13 @@
       "category": "healing",
       "level": 1,
       "heal": 0.18,
-      "cooldown": 3
+      "cooldown": 3,
+      "visual": {
+        "style": "heal",
+        "color": "#70f4b1",
+        "intensity": 1,
+        "variant": 7
+      }
     },
     {
       "id": "all-might-base:8",
@@ -2255,16 +3755,28 @@
       "category": "healing",
       "level": 40,
       "heal": 0.3,
-      "cooldown": 4
+      "cooldown": 4,
+      "visual": {
+        "style": "heal",
+        "color": "#70f4b1",
+        "intensity": 2,
+        "variant": 8
+      }
     },
     {
       "id": "all-might-base:9",
-      "name": "Oklahoma Smash — Mastery",
+      "name": "Oklahoma Smash \u2014 Mastery",
       "category": "attack",
       "level": 80,
       "power": 2.1,
       "cooldown": 4,
-      "kind": "physical"
+      "kind": "physical",
+      "visual": {
+        "style": "punch",
+        "color": "#f9d14c",
+        "intensity": 3,
+        "variant": 9
+      }
     }
   ],
   "saitama-base": [
@@ -2275,7 +3787,13 @@
       "level": 1,
       "power": 0.9,
       "cooldown": 0,
-      "kind": "physical"
+      "kind": "physical",
+      "visual": {
+        "style": "punch",
+        "color": "#ffdf90",
+        "intensity": 1,
+        "variant": 1
+      }
     },
     {
       "id": "saitama-base:2",
@@ -2284,7 +3802,13 @@
       "level": 1,
       "power": 1.2,
       "cooldown": 1,
-      "kind": "physical"
+      "kind": "physical",
+      "visual": {
+        "style": "punch",
+        "color": "#ffdf90",
+        "intensity": 1,
+        "variant": 2
+      }
     },
     {
       "id": "saitama-base:3",
@@ -2293,7 +3817,13 @@
       "level": 1,
       "power": 1.5,
       "cooldown": 2,
-      "kind": "physical"
+      "kind": "physical",
+      "visual": {
+        "style": "barrage",
+        "color": "#ffdf90",
+        "intensity": 1,
+        "variant": 3
+      }
     },
     {
       "id": "saitama-base:4",
@@ -2302,7 +3832,13 @@
       "level": 12,
       "power": 1.65,
       "cooldown": 2,
-      "kind": "physical"
+      "kind": "physical",
+      "visual": {
+        "style": "punch",
+        "color": "#ffdf90",
+        "intensity": 2,
+        "variant": 4
+      }
     },
     {
       "id": "saitama-base:5",
@@ -2311,7 +3847,13 @@
       "level": 30,
       "power": 1.85,
       "cooldown": 3,
-      "kind": "physical"
+      "kind": "physical",
+      "visual": {
+        "style": "barrage",
+        "color": "#ffdf90",
+        "intensity": 2,
+        "variant": 5
+      }
     },
     {
       "id": "saitama-base:6",
@@ -2320,7 +3862,13 @@
       "level": 20,
       "power": 2.6,
       "cooldown": 5,
-      "kind": "physical"
+      "kind": "physical",
+      "visual": {
+        "style": "burst",
+        "color": "#ffdf90",
+        "intensity": 3,
+        "variant": 6
+      }
     },
     {
       "id": "saitama-base:7",
@@ -2328,7 +3876,13 @@
       "category": "healing",
       "level": 1,
       "heal": 0.18,
-      "cooldown": 3
+      "cooldown": 3,
+      "visual": {
+        "style": "heal",
+        "color": "#70f4b1",
+        "intensity": 1,
+        "variant": 7
+      }
     },
     {
       "id": "saitama-base:8",
@@ -2336,16 +3890,28 @@
       "category": "healing",
       "level": 40,
       "heal": 0.3,
-      "cooldown": 4
+      "cooldown": 4,
+      "visual": {
+        "style": "heal",
+        "color": "#70f4b1",
+        "intensity": 2,
+        "variant": 8
+      }
     },
     {
       "id": "saitama-base:9",
-      "name": "Rapid Barrage — Mastery",
+      "name": "Rapid Barrage \u2014 Mastery",
       "category": "attack",
       "level": 80,
       "power": 2.1,
       "cooldown": 4,
-      "kind": "physical"
+      "kind": "physical",
+      "visual": {
+        "style": "barrage",
+        "color": "#ffdf90",
+        "intensity": 3,
+        "variant": 9
+      }
     }
   ],
   "ken-kaneki-base": [
@@ -2356,7 +3922,13 @@
       "level": 1,
       "power": 0.9,
       "cooldown": 0,
-      "kind": "physical"
+      "kind": "physical",
+      "visual": {
+        "style": "chain",
+        "color": "#f14b68",
+        "intensity": 1,
+        "variant": 1
+      }
     },
     {
       "id": "ken-kaneki-base:2",
@@ -2365,7 +3937,13 @@
       "level": 1,
       "power": 1.2,
       "cooldown": 1,
-      "kind": "physical"
+      "kind": "physical",
+      "visual": {
+        "style": "chain",
+        "color": "#f14b68",
+        "intensity": 1,
+        "variant": 2
+      }
     },
     {
       "id": "ken-kaneki-base:3",
@@ -2374,7 +3952,13 @@
       "level": 1,
       "power": 1.5,
       "cooldown": 2,
-      "kind": "physical"
+      "kind": "physical",
+      "visual": {
+        "style": "slash",
+        "color": "#f14b68",
+        "intensity": 1,
+        "variant": 3
+      }
     },
     {
       "id": "ken-kaneki-base:4",
@@ -2383,7 +3967,13 @@
       "level": 12,
       "power": 1.65,
       "cooldown": 2,
-      "kind": "physical"
+      "kind": "physical",
+      "visual": {
+        "style": "dash",
+        "color": "#f14b68",
+        "intensity": 2,
+        "variant": 4
+      }
     },
     {
       "id": "ken-kaneki-base:5",
@@ -2392,7 +3982,13 @@
       "level": 30,
       "power": 1.85,
       "cooldown": 3,
-      "kind": "physical"
+      "kind": "physical",
+      "visual": {
+        "style": "barrage",
+        "color": "#f14b68",
+        "intensity": 2,
+        "variant": 5
+      }
     },
     {
       "id": "ken-kaneki-base:6",
@@ -2401,7 +3997,13 @@
       "level": 20,
       "power": 2.6,
       "cooldown": 5,
-      "kind": "physical"
+      "kind": "physical",
+      "visual": {
+        "style": "swarm",
+        "color": "#f14b68",
+        "intensity": 3,
+        "variant": 6
+      }
     },
     {
       "id": "ken-kaneki-base:7",
@@ -2409,7 +4011,13 @@
       "category": "healing",
       "level": 1,
       "heal": 0.18,
-      "cooldown": 3
+      "cooldown": 3,
+      "visual": {
+        "style": "heal",
+        "color": "#70f4b1",
+        "intensity": 1,
+        "variant": 7
+      }
     },
     {
       "id": "ken-kaneki-base:8",
@@ -2417,16 +4025,28 @@
       "category": "healing",
       "level": 40,
       "heal": 0.3,
-      "cooldown": 4
+      "cooldown": 4,
+      "visual": {
+        "style": "heal",
+        "color": "#70f4b1",
+        "intensity": 2,
+        "variant": 8
+      }
     },
     {
       "id": "ken-kaneki-base:9",
-      "name": "Crimson Barrage — Mastery",
+      "name": "Crimson Barrage \u2014 Mastery",
       "category": "attack",
       "level": 80,
       "power": 2.1,
       "cooldown": 4,
-      "kind": "physical"
+      "kind": "physical",
+      "visual": {
+        "style": "barrage",
+        "color": "#f14b68",
+        "intensity": 3,
+        "variant": 9
+      }
     }
   ],
   "l-lawliet-base": [
@@ -2437,7 +4057,13 @@
       "level": 1,
       "power": 0.9,
       "cooldown": 0,
-      "kind": "physical"
+      "kind": "physical",
+      "visual": {
+        "style": "punch",
+        "color": "#b5c9e8",
+        "intensity": 1,
+        "variant": 1
+      }
     },
     {
       "id": "l-lawliet-base:2",
@@ -2446,7 +4072,13 @@
       "level": 1,
       "power": 1.2,
       "cooldown": 1,
-      "kind": "physical"
+      "kind": "physical",
+      "visual": {
+        "style": "dash",
+        "color": "#b5c9e8",
+        "intensity": 1,
+        "variant": 2
+      }
     },
     {
       "id": "l-lawliet-base:3",
@@ -2455,7 +4087,13 @@
       "level": 1,
       "power": 1.5,
       "cooldown": 2,
-      "kind": "physical"
+      "kind": "physical",
+      "visual": {
+        "style": "punch",
+        "color": "#b5c9e8",
+        "intensity": 1,
+        "variant": 3
+      }
     },
     {
       "id": "l-lawliet-base:4",
@@ -2464,7 +4102,13 @@
       "level": 12,
       "power": 1.65,
       "cooldown": 2,
-      "kind": "physical"
+      "kind": "physical",
+      "visual": {
+        "style": "slash",
+        "color": "#b5c9e8",
+        "intensity": 2,
+        "variant": 4
+      }
     },
     {
       "id": "l-lawliet-base:5",
@@ -2473,7 +4117,13 @@
       "level": 30,
       "power": 1.85,
       "cooldown": 3,
-      "kind": "physical"
+      "kind": "physical",
+      "visual": {
+        "style": "dash",
+        "color": "#b5c9e8",
+        "intensity": 2,
+        "variant": 5
+      }
     },
     {
       "id": "l-lawliet-base:6",
@@ -2482,7 +4132,13 @@
       "level": 20,
       "power": 2.6,
       "cooldown": 5,
-      "kind": "physical"
+      "kind": "physical",
+      "visual": {
+        "style": "seal",
+        "color": "#b5c9e8",
+        "intensity": 3,
+        "variant": 6
+      }
     },
     {
       "id": "l-lawliet-base:7",
@@ -2490,7 +4146,13 @@
       "category": "healing",
       "level": 1,
       "heal": 0.18,
-      "cooldown": 3
+      "cooldown": 3,
+      "visual": {
+        "style": "heal",
+        "color": "#70f4b1",
+        "intensity": 1,
+        "variant": 7
+      }
     },
     {
       "id": "l-lawliet-base:8",
@@ -2498,16 +4160,28 @@
       "category": "healing",
       "level": 40,
       "heal": 0.3,
-      "cooldown": 4
+      "cooldown": 4,
+      "visual": {
+        "style": "heal",
+        "color": "#70f4b1",
+        "intensity": 2,
+        "variant": 8
+      }
     },
     {
       "id": "l-lawliet-base:9",
-      "name": "Tactical Rush — Mastery",
+      "name": "Tactical Rush \u2014 Mastery",
       "category": "attack",
       "level": 80,
       "power": 2.1,
       "cooldown": 4,
-      "kind": "physical"
+      "kind": "physical",
+      "visual": {
+        "style": "dash",
+        "color": "#b5c9e8",
+        "intensity": 3,
+        "variant": 9
+      }
     }
   ],
   "monkey-d-luffy-base": [
@@ -2518,7 +4192,13 @@
       "level": 1,
       "power": 0.9,
       "cooldown": 0,
-      "kind": "physical"
+      "kind": "physical",
+      "visual": {
+        "style": "punch",
+        "color": "#ffb04c",
+        "intensity": 1,
+        "variant": 1
+      }
     },
     {
       "id": "monkey-d-luffy-base:2",
@@ -2527,7 +4207,13 @@
       "level": 1,
       "power": 1.2,
       "cooldown": 1,
-      "kind": "physical"
+      "kind": "physical",
+      "visual": {
+        "style": "chain",
+        "color": "#ffb04c",
+        "intensity": 1,
+        "variant": 2
+      }
     },
     {
       "id": "monkey-d-luffy-base:3",
@@ -2536,7 +4222,13 @@
       "level": 1,
       "power": 1.5,
       "cooldown": 2,
-      "kind": "physical"
+      "kind": "physical",
+      "visual": {
+        "style": "punch",
+        "color": "#ffb04c",
+        "intensity": 1,
+        "variant": 3
+      }
     },
     {
       "id": "monkey-d-luffy-base:4",
@@ -2545,7 +4237,13 @@
       "level": 12,
       "power": 1.65,
       "cooldown": 2,
-      "kind": "physical"
+      "kind": "physical",
+      "visual": {
+        "style": "barrage",
+        "color": "#ffb04c",
+        "intensity": 2,
+        "variant": 4
+      }
     },
     {
       "id": "monkey-d-luffy-base:5",
@@ -2554,7 +4252,13 @@
       "level": 30,
       "power": 1.85,
       "cooldown": 3,
-      "kind": "physical"
+      "kind": "physical",
+      "visual": {
+        "style": "flame",
+        "color": "#ff8645",
+        "intensity": 2,
+        "variant": 5
+      }
     },
     {
       "id": "monkey-d-luffy-base:6",
@@ -2563,7 +4267,13 @@
       "level": 20,
       "power": 2.6,
       "cooldown": 5,
-      "kind": "physical"
+      "kind": "physical",
+      "visual": {
+        "style": "punch",
+        "color": "#ffb04c",
+        "intensity": 3,
+        "variant": 6
+      }
     },
     {
       "id": "monkey-d-luffy-base:7",
@@ -2571,7 +4281,13 @@
       "category": "healing",
       "level": 1,
       "heal": 0.18,
-      "cooldown": 3
+      "cooldown": 3,
+      "visual": {
+        "style": "heal",
+        "color": "#70f4b1",
+        "intensity": 1,
+        "variant": 7
+      }
     },
     {
       "id": "monkey-d-luffy-base:8",
@@ -2579,16 +4295,28 @@
       "category": "healing",
       "level": 40,
       "heal": 0.3,
-      "cooldown": 4
+      "cooldown": 4,
+      "visual": {
+        "style": "heal",
+        "color": "#70f4b1",
+        "intensity": 2,
+        "variant": 8
+      }
     },
     {
       "id": "monkey-d-luffy-base:9",
-      "name": "Red Hawk — Mastery",
+      "name": "Red Hawk \u2014 Mastery",
       "category": "attack",
       "level": 80,
       "power": 2.1,
       "cooldown": 4,
-      "kind": "physical"
+      "kind": "physical",
+      "visual": {
+        "style": "flame",
+        "color": "#ff8645",
+        "intensity": 3,
+        "variant": 9
+      }
     }
   ],
   "son-goku-base": [
@@ -2599,7 +4327,13 @@
       "level": 1,
       "power": 0.9,
       "cooldown": 0,
-      "kind": "physical"
+      "kind": "physical",
+      "visual": {
+        "style": "hammer",
+        "color": "#60dfff",
+        "intensity": 1,
+        "variant": 1
+      }
     },
     {
       "id": "son-goku-base:2",
@@ -2608,7 +4342,13 @@
       "level": 1,
       "power": 1.2,
       "cooldown": 1,
-      "kind": "physical"
+      "kind": "physical",
+      "visual": {
+        "style": "orb",
+        "color": "#60dfff",
+        "intensity": 1,
+        "variant": 2
+      }
     },
     {
       "id": "son-goku-base:3",
@@ -2617,7 +4357,13 @@
       "level": 1,
       "power": 1.5,
       "cooldown": 2,
-      "kind": "physical"
+      "kind": "physical",
+      "visual": {
+        "style": "punch",
+        "color": "#60dfff",
+        "intensity": 1,
+        "variant": 3
+      }
     },
     {
       "id": "son-goku-base:4",
@@ -2626,7 +4372,13 @@
       "level": 12,
       "power": 1.65,
       "cooldown": 2,
-      "kind": "physical"
+      "kind": "physical",
+      "visual": {
+        "style": "beam",
+        "color": "#60dfff",
+        "intensity": 2,
+        "variant": 4
+      }
     },
     {
       "id": "son-goku-base:5",
@@ -2635,7 +4387,13 @@
       "level": 30,
       "power": 1.85,
       "cooldown": 3,
-      "kind": "physical"
+      "kind": "physical",
+      "visual": {
+        "style": "flame",
+        "color": "#60dfff",
+        "intensity": 2,
+        "variant": 5
+      }
     },
     {
       "id": "son-goku-base:6",
@@ -2644,7 +4402,13 @@
       "level": 20,
       "power": 2.6,
       "cooldown": 5,
-      "kind": "physical"
+      "kind": "physical",
+      "visual": {
+        "style": "meteor",
+        "color": "#60dfff",
+        "intensity": 3,
+        "variant": 6
+      }
     },
     {
       "id": "son-goku-base:7",
@@ -2652,7 +4416,13 @@
       "category": "healing",
       "level": 1,
       "heal": 0.18,
-      "cooldown": 3
+      "cooldown": 3,
+      "visual": {
+        "style": "heal",
+        "color": "#70f4b1",
+        "intensity": 1,
+        "variant": 7
+      }
     },
     {
       "id": "son-goku-base:8",
@@ -2660,16 +4430,28 @@
       "category": "healing",
       "level": 40,
       "heal": 0.3,
-      "cooldown": 4
+      "cooldown": 4,
+      "visual": {
+        "style": "heal",
+        "color": "#70f4b1",
+        "intensity": 2,
+        "variant": 8
+      }
     },
     {
       "id": "son-goku-base:9",
-      "name": "Dragon Fist — Mastery",
+      "name": "Dragon Fist \u2014 Mastery",
       "category": "attack",
       "level": 80,
       "power": 2.1,
       "cooldown": 4,
-      "kind": "physical"
+      "kind": "physical",
+      "visual": {
+        "style": "flame",
+        "color": "#60dfff",
+        "intensity": 3,
+        "variant": 9
+      }
     }
   ],
   "ichigo-kurosaki-base": [
@@ -2680,7 +4462,13 @@
       "level": 1,
       "power": 0.9,
       "cooldown": 0,
-      "kind": "physical"
+      "kind": "physical",
+      "visual": {
+        "style": "slash",
+        "color": "#a2b9ff",
+        "intensity": 1,
+        "variant": 1
+      }
     },
     {
       "id": "ichigo-kurosaki-base:2",
@@ -2689,7 +4477,13 @@
       "level": 1,
       "power": 1.2,
       "cooldown": 1,
-      "kind": "physical"
+      "kind": "physical",
+      "visual": {
+        "style": "dash",
+        "color": "#a2b9ff",
+        "intensity": 1,
+        "variant": 2
+      }
     },
     {
       "id": "ichigo-kurosaki-base:3",
@@ -2698,7 +4492,13 @@
       "level": 1,
       "power": 1.5,
       "cooldown": 2,
-      "kind": "physical"
+      "kind": "physical",
+      "visual": {
+        "style": "slash",
+        "color": "#a2b9ff",
+        "intensity": 1,
+        "variant": 3
+      }
     },
     {
       "id": "ichigo-kurosaki-base:4",
@@ -2707,7 +4507,13 @@
       "level": 12,
       "power": 1.65,
       "cooldown": 2,
-      "kind": "physical"
+      "kind": "physical",
+      "visual": {
+        "style": "beam",
+        "color": "#a2b9ff",
+        "intensity": 2,
+        "variant": 4
+      }
     },
     {
       "id": "ichigo-kurosaki-base:5",
@@ -2716,7 +4522,13 @@
       "level": 30,
       "power": 1.85,
       "cooldown": 3,
-      "kind": "physical"
+      "kind": "physical",
+      "visual": {
+        "style": "beam",
+        "color": "#a2b9ff",
+        "intensity": 2,
+        "variant": 5
+      }
     },
     {
       "id": "ichigo-kurosaki-base:6",
@@ -2725,7 +4537,13 @@
       "level": 20,
       "power": 2.6,
       "cooldown": 5,
-      "kind": "physical"
+      "kind": "physical",
+      "visual": {
+        "style": "beam",
+        "color": "#a2b9ff",
+        "intensity": 3,
+        "variant": 6
+      }
     },
     {
       "id": "ichigo-kurosaki-base:7",
@@ -2733,7 +4551,13 @@
       "category": "healing",
       "level": 1,
       "heal": 0.18,
-      "cooldown": 3
+      "cooldown": 3,
+      "visual": {
+        "style": "heal",
+        "color": "#70f4b1",
+        "intensity": 1,
+        "variant": 7
+      }
     },
     {
       "id": "ichigo-kurosaki-base:8",
@@ -2741,16 +4565,28 @@
       "category": "healing",
       "level": 40,
       "heal": 0.3,
-      "cooldown": 4
+      "cooldown": 4,
+      "visual": {
+        "style": "heal",
+        "color": "#70f4b1",
+        "intensity": 2,
+        "variant": 8
+      }
     },
     {
       "id": "ichigo-kurosaki-base:9",
-      "name": "Black Getsuga — Mastery",
+      "name": "Black Getsuga \u2014 Mastery",
       "category": "attack",
       "level": 80,
       "power": 2.1,
       "cooldown": 4,
-      "kind": "physical"
+      "kind": "physical",
+      "visual": {
+        "style": "beam",
+        "color": "#a2b9ff",
+        "intensity": 3,
+        "variant": 9
+      }
     }
   ],
   "tanjiro-kamado-base": [
@@ -2761,7 +4597,13 @@
       "level": 1,
       "power": 0.9,
       "cooldown": 0,
-      "kind": "physical"
+      "kind": "physical",
+      "visual": {
+        "style": "slash",
+        "color": "#64d6ff",
+        "intensity": 1,
+        "variant": 1
+      }
     },
     {
       "id": "tanjiro-kamado-base:2",
@@ -2770,7 +4612,13 @@
       "level": 1,
       "power": 1.2,
       "cooldown": 1,
-      "kind": "physical"
+      "kind": "physical",
+      "visual": {
+        "style": "wave",
+        "color": "#64d6ff",
+        "intensity": 1,
+        "variant": 2
+      }
     },
     {
       "id": "tanjiro-kamado-base:3",
@@ -2779,7 +4627,13 @@
       "level": 1,
       "power": 1.5,
       "cooldown": 2,
-      "kind": "physical"
+      "kind": "physical",
+      "visual": {
+        "style": "vortex",
+        "color": "#64d6ff",
+        "intensity": 1,
+        "variant": 3
+      }
     },
     {
       "id": "tanjiro-kamado-base:4",
@@ -2788,7 +4642,13 @@
       "level": 12,
       "power": 1.65,
       "cooldown": 2,
-      "kind": "physical"
+      "kind": "physical",
+      "visual": {
+        "style": "wave",
+        "color": "#64d6ff",
+        "intensity": 2,
+        "variant": 4
+      }
     },
     {
       "id": "tanjiro-kamado-base:5",
@@ -2797,7 +4657,13 @@
       "level": 30,
       "power": 1.85,
       "cooldown": 3,
-      "kind": "physical"
+      "kind": "physical",
+      "visual": {
+        "style": "flame",
+        "color": "#64d6ff",
+        "intensity": 2,
+        "variant": 5
+      }
     },
     {
       "id": "tanjiro-kamado-base:6",
@@ -2806,7 +4672,13 @@
       "level": 20,
       "power": 2.6,
       "cooldown": 5,
-      "kind": "physical"
+      "kind": "physical",
+      "visual": {
+        "style": "flame",
+        "color": "#64d6ff",
+        "intensity": 3,
+        "variant": 6
+      }
     },
     {
       "id": "tanjiro-kamado-base:7",
@@ -2814,7 +4686,13 @@
       "category": "healing",
       "level": 1,
       "heal": 0.18,
-      "cooldown": 3
+      "cooldown": 3,
+      "visual": {
+        "style": "heal",
+        "color": "#70f4b1",
+        "intensity": 1,
+        "variant": 7
+      }
     },
     {
       "id": "tanjiro-kamado-base:8",
@@ -2822,16 +4700,28 @@
       "category": "healing",
       "level": 40,
       "heal": 0.3,
-      "cooldown": 4
+      "cooldown": 4,
+      "visual": {
+        "style": "heal",
+        "color": "#70f4b1",
+        "intensity": 2,
+        "variant": 8
+      }
     },
     {
       "id": "tanjiro-kamado-base:9",
-      "name": "Hinokami Kagura — Mastery",
+      "name": "Hinokami Kagura \u2014 Mastery",
       "category": "attack",
       "level": 80,
       "power": 2.1,
       "cooldown": 4,
-      "kind": "physical"
+      "kind": "physical",
+      "visual": {
+        "style": "flame",
+        "color": "#64d6ff",
+        "intensity": 3,
+        "variant": 9
+      }
     }
   ],
   "naruto-uzumaki-base": [
@@ -2842,7 +4732,13 @@
       "level": 1,
       "power": 0.9,
       "cooldown": 0,
-      "kind": "arcane"
+      "kind": "arcane",
+      "visual": {
+        "style": "swarm",
+        "color": "#5bcfff",
+        "intensity": 1,
+        "variant": 1
+      }
     },
     {
       "id": "naruto-uzumaki-base:2",
@@ -2851,7 +4747,13 @@
       "level": 1,
       "power": 1.2,
       "cooldown": 1,
-      "kind": "arcane"
+      "kind": "arcane",
+      "visual": {
+        "style": "projectile",
+        "color": "#5bcfff",
+        "intensity": 1,
+        "variant": 2
+      }
     },
     {
       "id": "naruto-uzumaki-base:3",
@@ -2860,7 +4762,13 @@
       "level": 1,
       "power": 1.5,
       "cooldown": 2,
-      "kind": "arcane"
+      "kind": "arcane",
+      "visual": {
+        "style": "burst",
+        "color": "#5bcfff",
+        "intensity": 1,
+        "variant": 3
+      }
     },
     {
       "id": "naruto-uzumaki-base:4",
@@ -2869,7 +4777,13 @@
       "level": 12,
       "power": 1.65,
       "cooldown": 2,
-      "kind": "arcane"
+      "kind": "arcane",
+      "visual": {
+        "style": "orb",
+        "color": "#5bcfff",
+        "intensity": 2,
+        "variant": 4
+      }
     },
     {
       "id": "naruto-uzumaki-base:5",
@@ -2878,7 +4792,13 @@
       "level": 30,
       "power": 1.85,
       "cooldown": 3,
-      "kind": "arcane"
+      "kind": "arcane",
+      "visual": {
+        "style": "vortex",
+        "color": "#5bcfff",
+        "intensity": 2,
+        "variant": 5
+      }
     },
     {
       "id": "naruto-uzumaki-base:6",
@@ -2887,7 +4807,13 @@
       "level": 20,
       "power": 2.6,
       "cooldown": 5,
-      "kind": "arcane"
+      "kind": "arcane",
+      "visual": {
+        "style": "vortex",
+        "color": "#5bcfff",
+        "intensity": 3,
+        "variant": 6
+      }
     },
     {
       "id": "naruto-uzumaki-base:7",
@@ -2895,7 +4821,13 @@
       "category": "healing",
       "level": 1,
       "heal": 0.18,
-      "cooldown": 3
+      "cooldown": 3,
+      "visual": {
+        "style": "heal",
+        "color": "#70f4b1",
+        "intensity": 1,
+        "variant": 7
+      }
     },
     {
       "id": "naruto-uzumaki-base:8",
@@ -2903,16 +4835,28 @@
       "category": "healing",
       "level": 40,
       "heal": 0.3,
-      "cooldown": 4
+      "cooldown": 4,
+      "visual": {
+        "style": "heal",
+        "color": "#70f4b1",
+        "intensity": 2,
+        "variant": 8
+      }
     },
     {
       "id": "naruto-uzumaki-base:9",
-      "name": "Rasenshuriken — Mastery",
+      "name": "Rasenshuriken \u2014 Mastery",
       "category": "attack",
       "level": 80,
       "power": 2.1,
       "cooldown": 4,
-      "kind": "arcane"
+      "kind": "arcane",
+      "visual": {
+        "style": "vortex",
+        "color": "#5bcfff",
+        "intensity": 3,
+        "variant": 9
+      }
     }
   ],
   "eren-yeager-base": [
@@ -2923,7 +4867,13 @@
       "level": 1,
       "power": 0.9,
       "cooldown": 0,
-      "kind": "physical"
+      "kind": "physical",
+      "visual": {
+        "style": "slash",
+        "color": "#b4ccb0",
+        "intensity": 1,
+        "variant": 1
+      }
     },
     {
       "id": "eren-yeager-base:2",
@@ -2932,7 +4882,13 @@
       "level": 1,
       "power": 1.2,
       "cooldown": 1,
-      "kind": "physical"
+      "kind": "physical",
+      "visual": {
+        "style": "dash",
+        "color": "#b4ccb0",
+        "intensity": 1,
+        "variant": 2
+      }
     },
     {
       "id": "eren-yeager-base:3",
@@ -2941,7 +4897,13 @@
       "level": 1,
       "power": 1.5,
       "cooldown": 2,
-      "kind": "physical"
+      "kind": "physical",
+      "visual": {
+        "style": "slash",
+        "color": "#b4ccb0",
+        "intensity": 1,
+        "variant": 3
+      }
     },
     {
       "id": "eren-yeager-base:4",
@@ -2950,7 +4912,13 @@
       "level": 12,
       "power": 1.65,
       "cooldown": 2,
-      "kind": "physical"
+      "kind": "physical",
+      "visual": {
+        "style": "punch",
+        "color": "#b4ccb0",
+        "intensity": 2,
+        "variant": 4
+      }
     },
     {
       "id": "eren-yeager-base:5",
@@ -2959,7 +4927,13 @@
       "level": 30,
       "power": 1.85,
       "cooldown": 3,
-      "kind": "physical"
+      "kind": "physical",
+      "visual": {
+        "style": "dash",
+        "color": "#b4ccb0",
+        "intensity": 2,
+        "variant": 5
+      }
     },
     {
       "id": "eren-yeager-base:6",
@@ -2968,7 +4942,13 @@
       "level": 20,
       "power": 2.6,
       "cooldown": 5,
-      "kind": "physical"
+      "kind": "physical",
+      "visual": {
+        "style": "burst",
+        "color": "#b4ccb0",
+        "intensity": 3,
+        "variant": 6
+      }
     },
     {
       "id": "eren-yeager-base:7",
@@ -2976,7 +4956,13 @@
       "category": "healing",
       "level": 1,
       "heal": 0.18,
-      "cooldown": 3
+      "cooldown": 3,
+      "visual": {
+        "style": "heal",
+        "color": "#70f4b1",
+        "intensity": 1,
+        "variant": 7
+      }
     },
     {
       "id": "eren-yeager-base:8",
@@ -2984,16 +4970,28 @@
       "category": "healing",
       "level": 40,
       "heal": 0.3,
-      "cooldown": 4
+      "cooldown": 4,
+      "visual": {
+        "style": "heal",
+        "color": "#70f4b1",
+        "intensity": 2,
+        "variant": 8
+      }
     },
     {
       "id": "eren-yeager-base:9",
-      "name": "Titan Charge — Mastery",
+      "name": "Titan Charge \u2014 Mastery",
       "category": "attack",
       "level": 80,
       "power": 2.1,
       "cooldown": 4,
-      "kind": "physical"
+      "kind": "physical",
+      "visual": {
+        "style": "dash",
+        "color": "#b4ccb0",
+        "intensity": 3,
+        "variant": 9
+      }
     }
   ]
 }
