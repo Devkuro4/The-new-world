@@ -16,6 +16,8 @@ const tierAliases={
   ur:'UR','ultra rare':'UR',ultrarare:'UR',
 };
 const catalogRow=(c,index)=>`${String(index).padStart(3,'0')}. ${c.name} · ${c.series} · ${c.rarity}`;
+const searchWords=value=>String(value||'').toLowerCase().replace(/[^a-z0-9]+/g,' ').trim().split(/\s+/).filter(Boolean);
+const matchesWords=(value,query)=>{const haystack=searchWords(value);return searchWords(query).every(word=>haystack.some(token=>token===word||token.startsWith(word)));};
 function services(s){for(const k of ['economy','wild','pvp','tower','exped','decks','shop','heals','nextSpawn','notices'])s[k]??={};s.settings??={};if(typeof s.settings.effectsEnabled!=='boolean')s.settings.effectsEnabled=false;if(!Number.isFinite(s.settings.spawnCooldownMs))s.settings.spawnCooldownMs=1800000;if(!Number.isFinite(s.settings.spawnChance))s.settings.spawnChance=.35;const economy=new Economy({state:s.economy});let wild,pvp,tower,exped;const busy=p=>!!(pvp.active(p)||tower.active(p)||Object.values(wild.state.groups).some(e=>e.battle?.sides[0].id===p));const selected=p=>{
   const all=economy.collection(p);
   const byId=new Map(all.map(card=>[card.uid,card]));
@@ -99,7 +101,7 @@ function run(state,ctx,command,args){
   case 'collection':{
     const pageToken=args.at(-1),page=/^\d+$/.test(pageToken||'')?Number(pageToken):1;
     const query=(/^\d+$/.test(pageToken||'')?args.slice(0,-1):args).join(' ').toLowerCase();
-    const matches=list().map((card,index)=>({card,index})).filter(({card})=>{const m=meta(card);return !query||`${m.name} ${m.series} ${m.rarity}`.toLowerCase().includes(query);});
+    const matches=list().map((card,index)=>({card,index})).filter(({card})=>{const m=meta(card);return !query||matchesWords(`${m.name} ${m.series} ${m.rarity}`,query);});
     const pages=Math.max(1,Math.ceil(matches.length/20));if(page<1||page>pages)throw Error(`Choose a page from 1 to ${pages}`);
     const rows=matches.slice((page-1)*20,page*20).map(({card,index})=>cardLine(card,index));
     const countLabel=`${matches.length} ${matches.length===1?'Card':'Cards'}`;
@@ -108,7 +110,7 @@ function run(state,ctx,command,args){
   case 'catalog':{
     const pageToken=args.at(-1),page=/^\d+$/.test(pageToken||'')?Number(pageToken):1;
     const query=(/^\d+$/.test(pageToken||'')?args.slice(0,-1):args).join(' ').toLowerCase();
-    const all=R.collectibleList().filter(c=>!query||`${c.name} ${c.series} ${c.rarity} ${c.catalogRarity}`.toLowerCase().includes(query));
+    const all=R.collectibleList().filter(c=>!query||matchesWords(`${c.name} ${c.series} ${c.rarity} ${c.catalogRarity}`,query));
     const pages=Math.max(1,Math.ceil(all.length/20));if(page<1||page>pages)throw Error(`Choose a page from 1 to ${pages}`);
     const rows=all.slice((page-1)*20,page*20).map((c,i)=>catalogRow(c,(page-1)*20+i+1));
     return reply(UI.title('CARD CATALOG')+`\n${all.length}/491 cards · Page ${page}/${pages}\n\n${rows.join('\n')}\n\n${ctx.prefix}catalog <search> [page]`);
@@ -121,7 +123,7 @@ function run(state,ctx,command,args){
       const series=[...new Set(catalog.map(c=>c.series))].sort((a,b)=>a.localeCompare(b));
       return reply(UI.title('CARD SERIES')+'\n\n'+series.map(name=>`${name} · ${catalog.filter(c=>c.series===name).length} cards`).join('\n')+`\n\nUse ${ctx.prefix}ss <series>`);
     }
-    const matches=catalog.filter(c=>c.series.toLowerCase().includes(query));
+    const matches=catalog.filter(c=>matchesWords(c.series,query));
     const pages=Math.max(1,Math.ceil(matches.length/20));if(page<1||page>pages)throw Error(`Choose a page from 1 to ${pages}`);
     const rows=matches.slice((page-1)*20,page*20).map((c,i)=>catalogRow(c,(page-1)*20+i+1));
     return reply(UI.title('SERIES SEARCH')+`\n${matches.length} cards · Page ${page}/${pages}\n\n${rows.join('\n')||'No cards matched that series.'}\n\n${ctx.prefix}ss <series> [page]`);
@@ -132,7 +134,7 @@ function run(state,ctx,command,args){
     const tier=tierAliases[(tokens.at(-1)||'').toLowerCase()];if(tier)tokens.pop();
     const query=tokens.join(' ').trim().toLowerCase();
     if(!query&&!tier)throw Error(`Use ${ctx.prefix}ci <name> [C|UC|R|SR|SSR|UR]`);
-    const matches=R.collectibleList().filter(c=>(!query||c.name.toLowerCase().includes(query))&&(!tier||c.catalogRarity===tier));
+    const matches=R.collectibleList().filter(c=>(!query||matchesWords(c.name,query))&&(!tier||c.catalogRarity===tier));
     const pages=Math.max(1,Math.ceil(matches.length/20));if(page<1||page>pages)throw Error(`Choose a page from 1 to ${pages}`);
     const mentionedOwners=new Set(),ownership=c=>{
       const variantIds=new Set([c.id,c.battleId].filter(Boolean));
