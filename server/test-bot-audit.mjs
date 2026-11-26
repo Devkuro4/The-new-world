@@ -153,7 +153,11 @@ try {
   assert.equal((await command('.wild',{chatMode:'dm'})).status,'blocked');
   assert.equal((await command('.kick @900')).status,'blocked');
   assert.equal(findCommand('auction'),undefined);
-  assert.equal(findCommand('cardshop').name,'cb');
+  const registeredCardCommands=['cb','starter','cards','catalog','ss','ci','card','deck','wild','claim','pvp','tower','exped','move','switch','desperate','pass','forfeit','heal','cardshop','openpack','openspack','bag','merge','learn','cmi','effects'];
+  assert.ok(registeredCardCommands.every(name=>findCommand(name)?.name===name));
+  assert.equal(new Set(botState.commands.map(command=>command.name)).size,botState.commands.length);
+  assert.equal(findCommand('cardshop').name,'cardshop');
+  assert.equal(findCommand('shop').name,'shop');
   assert.equal(findCommand('use').name,'use');
   await command('.starter',{senderId:playerB,senderName:'Audit Bob'});
   await command('.starter');

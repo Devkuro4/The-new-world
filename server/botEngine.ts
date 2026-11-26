@@ -43,6 +43,12 @@ import {
   savePlayerCover,
 } from './profileRenderer.ts';
 
+const CARD_BATTLE_COMMANDS = new Set([
+  'cb', 'starter', 'cards', 'catalog', 'ss', 'ci', 'card', 'deck', 'wild', 'claim', 'pvp', 'tower',
+  'exped', 'move', 'switch', 'desperate', 'pass', 'forfeit', 'heal', 'cardshop', 'openpack', 'openspack',
+  'bag', 'merge', 'learn', 'cmi', 'effects',
+]);
+
 export interface ActiveDrop {
   card: AnimeCard;
   claimCode: string;
@@ -1567,7 +1573,7 @@ async function handleIncomingMessageInternal(params: IncomingParams): Promise<Bo
       return reply;
     }
 
-    if (params.chatMode !== 'group' && (cmdDef.name === 'cb' || (cmdDef.category === 'Admin' && cmdDef.name !== 'setxp'))) {
+    if (params.chatMode !== 'group' && (CARD_BATTLE_COMMANDS.has(cmdDef.name) || (cmdDef.category === 'Admin' && cmdDef.name !== 'setxp'))) {
       return { text: 'This command is group-only.', handler: 'Command Router', status: 'blocked' };
     }
 
@@ -1599,13 +1605,13 @@ async function handleIncomingMessageInternal(params: IncomingParams): Promise<Bo
       'rules', 'support', 'community', 'addbot', 'test', 'stats', 'bots', 'url', 'otp', 'owner', 'mods', 'mem', 'memories',
     ]);
 
-    if (cmdDef.name === 'cb') {
+    if (CARD_BATTLE_COMMANDS.has(cmdDef.name)) {
       const draft = structuredClone(botState.cardBattle || {});
       const accountForBattle = (ids: string[]) =>
         ids.find(id => draft.economy?.players?.[id]?.cards?.length) ??
         ids.find(id => Object.hasOwn(draft.economy?.players ?? {}, id)) ?? ids[0];
       const target = accountForBattle(params.targetAccountIds ?? []);
-      const aliases: Record<string, string> = { starter: 'start', cards: 'collection', col: 'collection', cardshop: 'shop' };
+      const aliases: Record<string, string> = { starter: 'start', cards: 'collection', col: 'collection', collection: 'collection', cardshop: 'shop', expedition: 'exped' };
       const token = rawCmd.toLowerCase();
       const subcommand = token === 'cb' ? (restTokens[0] || 'help').toLowerCase() : token;
       const result = cardBattleAdapter.run(draft, {

@@ -20,6 +20,8 @@ Card Battle is the active card system. Its Credits, cards, decks and inventory u
 
 Direct aliases include `.starter`, `.catalog`, `.ss`, `.ci`, `.cards`, `.card`, `.deck`, `.wild`, `.claim`, `.pvp`, `.tower`, `.exped`, `.move`, `.switch`, `.forfeit`, `.cardshop`, `.bag` and `.heal`. Card Battle commands are group-only. `.wild` refreshes an idle encounter and leaves an active battle running. Scheduled checks run every 30 seconds during a WhatsApp connection.
 
+Every direct Card Battle command has its own entry in the dashboard command registry, including its usage, access role and enabled toggle. The existing economy `.shop`, `.buy` and `.use` commands keep their original meanings; Card Battle shop purchases and consumables use `.cb buy` and `.cb use`.
+
 ## Collectible artwork
 
 The bundled 491-entry Mazoku catalog is the collectible catalog and pack pool. Every catalog card can be collected, searched and viewed. The 20 catalog cards marked with `⚔` are mapped to existing fighters and can enter decks and battles now; the other 471 remain collectible-only until their battle stats and sprites are added. Existing saved battle cards and the full 37-character battle roster remain valid. Battles continue using sprites, while card details and pack reveals use collectible artwork. Remote AVIF artwork is converted to JPEG for WhatsApp when the CDN and image decoder are available. The original catalog rarity stays independent of Card Battle rarity.
