@@ -1,6 +1,8 @@
 import crypto from 'node:crypto';
+import fs from 'node:fs';
 import path from 'node:path';
 import 'dotenv/config';
+import JSZip from 'jszip';
 import { cloudEnabled, flushBotSnapshot } from './server/supabaseStore.ts';
 import express, { type Request, type Response } from 'express';
 import {
@@ -20,6 +22,7 @@ import {
 } from './server/botEngine.ts';
 import { hasGroqKey } from './server/groqClient.ts';
 import { ASSET_DIR, getThumbImageUrl, resolveThumbKey } from './server/assets.ts';
+import { loadCardArtwork } from './server/cardBattleArtwork.ts';
 import { renderProfileCardBuffer } from './server/profileRenderer.ts';
 import type { AnimeCard, BotCommandDef, CommandRole } from './src/shared/botSchema.ts';
 
@@ -474,6 +477,123 @@ async function startServer() {
   app.get('/api/download-zip', (_req: Request, res: Response) => {
     const zipPath = path.join(ASSET_DIR, 'the-new-world-pieck-bot.zip');
     res.download(zipPath, 'the-new-world-pieck-bot.zip');
+  });
+
+  app.get('/api/cards/download-zip', async (req: Request, res: Response) => {
+    try {
+      const cardId = typeof req.query.cardId === 'string' ? req.query.cardId.trim() : '';
+      const series = typeof req.query.series === 'string' ? req.query.series.trim() : '';
+      const tier = typeof req.query.tier === 'string' ? req.query.tier.trim() : '';
+
+      if (!cardId && !series) {
+        res.status(400).json({ error: 'Provide either cardId or series query parameter.' });
+        return;
+      }
+
+      const cardBattleDir = path.resolve(process.cwd(), 'server/cardBattle');
+      const catalog = JSON.parse(
+        fs.readFileSync(path.join(cardBattleDir, 'mazoku-cards.json'), 'utf8')
+      ) as Array<{
+        card_id: string;
+        character_name: string;
+        series: string;
+        rarity: string;
+        image_url: string;
+        card_url: string;
+      }>;
+      const artworkMap = JSON.parse(
+        fs.readFileSync(path.join(cardBattleDir, 'card-artwork-map.json'), 'utf8')
+      ) as Record<string, string>;
+
+      const spritesByCardId = new Map<string, string[]>();
+      for (const [battleId, mappedCardId] of Object.entries(artworkMap)) {
+        const list = spritesByCardId.get(mappedCardId) ?? [];
+        list.push(battleId);
+        spritesByCardId.set(mappedCardId, list);
+      }
+
+      let selected = catalog;
+      if (cardId) {
+        selected = catalog.filter((c) => c.card_id === cardId);
+      } else {
+        const targetSeries = series.toLowerCase();
+        selected = catalog.filter(
+          (c) =>
+            c.series.toLowerCase() === targetSeries &&
+            (!tier || tier.toLowerCase() === 'all' || c.rarity.toUpperCase() === tier.toUpperCase())
+        );
+      }
+
+      if (selected.length === 0) {
+        res.status(404).json({ error: cardId ? 'Card not found.' : 'No cards found for that series.' });
+        return;
+      }
+
+      const slug = (value: string) =>
+        value
+          .replace(/[^a-zA-Z0-9._-]+/g, '_')
+          .replace(/^_+|_+$/g, '') || 'card';
+
+      const isSingle = Boolean(cardId);
+      const baseFolder = isSingle ? '' : `${slug(selected[0].series)}/`;
+      const zip = new JSZip();
+      const targetFolder = baseFolder ? zip.folder(baseFolder.slice(0, -1))! : zip;
+
+      const batchSize = 5;
+      for (let i = 0; i < selected.length; i += batchSize) {
+        const batch = selected.slice(i, i + batchSize);
+        await Promise.all(
+          batch.map(async (card, offset) => {
+            const idx = i + offset + 1;
+            let imageBuf = await loadCardArtwork({ imageUrl: card.image_url, pageUrl: card.card_url });
+            let ext = 'jpg';
+            if (!imageBuf) {
+              try {
+                const rawRes = await fetch(card.image_url, { signal: AbortSignal.timeout(5_000) });
+                if (rawRes.ok) {
+                  imageBuf = Buffer.from(await rawRes.arrayBuffer());
+                  ext = 'avif';
+                }
+              } catch {
+                // Skip unavailable remote image without failing the entire archive
+              }
+            }
+
+            if (imageBuf) {
+              const filename = isSingle
+                ? `${slug(card.character_name)}_${slug(card.rarity)}.${ext}`
+                : `${String(idx).padStart(2, '0')}_${slug(card.character_name)}_${slug(card.rarity)}_${card.card_id.slice(0, 6)}.${ext}`;
+              targetFolder.file(filename, imageBuf);
+            }
+
+            const battleIds = spritesByCardId.get(card.card_id) ?? [];
+            for (const battleId of battleIds) {
+              const spriteFile = path.join(cardBattleDir, 'sprites', `${battleId}.png`);
+              if (fs.existsSync(spriteFile)) {
+                targetFolder.file(`sprites/${battleId}.png`, fs.readFileSync(spriteFile));
+              }
+            }
+          })
+        );
+      }
+
+      targetFolder.file(
+        isSingle ? 'card.json' : 'cards.json',
+        JSON.stringify(isSingle ? selected[0] : selected, null, 2)
+      );
+
+      const zipBuf = await zip.generateAsync({ type: 'nodebuffer', compression: 'DEFLATE' });
+      const zipFilename = isSingle
+        ? `${slug(selected[0].character_name)}_${slug(selected[0].rarity)}.zip`
+        : `${slug(selected[0].series)}${tier && tier.toLowerCase() !== 'all' ? `_${slug(tier.toUpperCase())}` : ''}.zip`;
+
+      res.setHeader('Content-Type', 'application/zip');
+      res.setHeader('Content-Disposition', `attachment; filename="${zipFilename}"`);
+      res.setHeader('Cache-Control', 'no-store');
+      res.send(zipBuf);
+    } catch (err) {
+      res.status(500).json({ error: err instanceof Error ? err.message : 'Failed to build card zip archive.' });
+    }
   });
 
   // ── BAILEYS WHATSAPP MULTI-DEVICE (PAIRING CODE & GROUPS) ──

@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
+import { Download } from 'lucide-react';
 import type { BotConfig, PlayerProfile } from '../shared/botSchema';
 import catalogData from '../../server/cardBattle/mazoku-cards.json';
 import artworkMap from '../../server/cardBattle/card-artwork-map.json';
@@ -37,6 +38,8 @@ export const EconomyCardsPanel: React.FC<EconomyCardsPanelProps> = ({
   const [cardSeries, setCardSeries] = useState('all');
   const [cardTier, setCardTier] = useState('all');
   const [cardPage, setCardPage] = useState(1);
+  const [downloadingKey, setDownloadingKey] = useState<string | null>(null);
+  const [downloadError, setDownloadError] = useState<string | null>(null);
 
   const seriesOptions = useMemo(
     () => [...new Set(CARD_CATALOG.map(card => card.series))].sort((a, b) => a.localeCompare(b)),
@@ -69,6 +72,35 @@ export const EconomyCardsPanel: React.FC<EconomyCardsPanelProps> = ({
       });
     } finally {
       setSavingRates(false);
+    }
+  };
+
+  const triggerZipDownload = async (key: string, params: Record<string, string>, fallbackName: string) => {
+    setDownloadingKey(key);
+    setDownloadError(null);
+    try {
+      const qs = new URLSearchParams(params);
+      const res = await fetch(`/api/cards/download-zip?${qs.toString()}`);
+      if (!res.ok) {
+        const errJson = (await res.json().catch(() => ({}))) as { error?: string };
+        throw new Error(errJson.error || 'Failed to generate zip archive.');
+      }
+      const disposition = res.headers.get('Content-Disposition') || '';
+      const match = disposition.match(/filename="([^"]+)"/i);
+      const filename = match?.[1] || fallbackName;
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = filename;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      URL.revokeObjectURL(url);
+    } catch (err) {
+      setDownloadError(err instanceof Error ? err.message : 'Download failed.');
+    } finally {
+      setDownloadingKey(null);
     }
   };
 
@@ -162,15 +194,46 @@ export const EconomyCardsPanel: React.FC<EconomyCardsPanelProps> = ({
           </div>
 
           <div className="rounded-xl border border-slate-200 bg-white p-4 sm:p-5">
-            <div className="mb-4 flex items-center justify-between gap-3 text-sm">
+            <div className="mb-4 flex flex-wrap items-center justify-between gap-3 text-sm">
               <span className="text-slate-600">{filteredCards.length} cards found</span>
-              <span className="font-mono text-xs text-slate-500">Page {safeCardPage} / {cardPages}</span>
+              <div className="flex items-center gap-3">
+                <button
+                  type="button"
+                  disabled={cardSeries === 'all' || downloadingKey !== null}
+                  onClick={() =>
+                    triggerZipDownload(
+                      `series:${cardSeries}`,
+                      cardTier === 'all' ? { series: cardSeries } : { series: cardSeries, tier: cardTier },
+                      `${cardSeries.replace(/[^a-zA-Z0-9._-]+/g, '_')}.zip`,
+                    )
+                  }
+                  className="inline-flex items-center gap-1.5 rounded-lg bg-emerald-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-emerald-700 disabled:cursor-not-allowed disabled:opacity-45"
+                >
+                  <Download className="h-3.5 w-3.5" />
+                  <span>
+                    {downloadingKey === `series:${cardSeries}`
+                      ? 'Zipping series...'
+                      : cardSeries === 'all'
+                      ? 'Select Series to Download .zip'
+                      : `Download ${cardSeries} (.zip)`}
+                  </span>
+                </button>
+                <span className="font-mono text-xs text-slate-500">Page {safeCardPage} / {cardPages}</span>
+              </div>
             </div>
+
+            {downloadError && (
+              <div className="mb-4 rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-xs text-rose-700">
+                {downloadError}
+              </div>
+            )}
 
             {visibleCards.length ? (
               <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
                 {visibleCards.map(card => {
                   const battleReady = BATTLE_READY_ART.has(card.card_id);
+                  const cardBusy = downloadingKey === `card:${card.card_id}`;
+                  const seriesBusy = downloadingKey === `card-series:${card.card_id}`;
                   return (
                     <article key={card.card_id} className="overflow-hidden rounded-xl border border-slate-200 bg-slate-50">
                       <div className="aspect-[5/7] bg-slate-200">
@@ -194,6 +257,39 @@ export const EconomyCardsPanel: React.FC<EconomyCardsPanelProps> = ({
                         <p className={`text-[11px] font-medium ${battleReady ? 'text-emerald-700' : 'text-slate-400'}`}>
                           {battleReady ? 'Battle-ready' : 'Collectible · sprite pending'}
                         </p>
+                        <div className="flex items-center gap-1.5 pt-1">
+                          <button
+                            type="button"
+                            disabled={downloadingKey !== null}
+                            onClick={() =>
+                              triggerZipDownload(
+                                `card:${card.card_id}`,
+                                { cardId: card.card_id },
+                                `${card.character_name.replace(/[^a-zA-Z0-9._-]+/g, '_')}_${card.rarity}.zip`,
+                              )
+                            }
+                            title={`Download ${card.character_name} card as .zip`}
+                            className="inline-flex flex-1 items-center justify-center gap-1 rounded-md border border-slate-200 bg-white px-2 py-1 text-[11px] font-medium text-slate-700 hover:bg-slate-100 disabled:opacity-45"
+                          >
+                            <Download className="h-3 w-3 shrink-0" />
+                            <span>{cardBusy ? 'Zipping...' : 'Card .zip'}</span>
+                          </button>
+                          <button
+                            type="button"
+                            disabled={downloadingKey !== null}
+                            onClick={() =>
+                              triggerZipDownload(
+                                `card-series:${card.card_id}`,
+                                { series: card.series },
+                                `${card.series.replace(/[^a-zA-Z0-9._-]+/g, '_')}.zip`,
+                              )
+                            }
+                            title={`Download all ${card.series} cards as .zip`}
+                            className="inline-flex items-center justify-center rounded-md border border-slate-200 bg-white px-2 py-1 text-[11px] font-medium text-slate-600 hover:bg-slate-100 disabled:opacity-45"
+                          >
+                            {seriesBusy ? '...' : 'Series .zip'}
+                          </button>
+                        </div>
                       </div>
                     </article>
                   );
