@@ -286,7 +286,7 @@ export const DEFAULT_COMMANDS: BotCommandDef[] = [
   { name: 'memories', category: 'General', description: 'View or manage your saved AI memories', usage: '.memories [add <note>|del <number>|clear]', role: 'everyone', enabled: true },
 
   // Cards
-  { name: 'cb', aliases: ['starter', 'cards', 'col', 'card', 'deck', 'wild', 'claim', 'pvp', 'tower', 'exped', 'move', 'switch', 'bag', 'heal', 'openpack', 'openspack', 'merge', 'learn', 'cmi', 'forfeit', 'cardshop'], category: 'Cards', description: 'Collect cards, build a deck and battle', usage: '.cb', role: 'everyone', enabled: true },
+  { name: 'cb', aliases: ['starter', 'cards', 'catalog', 'ss', 'ci', 'col', 'card', 'deck', 'wild', 'claim', 'pvp', 'tower', 'exped', 'move', 'switch', 'bag', 'heal', 'openpack', 'openspack', 'merge', 'learn', 'cmi', 'forfeit', 'cardshop'], category: 'Cards', description: 'Collect and search 491 cards, build a battle-ready deck and battle', usage: '.cb | .ss <series> | .ci <name> [tier]', role: 'everyone', enabled: true },
 
   // Economy
   { name: 'bal', aliases: ['balance'], category: 'Economy', description: 'Check your Gold wallet, bank & net worth', usage: '.bal', role: 'everyone', enabled: true },

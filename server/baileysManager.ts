@@ -1,3 +1,4 @@
+import { loadCardArtwork } from './cardBattleArtwork.ts';
 import { userJid, identityJids, accountIds, selectTarget } from './whatsappIdentity.ts';
 import { mentionsName, reactionVideo } from './animeReactions.ts';
 import { cloudEnabled } from './supabaseStore.ts';
@@ -68,7 +69,17 @@ const cardBattleTimer = setInterval(async () => {
       if (!notice.group.endsWith('@g.us') || !cachedGroups.some(g => g.id === notice.group)) continue;
       try {
         const text = notice.text.replace(/\.cb claim/g, `${botState.config.prefix || '.'}cb claim`);
-        const sent = await sock.sendMessage(notice.group, notice.imagePath ? {image: fs.readFileSync(notice.imagePath), caption: text} : {text});
+        const image = notice.artwork ? await loadCardArtwork(notice.artwork) : undefined;
+        if (image) {
+          try {
+            const sent = await sock.sendMessage(notice.group, { image, caption: text });
+            trackSentId(sent?.key?.id);
+            continue;
+          } catch (err) { console.warn('[Card Battle] Notice artwork could not be sent', err); }
+        }
+        const sent = await sock.sendMessage(notice.group, {
+          text: notice.artwork ? `${text}\n\nCard art: ${notice.artwork.pageUrl}` : text,
+        });
         trackSentId(sent?.key?.id);
       } catch (err) { console.warn('[Card Battle] Notice failed', err); }
     }

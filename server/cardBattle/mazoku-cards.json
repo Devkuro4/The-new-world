@@ -1,0 +1,3930 @@
+[
+  {
+    "character_name": "Levi Ackerman",
+    "series": "Attack on Titan",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/80785de1-8222-48a5-895e-6d7f4c14ae68.avif?width=300",
+    "card_url": "https://mazoku.cc/card/80785de1-8222-48a5-895e-6d7f4c14ae68",
+    "card_id": "80785de1-8222-48a5-895e-6d7f4c14ae68"
+  },
+  {
+    "character_name": "Armin Arlert",
+    "series": "Attack on Titan",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/a8decd4b-cacb-441f-bde6-dba71d68f44a.avif?width=300",
+    "card_url": "https://mazoku.cc/card/a8decd4b-cacb-441f-bde6-dba71d68f44a",
+    "card_id": "a8decd4b-cacb-441f-bde6-dba71d68f44a"
+  },
+  {
+    "character_name": "Eren Yeager",
+    "series": "Attack on Titan",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/cbd162cd-8c92-4692-9e30-44d52a894f30.avif?width=300",
+    "card_url": "https://mazoku.cc/card/cbd162cd-8c92-4692-9e30-44d52a894f30",
+    "card_id": "cbd162cd-8c92-4692-9e30-44d52a894f30"
+  },
+  {
+    "character_name": "Mikasa Ackerman",
+    "series": "Attack on Titan",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/ffe72274-1481-48c4-885c-62fcc99504cb.avif?width=300",
+    "card_url": "https://mazoku.cc/card/ffe72274-1481-48c4-885c-62fcc99504cb",
+    "card_id": "ffe72274-1481-48c4-885c-62fcc99504cb"
+  },
+  {
+    "character_name": "Hange Zoe",
+    "series": "Attack on Titan",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/861d560d-8de0-417f-956f-c54556eedb97.avif?width=300",
+    "card_url": "https://mazoku.cc/card/861d560d-8de0-417f-956f-c54556eedb97",
+    "card_id": "861d560d-8de0-417f-956f-c54556eedb97"
+  },
+  {
+    "character_name": "Pieck Finger",
+    "series": "Attack on Titan",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/b9580639-a32c-4a48-9a1e-90c041e0dbd8.avif?width=300",
+    "card_url": "https://mazoku.cc/card/b9580639-a32c-4a48-9a1e-90c041e0dbd8",
+    "card_id": "b9580639-a32c-4a48-9a1e-90c041e0dbd8"
+  },
+  {
+    "character_name": "Sasha Blouse",
+    "series": "Attack on Titan",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/1965d399-f04d-4160-a2cd-94dd1b7e3fd2.avif?width=300",
+    "card_url": "https://mazoku.cc/card/1965d399-f04d-4160-a2cd-94dd1b7e3fd2",
+    "card_id": "1965d399-f04d-4160-a2cd-94dd1b7e3fd2"
+  },
+  {
+    "character_name": "Connie Springer",
+    "series": "Attack on Titan",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/d11fb9bf-617c-4157-b4d4-d0d9ec6d3655.avif?width=300",
+    "card_url": "https://mazoku.cc/card/d11fb9bf-617c-4157-b4d4-d0d9ec6d3655",
+    "card_id": "d11fb9bf-617c-4157-b4d4-d0d9ec6d3655"
+  },
+  {
+    "character_name": "Historia Reiss",
+    "series": "Attack on Titan",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/24212a82-7d0c-4dee-9b4b-0a48e88b29c7.avif?width=300",
+    "card_url": "https://mazoku.cc/card/24212a82-7d0c-4dee-9b4b-0a48e88b29c7",
+    "card_id": "24212a82-7d0c-4dee-9b4b-0a48e88b29c7"
+  },
+  {
+    "character_name": "Jean Kirstein",
+    "series": "Attack on Titan",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/054b1001-95a7-44e8-999a-577de41353f5.avif?width=300",
+    "card_url": "https://mazoku.cc/card/054b1001-95a7-44e8-999a-577de41353f5",
+    "card_id": "054b1001-95a7-44e8-999a-577de41353f5"
+  },
+  {
+    "character_name": "Douma",
+    "series": "Demon Slayer",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/00cb91d7-4fec-480c-8862-0d4a3392a213.avif?width=300",
+    "card_url": "https://mazoku.cc/card/00cb91d7-4fec-480c-8862-0d4a3392a213",
+    "card_id": "00cb91d7-4fec-480c-8862-0d4a3392a213"
+  },
+  {
+    "character_name": "Genya Shinazugawa",
+    "series": "Demon Slayer",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/a2c2e91f-6317-4250-a152-9258c6052e34.avif?width=300",
+    "card_url": "https://mazoku.cc/card/a2c2e91f-6317-4250-a152-9258c6052e34",
+    "card_id": "a2c2e91f-6317-4250-a152-9258c6052e34"
+  },
+  {
+    "character_name": "Gyoumei Himejima",
+    "series": "Demon Slayer",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/568d6d83-6b87-497a-bdba-b2b4342fb064.avif?width=300",
+    "card_url": "https://mazoku.cc/card/568d6d83-6b87-497a-bdba-b2b4342fb064",
+    "card_id": "568d6d83-6b87-497a-bdba-b2b4342fb064"
+  },
+  {
+    "character_name": "Gyuutaro",
+    "series": "Demon Slayer",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/10d9b2bf-374f-4167-a907-336d1b5e72a8.avif?width=300",
+    "card_url": "https://mazoku.cc/card/10d9b2bf-374f-4167-a907-336d1b5e72a8",
+    "card_id": "10d9b2bf-374f-4167-a907-336d1b5e72a8"
+  },
+  {
+    "character_name": "Iguro Obanai",
+    "series": "Demon Slayer",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/c923db37-2820-43f9-8915-d5a8fb12aaeb.avif?width=300",
+    "card_url": "https://mazoku.cc/card/c923db37-2820-43f9-8915-d5a8fb12aaeb",
+    "card_id": "c923db37-2820-43f9-8915-d5a8fb12aaeb"
+  },
+  {
+    "character_name": "Inosuke Hashibira",
+    "series": "Demon Slayer",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/fca01b62-a435-41a2-9849-ae3730886784.avif?width=300",
+    "card_url": "https://mazoku.cc/card/fca01b62-a435-41a2-9849-ae3730886784",
+    "card_id": "fca01b62-a435-41a2-9849-ae3730886784"
+  },
+  {
+    "character_name": "Kanao Tsuyuri",
+    "series": "Demon Slayer",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/d5a421bb-0836-4f0a-a4de-3ad7d136c31e.avif?width=300",
+    "card_url": "https://mazoku.cc/card/d5a421bb-0836-4f0a-a4de-3ad7d136c31e",
+    "card_id": "d5a421bb-0836-4f0a-a4de-3ad7d136c31e"
+  },
+  {
+    "character_name": "Kanroji Mitsuri",
+    "series": "Demon Slayer",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/cb9dfe08-79c8-4e8a-bb42-bcf6f635da22.avif?width=300",
+    "card_url": "https://mazoku.cc/card/cb9dfe08-79c8-4e8a-bb42-bcf6f635da22",
+    "card_id": "cb9dfe08-79c8-4e8a-bb42-bcf6f635da22"
+  },
+  {
+    "character_name": "Muichiro Tokito",
+    "series": "Demon Slayer",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/5f8190e6-5698-4d07-81c7-a0efefe9ee6f.avif?width=300",
+    "card_url": "https://mazoku.cc/card/5f8190e6-5698-4d07-81c7-a0efefe9ee6f",
+    "card_id": "5f8190e6-5698-4d07-81c7-a0efefe9ee6f"
+  },
+  {
+    "character_name": "Nezuko Kamado",
+    "series": "Demon Slayer",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/d43f1614-50a6-4ff9-95e4-587a143459e7.avif?width=300",
+    "card_url": "https://mazoku.cc/card/d43f1614-50a6-4ff9-95e4-587a143459e7",
+    "card_id": "d43f1614-50a6-4ff9-95e4-587a143459e7"
+  },
+  {
+    "character_name": "Dagon",
+    "series": "Jujutsu Kaisen",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/eb4f8f81-2f1b-4da5-aa8a-665d8efaafbd.avif?width=300",
+    "card_url": "https://mazoku.cc/card/eb4f8f81-2f1b-4da5-aa8a-665d8efaafbd",
+    "card_id": "eb4f8f81-2f1b-4da5-aa8a-665d8efaafbd"
+  },
+  {
+    "character_name": "Gojo Satoru",
+    "series": "Jujutsu Kaisen",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/ced92944-4176-4eb2-a969-ae70e7840fea.avif?width=300",
+    "card_url": "https://mazoku.cc/card/ced92944-4176-4eb2-a969-ae70e7840fea",
+    "card_id": "ced92944-4176-4eb2-a969-ae70e7840fea"
+  },
+  {
+    "character_name": "Hanami",
+    "series": "Jujutsu Kaisen",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/ce9b4c09-e9e0-4fa8-8113-68440762bd99.avif?width=300",
+    "card_url": "https://mazoku.cc/card/ce9b4c09-e9e0-4fa8-8113-68440762bd99",
+    "card_id": "ce9b4c09-e9e0-4fa8-8113-68440762bd99"
+  },
+  {
+    "character_name": "Jogo",
+    "series": "Jujutsu Kaisen",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/ddbb0c04-3c65-43b4-b21a-795e45c9e246.avif?width=300",
+    "card_url": "https://mazoku.cc/card/ddbb0c04-3c65-43b4-b21a-795e45c9e246",
+    "card_id": "ddbb0c04-3c65-43b4-b21a-795e45c9e246"
+  },
+  {
+    "character_name": "Mahito",
+    "series": "Jujutsu Kaisen",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/9def29d6-9780-495a-a5b4-cd09ea0e70b4.avif?width=300",
+    "card_url": "https://mazoku.cc/card/9def29d6-9780-495a-a5b4-cd09ea0e70b4",
+    "card_id": "9def29d6-9780-495a-a5b4-cd09ea0e70b4"
+  },
+  {
+    "character_name": "Maki Zenin",
+    "series": "Jujutsu Kaisen",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/192c3506-d727-49db-ab0b-ba7f094b8cd5.avif?width=300",
+    "card_url": "https://mazoku.cc/card/192c3506-d727-49db-ab0b-ba7f094b8cd5",
+    "card_id": "192c3506-d727-49db-ab0b-ba7f094b8cd5"
+  },
+  {
+    "character_name": "Megumi Fushiguro",
+    "series": "Jujutsu Kaisen",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/816bf05e-4dc2-43d0-a01c-f3116046daa8.avif?width=300",
+    "card_url": "https://mazoku.cc/card/816bf05e-4dc2-43d0-a01c-f3116046daa8",
+    "card_id": "816bf05e-4dc2-43d0-a01c-f3116046daa8"
+  },
+  {
+    "character_name": "Nobara Kugisaki",
+    "series": "Jujutsu Kaisen",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/b3b3f7c0-1c1a-4979-bf76-633caead178e.avif?width=300",
+    "card_url": "https://mazoku.cc/card/b3b3f7c0-1c1a-4979-bf76-633caead178e",
+    "card_id": "b3b3f7c0-1c1a-4979-bf76-633caead178e"
+  },
+  {
+    "character_name": "Panda",
+    "series": "Jujutsu Kaisen",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/369110d0-8a6f-434d-90cc-29ce70270628.avif?width=300",
+    "card_url": "https://mazoku.cc/card/369110d0-8a6f-434d-90cc-29ce70270628",
+    "card_id": "369110d0-8a6f-434d-90cc-29ce70270628"
+  },
+  {
+    "character_name": "Ryomen Sukuna",
+    "series": "Jujutsu Kaisen",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/7bde7077-e959-45c6-b219-9034398883e8.avif?width=300",
+    "card_url": "https://mazoku.cc/card/7bde7077-e959-45c6-b219-9034398883e8",
+    "card_id": "7bde7077-e959-45c6-b219-9034398883e8"
+  },
+  {
+    "character_name": "Alvida",
+    "series": "One Piece",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/b3ed5fcb-1fa2-45d5-a5f7-9f63fc5e9b38.avif?width=300",
+    "card_url": "https://mazoku.cc/card/b3ed5fcb-1fa2-45d5-a5f7-9f63fc5e9b38",
+    "card_id": "b3ed5fcb-1fa2-45d5-a5f7-9f63fc5e9b38"
+  },
+  {
+    "character_name": "Eustass Kid",
+    "series": "One Piece",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/38d6e7f0-85dd-45cc-931c-d0507acb3977.avif?width=300",
+    "card_url": "https://mazoku.cc/card/38d6e7f0-85dd-45cc-931c-d0507acb3977",
+    "card_id": "38d6e7f0-85dd-45cc-931c-d0507acb3977"
+  },
+  {
+    "character_name": "Kuzan",
+    "series": "One Piece",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/dd2342c8-da80-43f8-9fcf-18967f14d9b4.avif?width=300",
+    "card_url": "https://mazoku.cc/card/dd2342c8-da80-43f8-9fcf-18967f14d9b4",
+    "card_id": "dd2342c8-da80-43f8-9fcf-18967f14d9b4"
+  },
+  {
+    "character_name": "Roronoa Zoro",
+    "series": "One Piece",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/bba08c10-a54e-42a9-8994-61393bcfc7b8.avif?width=300",
+    "card_url": "https://mazoku.cc/card/bba08c10-a54e-42a9-8994-61393bcfc7b8",
+    "card_id": "bba08c10-a54e-42a9-8994-61393bcfc7b8"
+  },
+  {
+    "character_name": "Trafalgar D. Water Law",
+    "series": "One Piece",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/bd25f121-b72d-40e5-892e-c90c77dd9115.avif?width=300",
+    "card_url": "https://mazoku.cc/card/bd25f121-b72d-40e5-892e-c90c77dd9115",
+    "card_id": "bd25f121-b72d-40e5-892e-c90c77dd9115"
+  },
+  {
+    "character_name": "Gol D. Roger",
+    "series": "One Piece",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/41a528ab-c1d5-4eaf-8bb6-403fd3f890bb.avif?width=300",
+    "card_url": "https://mazoku.cc/card/41a528ab-c1d5-4eaf-8bb6-403fd3f890bb",
+    "card_id": "41a528ab-c1d5-4eaf-8bb6-403fd3f890bb"
+  },
+  {
+    "character_name": "Kozuki Oden",
+    "series": "One Piece",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/7f079c81-85c2-4142-aef2-8497ac19a1a8.avif?width=300",
+    "card_url": "https://mazoku.cc/card/7f079c81-85c2-4142-aef2-8497ac19a1a8",
+    "card_id": "7f079c81-85c2-4142-aef2-8497ac19a1a8"
+  },
+  {
+    "character_name": "Shanks",
+    "series": "One Piece",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/ae59de69-7ed4-4537-9118-ced41813e52a.avif?width=300",
+    "card_url": "https://mazoku.cc/card/ae59de69-7ed4-4537-9118-ced41813e52a",
+    "card_id": "ae59de69-7ed4-4537-9118-ced41813e52a"
+  },
+  {
+    "character_name": "Shiryu",
+    "series": "One Piece",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/110ed6e9-4743-40d9-9fc8-bef9dfb9b594.avif?width=300",
+    "card_url": "https://mazoku.cc/card/110ed6e9-4743-40d9-9fc8-bef9dfb9b594",
+    "card_id": "110ed6e9-4743-40d9-9fc8-bef9dfb9b594"
+  },
+  {
+    "character_name": "Tony Tony Chopper",
+    "series": "One Piece",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/85ed2bc9-d311-4344-9c42-c1989efde9ad.avif?width=300",
+    "card_url": "https://mazoku.cc/card/85ed2bc9-d311-4344-9c42-c1989efde9ad",
+    "card_id": "85ed2bc9-d311-4344-9c42-c1989efde9ad"
+  },
+  {
+    "character_name": "Hinata Hyuuga",
+    "series": "Naruto / Naruto: Shippuden",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/ce2b8348-de6c-4cf8-82e2-a9a475944617.avif?width=300",
+    "card_url": "https://mazoku.cc/card/ce2b8348-de6c-4cf8-82e2-a9a475944617",
+    "card_id": "ce2b8348-de6c-4cf8-82e2-a9a475944617"
+  },
+  {
+    "character_name": "Madara Uchiha",
+    "series": "Naruto / Naruto: Shippuden",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/79af831a-5d43-4221-9dbc-a9498ca30777.avif?width=300",
+    "card_url": "https://mazoku.cc/card/79af831a-5d43-4221-9dbc-a9498ca30777",
+    "card_id": "79af831a-5d43-4221-9dbc-a9498ca30777"
+  },
+  {
+    "character_name": "Naruto Uzumaki",
+    "series": "Naruto / Naruto: Shippuden",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/32828a92-04cb-440a-a110-17704a29e481.avif?width=300",
+    "card_url": "https://mazoku.cc/card/32828a92-04cb-440a-a110-17704a29e481",
+    "card_id": "32828a92-04cb-440a-a110-17704a29e481"
+  },
+  {
+    "character_name": "Sasuke Uchiha",
+    "series": "Naruto / Naruto: Shippuden",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/093a8bfc-1dea-43eb-acab-491101f414aa.avif?width=300",
+    "card_url": "https://mazoku.cc/card/093a8bfc-1dea-43eb-acab-491101f414aa",
+    "card_id": "093a8bfc-1dea-43eb-acab-491101f414aa"
+  },
+  {
+    "character_name": "Temari",
+    "series": "Naruto / Naruto: Shippuden",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/5705392a-c453-4d77-8e8e-e6d35420a131.avif?width=300",
+    "card_url": "https://mazoku.cc/card/5705392a-c453-4d77-8e8e-e6d35420a131",
+    "card_id": "5705392a-c453-4d77-8e8e-e6d35420a131"
+  },
+  {
+    "character_name": "Itachi Uchiha",
+    "series": "Naruto / Naruto: Shippuden",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/983485c3-0678-4495-876a-b3624b9ef0ca.avif?width=300",
+    "card_url": "https://mazoku.cc/card/983485c3-0678-4495-876a-b3624b9ef0ca",
+    "card_id": "983485c3-0678-4495-876a-b3624b9ef0ca"
+  },
+  {
+    "character_name": "Gaara",
+    "series": "Naruto / Naruto: Shippuden",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/98e5b50b-8fb4-469d-bb80-8ca030dc2cc0.avif?width=300",
+    "card_url": "https://mazoku.cc/card/98e5b50b-8fb4-469d-bb80-8ca030dc2cc0",
+    "card_id": "98e5b50b-8fb4-469d-bb80-8ca030dc2cc0"
+  },
+  {
+    "character_name": "Kabuto Yakushi",
+    "series": "Naruto / Naruto: Shippuden",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/58d9989b-42ae-4b5f-96d6-bee16534a91b.avif?width=300",
+    "card_url": "https://mazoku.cc/card/58d9989b-42ae-4b5f-96d6-bee16534a91b",
+    "card_id": "58d9989b-42ae-4b5f-96d6-bee16534a91b"
+  },
+  {
+    "character_name": "Kakuzu",
+    "series": "Naruto / Naruto: Shippuden",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/4e3e5c2e-ee1c-4819-aec0-cc630123bb70.avif?width=300",
+    "card_url": "https://mazoku.cc/card/4e3e5c2e-ee1c-4819-aec0-cc630123bb70",
+    "card_id": "4e3e5c2e-ee1c-4819-aec0-cc630123bb70"
+  },
+  {
+    "character_name": "Killer Bee",
+    "series": "Naruto / Naruto: Shippuden",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/ed5e4d0d-c3a3-4a9a-b801-f0f19764f1cd.avif?width=300",
+    "card_url": "https://mazoku.cc/card/ed5e4d0d-c3a3-4a9a-b801-f0f19764f1cd",
+    "card_id": "ed5e4d0d-c3a3-4a9a-b801-f0f19764f1cd"
+  },
+  {
+    "character_name": "Mihael Keehl",
+    "series": "Death Note",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/a252d7c5-b7cb-44f0-9e56-660fb7783710.avif?width=300",
+    "card_url": "https://mazoku.cc/card/a252d7c5-b7cb-44f0-9e56-660fb7783710",
+    "card_id": "a252d7c5-b7cb-44f0-9e56-660fb7783710"
+  },
+  {
+    "character_name": "L",
+    "series": "Death Note",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/b6556d99-819e-459c-b406-199a0f235501.avif?width=300",
+    "card_url": "https://mazoku.cc/card/b6556d99-819e-459c-b406-199a0f235501",
+    "card_id": "b6556d99-819e-459c-b406-199a0f235501"
+  },
+  {
+    "character_name": "Light Yagami",
+    "series": "Death Note",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/d2ddefde-7016-4a56-ac0d-ae8b8a438566.avif?width=300",
+    "card_url": "https://mazoku.cc/card/d2ddefde-7016-4a56-ac0d-ae8b8a438566",
+    "card_id": "d2ddefde-7016-4a56-ac0d-ae8b8a438566"
+  },
+  {
+    "character_name": "Misa Amane",
+    "series": "Death Note",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/d1a58163-3a9a-4a30-a37f-ddba240d23e4.avif?width=300",
+    "card_url": "https://mazoku.cc/card/d1a58163-3a9a-4a30-a37f-ddba240d23e4",
+    "card_id": "d1a58163-3a9a-4a30-a37f-ddba240d23e4"
+  },
+  {
+    "character_name": "Near",
+    "series": "Death Note",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/931cf73a-e9b7-41dc-8b80-ee66b947ce3f.avif?width=300",
+    "card_url": "https://mazoku.cc/card/931cf73a-e9b7-41dc-8b80-ee66b947ce3f",
+    "card_id": "931cf73a-e9b7-41dc-8b80-ee66b947ce3f"
+  },
+  {
+    "character_name": "Naomi Misora",
+    "series": "Death Note",
+    "rarity": "R",
+    "image_url": "https://cdn7.mazoku.cc/cards/cf4c7e3f-ce27-4046-ab85-05d1e9b31cd0.avif?width=300",
+    "card_url": "https://mazoku.cc/card/cf4c7e3f-ce27-4046-ab85-05d1e9b31cd0",
+    "card_id": "cf4c7e3f-ce27-4046-ab85-05d1e9b31cd0"
+  },
+  {
+    "character_name": "L",
+    "series": "Death Note",
+    "rarity": "R",
+    "image_url": "https://cdn7.mazoku.cc/cards/baa8d5cc-7428-42a1-aed4-22a7e3c480b4.avif?width=300",
+    "card_url": "https://mazoku.cc/card/baa8d5cc-7428-42a1-aed4-22a7e3c480b4",
+    "card_id": "baa8d5cc-7428-42a1-aed4-22a7e3c480b4"
+  },
+  {
+    "character_name": "Light Yagami",
+    "series": "Death Note",
+    "rarity": "R",
+    "image_url": "https://cdn7.mazoku.cc/cards/7af3ad13-3a98-476c-b38c-ef123e027d98.avif?width=300",
+    "card_url": "https://mazoku.cc/card/7af3ad13-3a98-476c-b38c-ef123e027d98",
+    "card_id": "7af3ad13-3a98-476c-b38c-ef123e027d98"
+  },
+  {
+    "character_name": "Misa Amane",
+    "series": "Death Note",
+    "rarity": "R",
+    "image_url": "https://cdn7.mazoku.cc/cards/a2afa378-1c50-49d0-9f02-5bae064af4f5.avif?width=300",
+    "card_url": "https://mazoku.cc/card/a2afa378-1c50-49d0-9f02-5bae064af4f5",
+    "card_id": "a2afa378-1c50-49d0-9f02-5bae064af4f5"
+  },
+  {
+    "character_name": "Light Yagami and Ryuk",
+    "series": "Death Note",
+    "rarity": "SR",
+    "image_url": "https://cdn7.mazoku.cc/cards/52cd4440-f767-4840-8c0d-2f1bd5c88cbe.avif?width=300",
+    "card_url": "https://mazoku.cc/card/52cd4440-f767-4840-8c0d-2f1bd5c88cbe",
+    "card_id": "52cd4440-f767-4840-8c0d-2f1bd5c88cbe"
+  },
+  {
+    "character_name": "Himiko Toga",
+    "series": "My Hero Academia",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/4ed2feff-7f44-4994-8f8b-d341dad029c6.avif?width=300",
+    "card_url": "https://mazoku.cc/card/4ed2feff-7f44-4994-8f8b-d341dad029c6",
+    "card_id": "4ed2feff-7f44-4994-8f8b-d341dad029c6"
+  },
+  {
+    "character_name": "Izuku Midoriya",
+    "series": "My Hero Academia",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/2c0d541c-b448-42cc-a3ef-400143f5ef10.avif?width=300",
+    "card_url": "https://mazoku.cc/card/2c0d541c-b448-42cc-a3ef-400143f5ef10",
+    "card_id": "2c0d541c-b448-42cc-a3ef-400143f5ef10"
+  },
+  {
+    "character_name": "Katsuki Bakugo",
+    "series": "My Hero Academia",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/80e769a7-c3b2-457d-8f1c-d2dc034a6f80.avif?width=300",
+    "card_url": "https://mazoku.cc/card/80e769a7-c3b2-457d-8f1c-d2dc034a6f80",
+    "card_id": "80e769a7-c3b2-457d-8f1c-d2dc034a6f80"
+  },
+  {
+    "character_name": "Ochaco Uraraka",
+    "series": "My Hero Academia",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/47bbb2aa-a125-40b9-ab17-1f2ac210d4d2.avif?width=300",
+    "card_url": "https://mazoku.cc/card/47bbb2aa-a125-40b9-ab17-1f2ac210d4d2",
+    "card_id": "47bbb2aa-a125-40b9-ab17-1f2ac210d4d2"
+  },
+  {
+    "character_name": "Shoto Todoroki",
+    "series": "My Hero Academia",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/a2baf33d-04ae-4752-b2f3-3d7983773f53.avif?width=300",
+    "card_url": "https://mazoku.cc/card/a2baf33d-04ae-4752-b2f3-3d7983773f53",
+    "card_id": "a2baf33d-04ae-4752-b2f3-3d7983773f53"
+  },
+  {
+    "character_name": "All Might",
+    "series": "My Hero Academia",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/92bc13eb-0df8-4047-a412-081725d237e7.avif?width=300",
+    "card_url": "https://mazoku.cc/card/92bc13eb-0df8-4047-a412-081725d237e7",
+    "card_id": "92bc13eb-0df8-4047-a412-081725d237e7"
+  },
+  {
+    "character_name": "Denki Kaminari",
+    "series": "My Hero Academia",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/0cfaaaab-5083-48d3-bd69-5dc12fc538e5.avif?width=300",
+    "card_url": "https://mazoku.cc/card/0cfaaaab-5083-48d3-bd69-5dc12fc538e5",
+    "card_id": "0cfaaaab-5083-48d3-bd69-5dc12fc538e5"
+  },
+  {
+    "character_name": "Eijiro Kirishima",
+    "series": "My Hero Academia",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/55fafbc2-8f05-4bea-b4a5-121565f5606e.avif?width=300",
+    "card_url": "https://mazoku.cc/card/55fafbc2-8f05-4bea-b4a5-121565f5606e",
+    "card_id": "55fafbc2-8f05-4bea-b4a5-121565f5606e"
+  },
+  {
+    "character_name": "Kai Chisaki",
+    "series": "My Hero Academia",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/984e4616-d870-4cea-b12e-d1d5ed5115fa.avif?width=300",
+    "card_url": "https://mazoku.cc/card/984e4616-d870-4cea-b12e-d1d5ed5115fa",
+    "card_id": "984e4616-d870-4cea-b12e-d1d5ed5115fa"
+  },
+  {
+    "character_name": "Camie Utsushimi",
+    "series": "My Hero Academia",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/e40681a4-8a66-49df-a26b-c04247b680b5.avif?width=300",
+    "card_url": "https://mazoku.cc/card/e40681a4-8a66-49df-a26b-c04247b680b5",
+    "card_id": "e40681a4-8a66-49df-a26b-c04247b680b5"
+  },
+  {
+    "character_name": "Shenron",
+    "series": "Dragon Ball Z",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/626b7e2f-7732-4cae-a7c7-360da5531ef1.avif?width=300",
+    "card_url": "https://mazoku.cc/card/626b7e2f-7732-4cae-a7c7-360da5531ef1",
+    "card_id": "626b7e2f-7732-4cae-a7c7-360da5531ef1"
+  },
+  {
+    "character_name": "Ging Freecss",
+    "series": "Hunter x Hunter",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/d805a360-3e9a-4c15-b82e-a81862ef16ad.avif?width=300",
+    "card_url": "https://mazoku.cc/card/d805a360-3e9a-4c15-b82e-a81862ef16ad",
+    "card_id": "d805a360-3e9a-4c15-b82e-a81862ef16ad"
+  },
+  {
+    "character_name": "Hisoka Morow",
+    "series": "Hunter x Hunter",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/215b613b-6fa8-4004-bc60-1bdf0658d9d1.avif?width=300",
+    "card_url": "https://mazoku.cc/card/215b613b-6fa8-4004-bc60-1bdf0658d9d1",
+    "card_id": "215b613b-6fa8-4004-bc60-1bdf0658d9d1"
+  },
+  {
+    "character_name": "Killua Zoldyck",
+    "series": "Hunter x Hunter",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/f8cf7e53-5c88-4071-8a7e-eb833a82f74b.avif?width=300",
+    "card_url": "https://mazoku.cc/card/f8cf7e53-5c88-4071-8a7e-eb833a82f74b",
+    "card_id": "f8cf7e53-5c88-4071-8a7e-eb833a82f74b"
+  },
+  {
+    "character_name": "Kurapika",
+    "series": "Hunter x Hunter",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/abd511d8-c993-4259-bd6c-adbe5ed7dbb0.avif?width=300",
+    "card_url": "https://mazoku.cc/card/abd511d8-c993-4259-bd6c-adbe5ed7dbb0",
+    "card_id": "abd511d8-c993-4259-bd6c-adbe5ed7dbb0"
+  },
+  {
+    "character_name": "Leorio Paladiknight",
+    "series": "Hunter x Hunter",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/6dbe7c88-f89a-440c-b4c8-7201bfb99974.avif?width=300",
+    "card_url": "https://mazoku.cc/card/6dbe7c88-f89a-440c-b4c8-7201bfb99974",
+    "card_id": "6dbe7c88-f89a-440c-b4c8-7201bfb99974"
+  },
+  {
+    "character_name": "Neferpitou",
+    "series": "Hunter x Hunter",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/8e9cc0fd-4828-4e91-b228-60cc7b7ff722.avif?width=300",
+    "card_url": "https://mazoku.cc/card/8e9cc0fd-4828-4e91-b228-60cc7b7ff722",
+    "card_id": "8e9cc0fd-4828-4e91-b228-60cc7b7ff722"
+  },
+  {
+    "character_name": "Gon Freecss",
+    "series": "Hunter x Hunter",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/0eac8c3a-2b6d-4ea4-b7fe-cde3f72853ac.avif?width=300",
+    "card_url": "https://mazoku.cc/card/0eac8c3a-2b6d-4ea4-b7fe-cde3f72853ac",
+    "card_id": "0eac8c3a-2b6d-4ea4-b7fe-cde3f72853ac"
+  },
+  {
+    "character_name": "Alluka Zoldyck",
+    "series": "Hunter x Hunter",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/eb683082-8244-436a-b87e-32d6c18cb230.avif?width=300",
+    "card_url": "https://mazoku.cc/card/eb683082-8244-436a-b87e-32d6c18cb230",
+    "card_id": "eb683082-8244-436a-b87e-32d6c18cb230"
+  },
+  {
+    "character_name": "Kite",
+    "series": "Hunter x Hunter",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/32e1ee6c-80f7-4bcd-88ce-d78caee90bce.avif?width=300",
+    "card_url": "https://mazoku.cc/card/32e1ee6c-80f7-4bcd-88ce-d78caee90bce",
+    "card_id": "32e1ee6c-80f7-4bcd-88ce-d78caee90bce"
+  },
+  {
+    "character_name": "Komugi",
+    "series": "Hunter x Hunter",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/d5fd2421-f4d5-4893-ac09-47724f4421f6.avif?width=300",
+    "card_url": "https://mazoku.cc/card/d5fd2421-f4d5-4893-ac09-47724f4421f6",
+    "card_id": "d5fd2421-f4d5-4893-ac09-47724f4421f6"
+  },
+  {
+    "character_name": "Touka Kirishima",
+    "series": "Tokyo Ghoul",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/1a146160-1f3f-4d91-a054-c4ec4233c5cf.avif?width=300",
+    "card_url": "https://mazoku.cc/card/1a146160-1f3f-4d91-a054-c4ec4233c5cf",
+    "card_id": "1a146160-1f3f-4d91-a054-c4ec4233c5cf"
+  },
+  {
+    "character_name": "Ken Kaneki",
+    "series": "Tokyo Ghoul",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/b5277184-7cad-4ab6-b2b9-665567831385.avif?width=300",
+    "card_url": "https://mazoku.cc/card/b5277184-7cad-4ab6-b2b9-665567831385",
+    "card_id": "b5277184-7cad-4ab6-b2b9-665567831385"
+  },
+  {
+    "character_name": "Shuu Tsukiyama",
+    "series": "Tokyo Ghoul",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/0141a23f-2632-4081-8a0c-8351c432c3e2.avif?width=300",
+    "card_url": "https://mazoku.cc/card/0141a23f-2632-4081-8a0c-8351c432c3e2",
+    "card_id": "0141a23f-2632-4081-8a0c-8351c432c3e2"
+  },
+  {
+    "character_name": "Juuzou Suzuya",
+    "series": "Tokyo Ghoul",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/c701dd0e-1721-410f-b884-f459eeb2cf76.avif?width=300",
+    "card_url": "https://mazoku.cc/card/c701dd0e-1721-410f-b884-f459eeb2cf76",
+    "card_id": "c701dd0e-1721-410f-b884-f459eeb2cf76"
+  },
+  {
+    "character_name": "Hideyoshi Nagachika",
+    "series": "Tokyo Ghoul",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/9a292ee4-9af9-48ac-ae03-30628c2f6b9b.avif?width=300",
+    "card_url": "https://mazoku.cc/card/9a292ee4-9af9-48ac-ae03-30628c2f6b9b",
+    "card_id": "9a292ee4-9af9-48ac-ae03-30628c2f6b9b"
+  },
+  {
+    "character_name": "Rize Kamishiro",
+    "series": "Tokyo Ghoul",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/460a3249-3d17-49ee-8345-2d50dece6e3e.avif?width=300",
+    "card_url": "https://mazoku.cc/card/460a3249-3d17-49ee-8345-2d50dece6e3e",
+    "card_id": "460a3249-3d17-49ee-8345-2d50dece6e3e"
+  },
+  {
+    "character_name": "Chie and Shuu",
+    "series": "Tokyo Ghoul",
+    "rarity": "R",
+    "image_url": "https://cdn7.mazoku.cc/cards/a55c36e5-cac3-4dbe-bcd7-c293a0955d59.avif?width=300",
+    "card_url": "https://mazoku.cc/card/a55c36e5-cac3-4dbe-bcd7-c293a0955d59",
+    "card_id": "a55c36e5-cac3-4dbe-bcd7-c293a0955d59"
+  },
+  {
+    "character_name": "Uta",
+    "series": "Tokyo Ghoul",
+    "rarity": "R",
+    "image_url": "https://cdn7.mazoku.cc/cards/d59fe593-1d1f-4d09-b8d4-8d64b000964e.avif?width=300",
+    "card_url": "https://mazoku.cc/card/d59fe593-1d1f-4d09-b8d4-8d64b000964e",
+    "card_id": "d59fe593-1d1f-4d09-b8d4-8d64b000964e"
+  },
+  {
+    "character_name": "Kishou Arima",
+    "series": "Tokyo Ghoul",
+    "rarity": "SR",
+    "image_url": "https://cdn7.mazoku.cc/cards/c92f6dea-6d19-4b68-89e9-aa333cd0cba2.avif?width=300",
+    "card_url": "https://mazoku.cc/card/c92f6dea-6d19-4b68-89e9-aa333cd0cba2",
+    "card_id": "c92f6dea-6d19-4b68-89e9-aa333cd0cba2"
+  },
+  {
+    "character_name": "Nimura Furuta",
+    "series": "Tokyo Ghoul",
+    "rarity": "SR",
+    "image_url": "https://cdn7.mazoku.cc/cards/9d159747-9048-4391-885d-5258eb49d233.avif?width=300",
+    "card_url": "https://mazoku.cc/card/9d159747-9048-4391-885d-5258eb49d233",
+    "card_id": "9d159747-9048-4391-885d-5258eb49d233"
+  },
+  {
+    "character_name": "Ichigo Kurosaki",
+    "series": "Bleach",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/f08148f2-cff2-44f1-a85e-0e623a400fa8.avif?width=300",
+    "card_url": "https://mazoku.cc/card/f08148f2-cff2-44f1-a85e-0e623a400fa8",
+    "card_id": "f08148f2-cff2-44f1-a85e-0e623a400fa8"
+  },
+  {
+    "character_name": "Rukia Kuchiki",
+    "series": "Bleach",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/cfa89ecc-f280-4266-9854-40a4b93674f9.avif?width=300",
+    "card_url": "https://mazoku.cc/card/cfa89ecc-f280-4266-9854-40a4b93674f9",
+    "card_id": "cfa89ecc-f280-4266-9854-40a4b93674f9"
+  },
+  {
+    "character_name": "Kisuke Urahara",
+    "series": "Bleach",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/2b785ec0-2caf-4c7b-b1dc-df2dbec3bdb7.avif?width=300",
+    "card_url": "https://mazoku.cc/card/2b785ec0-2caf-4c7b-b1dc-df2dbec3bdb7",
+    "card_id": "2b785ec0-2caf-4c7b-b1dc-df2dbec3bdb7"
+  },
+  {
+    "character_name": "Orihime Inoue",
+    "series": "Bleach",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/e2de960f-d59a-422f-8aad-9de2e3b39166.avif?width=300",
+    "card_url": "https://mazoku.cc/card/e2de960f-d59a-422f-8aad-9de2e3b39166",
+    "card_id": "e2de960f-d59a-422f-8aad-9de2e3b39166"
+  },
+  {
+    "character_name": "Rangiku Matsumoto",
+    "series": "Bleach",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/87efbbc2-86ef-476c-874f-a498bc6fb7b8.avif?width=300",
+    "card_url": "https://mazoku.cc/card/87efbbc2-86ef-476c-874f-a498bc6fb7b8",
+    "card_id": "87efbbc2-86ef-476c-874f-a498bc6fb7b8"
+  },
+  {
+    "character_name": "Ulquiorra Cifer",
+    "series": "Bleach",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/9fcac119-0338-4cf2-9be4-3e62b5c7340f.avif?width=300",
+    "card_url": "https://mazoku.cc/card/9fcac119-0338-4cf2-9be4-3e62b5c7340f",
+    "card_id": "9fcac119-0338-4cf2-9be4-3e62b5c7340f"
+  },
+  {
+    "character_name": "Yoruichi Shihoin",
+    "series": "Bleach",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/9ad4b462-4d4d-4f01-8b0d-de34f85ca7dd.avif?width=300",
+    "card_url": "https://mazoku.cc/card/9ad4b462-4d4d-4f01-8b0d-de34f85ca7dd",
+    "card_id": "9ad4b462-4d4d-4f01-8b0d-de34f85ca7dd"
+  },
+  {
+    "character_name": "As Nodt",
+    "series": "Bleach",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/4b98117b-e90a-4342-a950-c3ca4699d80e.avif?width=300",
+    "card_url": "https://mazoku.cc/card/4b98117b-e90a-4342-a950-c3ca4699d80e",
+    "card_id": "4b98117b-e90a-4342-a950-c3ca4699d80e"
+  },
+  {
+    "character_name": "Baraggan Louisenbairn",
+    "series": "Bleach",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/b66464ce-f3c6-4ede-b586-1daeef6babb4.avif?width=300",
+    "card_url": "https://mazoku.cc/card/b66464ce-f3c6-4ede-b586-1daeef6babb4",
+    "card_id": "b66464ce-f3c6-4ede-b586-1daeef6babb4"
+  },
+  {
+    "character_name": "Coyote Stark",
+    "series": "Bleach",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/9a1f8b31-52c6-4cc2-821b-e146ddc821c7.avif?width=300",
+    "card_url": "https://mazoku.cc/card/9a1f8b31-52c6-4cc2-821b-e146ddc821c7",
+    "card_id": "9a1f8b31-52c6-4cc2-821b-e146ddc821c7"
+  },
+  {
+    "character_name": "Jugram Haschwalt",
+    "series": "Bleach",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/87263179-f187-451a-88c7-42af6a4ed2a2.avif?width=300",
+    "card_url": "https://mazoku.cc/card/87263179-f187-451a-88c7-42af6a4ed2a2",
+    "card_id": "87263179-f187-451a-88c7-42af6a4ed2a2"
+  },
+  {
+    "character_name": "Mayuri Kurotsuchi",
+    "series": "Bleach",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/86815cd2-d5db-49ed-8ede-0a9eb47c370f.avif?width=300",
+    "card_url": "https://mazoku.cc/card/86815cd2-d5db-49ed-8ede-0a9eb47c370f",
+    "card_id": "86815cd2-d5db-49ed-8ede-0a9eb47c370f"
+  },
+  {
+    "character_name": "Nelliel Tu Odelschwanck",
+    "series": "Bleach",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/5996d96f-6826-4a69-a8c8-1fde43f52301.avif?width=300",
+    "card_url": "https://mazoku.cc/card/5996d96f-6826-4a69-a8c8-1fde43f52301",
+    "card_id": "5996d96f-6826-4a69-a8c8-1fde43f52301"
+  },
+  {
+    "character_name": "Nimaiya Oetsu",
+    "series": "Bleach",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/321e8f5f-bf9a-458a-8ff1-3fcb9582f843.avif?width=300",
+    "card_url": "https://mazoku.cc/card/321e8f5f-bf9a-458a-8ff1-3fcb9582f843",
+    "card_id": "321e8f5f-bf9a-458a-8ff1-3fcb9582f843"
+  },
+  {
+    "character_name": "Sousuke Aizen",
+    "series": "Bleach",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/5a7d39dc-d8b9-40e9-a54a-54b84ae241ea.avif?width=300",
+    "card_url": "https://mazoku.cc/card/5a7d39dc-d8b9-40e9-a54a-54b84ae241ea",
+    "card_id": "5a7d39dc-d8b9-40e9-a54a-54b84ae241ea"
+  },
+  {
+    "character_name": "Szayel Aporro Grantz",
+    "series": "Bleach",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/2d3d0b40-059c-42ab-9532-a901c8697f5c.avif?width=300",
+    "card_url": "https://mazoku.cc/card/2d3d0b40-059c-42ab-9532-a901c8697f5c",
+    "card_id": "2d3d0b40-059c-42ab-9532-a901c8697f5c"
+  },
+  {
+    "character_name": "Toshiro Hitsugaya",
+    "series": "Bleach",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/e8bcb7b3-ae17-4c0f-8f25-4e0b4c2fed84.avif?width=300",
+    "card_url": "https://mazoku.cc/card/e8bcb7b3-ae17-4c0f-8f25-4e0b4c2fed84",
+    "card_id": "e8bcb7b3-ae17-4c0f-8f25-4e0b4c2fed84"
+  },
+  {
+    "character_name": "Uryuu Ishida",
+    "series": "Bleach",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/8a66bcd3-a78b-48d4-ae95-a61a13dc0b74.avif?width=300",
+    "card_url": "https://mazoku.cc/card/8a66bcd3-a78b-48d4-ae95-a61a13dc0b74",
+    "card_id": "8a66bcd3-a78b-48d4-ae95-a61a13dc0b74"
+  },
+  {
+    "character_name": "Yhwach",
+    "series": "Bleach",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/ac9f0036-d36f-4fa6-8b5b-78d4bf8108a1.avif?width=300",
+    "card_url": "https://mazoku.cc/card/ac9f0036-d36f-4fa6-8b5b-78d4bf8108a1",
+    "card_id": "ac9f0036-d36f-4fa6-8b5b-78d4bf8108a1"
+  },
+  {
+    "character_name": "Yoruichi Shihouin",
+    "series": "Bleach",
+    "rarity": "UR",
+    "image_url": "https://cdn7.mazoku.cc/cards/4e64556b-4c73-42b1-8b13-e127689c9ef3.avif?width=300",
+    "card_url": "https://mazoku.cc/card/4e64556b-4c73-42b1-8b13-e127689c9ef3",
+    "card_id": "4e64556b-4c73-42b1-8b13-e127689c9ef3"
+  },
+  {
+    "character_name": "Akane Sawatari",
+    "series": "Chainsaw Man",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/71e78871-670e-4af7-aee0-b1f3293d60e4.avif?width=300",
+    "card_url": "https://mazoku.cc/card/71e78871-670e-4af7-aee0-b1f3293d60e4",
+    "card_id": "71e78871-670e-4af7-aee0-b1f3293d60e4"
+  },
+  {
+    "character_name": "Aki Hayakawa",
+    "series": "Chainsaw Man",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/ad54c58f-1a39-4330-8582-0ee9c2e060c0.avif?width=300",
+    "card_url": "https://mazoku.cc/card/ad54c58f-1a39-4330-8582-0ee9c2e060c0",
+    "card_id": "ad54c58f-1a39-4330-8582-0ee9c2e060c0"
+  },
+  {
+    "character_name": "Denji",
+    "series": "Chainsaw Man",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/04a9de9d-c247-4974-b366-fc4fc9066358.avif?width=300",
+    "card_url": "https://mazoku.cc/card/04a9de9d-c247-4974-b366-fc4fc9066358",
+    "card_id": "04a9de9d-c247-4974-b366-fc4fc9066358"
+  },
+  {
+    "character_name": "Himeno",
+    "series": "Chainsaw Man",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/df30beb7-6e00-4672-8025-249d622264b3.avif?width=300",
+    "card_url": "https://mazoku.cc/card/df30beb7-6e00-4672-8025-249d622264b3",
+    "card_id": "df30beb7-6e00-4672-8025-249d622264b3"
+  },
+  {
+    "character_name": "Kobeni Higashiyama",
+    "series": "Chainsaw Man",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/dd8e0503-a011-4724-914b-f47a355408a2.avif?width=300",
+    "card_url": "https://mazoku.cc/card/dd8e0503-a011-4724-914b-f47a355408a2",
+    "card_id": "dd8e0503-a011-4724-914b-f47a355408a2"
+  },
+  {
+    "character_name": "Makima",
+    "series": "Chainsaw Man",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/bd738984-196d-4b83-920a-459a4d8b8ed0.avif?width=300",
+    "card_url": "https://mazoku.cc/card/bd738984-196d-4b83-920a-459a4d8b8ed0",
+    "card_id": "bd738984-196d-4b83-920a-459a4d8b8ed0"
+  },
+  {
+    "character_name": "Power",
+    "series": "Chainsaw Man",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/22285ed2-439c-4488-8530-71d3e48b5b65.avif?width=300",
+    "card_url": "https://mazoku.cc/card/22285ed2-439c-4488-8530-71d3e48b5b65",
+    "card_id": "22285ed2-439c-4488-8530-71d3e48b5b65"
+  },
+  {
+    "character_name": "Kishibe",
+    "series": "Chainsaw Man",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/55d3b797-92fc-4462-ae29-98808c4caa30.avif?width=300",
+    "card_url": "https://mazoku.cc/card/55d3b797-92fc-4462-ae29-98808c4caa30",
+    "card_id": "55d3b797-92fc-4462-ae29-98808c4caa30"
+  },
+  {
+    "character_name": "Pochita",
+    "series": "Chainsaw Man",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/a1b4d2c9-356f-472b-b7e6-a86984b7b5c5.avif?width=300",
+    "card_url": "https://mazoku.cc/card/a1b4d2c9-356f-472b-b7e6-a86984b7b5c5",
+    "card_id": "a1b4d2c9-356f-472b-b7e6-a86984b7b5c5"
+  },
+  {
+    "character_name": "Beam",
+    "series": "Chainsaw Man",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/08b495b5-23c8-4860-ad11-16051282a02a.avif?width=300",
+    "card_url": "https://mazoku.cc/card/08b495b5-23c8-4860-ad11-16051282a02a",
+    "card_id": "08b495b5-23c8-4860-ad11-16051282a02a"
+  },
+  {
+    "character_name": "Reze",
+    "series": "Chainsaw Man",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/3dca8d25-bd95-42ce-bb6d-1a8840d8ca8e.avif?width=300",
+    "card_url": "https://mazoku.cc/card/3dca8d25-bd95-42ce-bb6d-1a8840d8ca8e",
+    "card_id": "3dca8d25-bd95-42ce-bb6d-1a8840d8ca8e"
+  },
+  {
+    "character_name": "Hirofumi Yoshida",
+    "series": "Chainsaw Man",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/2b442e95-6ff5-487d-b7f6-ca67f2d0fbde.avif?width=300",
+    "card_url": "https://mazoku.cc/card/2b442e95-6ff5-487d-b7f6-ca67f2d0fbde",
+    "card_id": "2b442e95-6ff5-487d-b7f6-ca67f2d0fbde"
+  },
+  {
+    "character_name": "Angel Devil",
+    "series": "Chainsaw Man",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/59265a3f-4eaa-4c20-a027-8076de376327.avif?width=300",
+    "card_url": "https://mazoku.cc/card/59265a3f-4eaa-4c20-a027-8076de376327",
+    "card_id": "59265a3f-4eaa-4c20-a027-8076de376327"
+  },
+  {
+    "character_name": "Makima",
+    "series": "Chainsaw Man",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/6e678e6b-32d2-431f-ada7-8732f2dc7f36.avif?width=300",
+    "card_url": "https://mazoku.cc/card/6e678e6b-32d2-431f-ada7-8732f2dc7f36",
+    "card_id": "6e678e6b-32d2-431f-ada7-8732f2dc7f36"
+  },
+  {
+    "character_name": "Galgali",
+    "series": "Chainsaw Man",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/867b3f3e-7045-4c19-b277-7e240ad1fd3b.avif?width=300",
+    "card_url": "https://mazoku.cc/card/867b3f3e-7045-4c19-b277-7e240ad1fd3b",
+    "card_id": "867b3f3e-7045-4c19-b277-7e240ad1fd3b"
+  },
+  {
+    "character_name": "Reze",
+    "series": "Chainsaw Man",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/3f9465da-b6cf-41db-916d-b366eaa03d08.avif?width=300",
+    "card_url": "https://mazoku.cc/card/3f9465da-b6cf-41db-916d-b366eaa03d08",
+    "card_id": "3f9465da-b6cf-41db-916d-b366eaa03d08"
+  },
+  {
+    "character_name": "Makima",
+    "series": "Chainsaw Man",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/01a8c1a1-0205-496d-a85b-c059769610e3.avif?width=300",
+    "card_url": "https://mazoku.cc/card/01a8c1a1-0205-496d-a85b-c059769610e3",
+    "card_id": "01a8c1a1-0205-496d-a85b-c059769610e3"
+  },
+  {
+    "character_name": "Makima",
+    "series": "Chainsaw Man",
+    "rarity": "R",
+    "image_url": "https://cdn7.mazoku.cc/cards/3e1c391c-e16c-41d7-8725-3f36aa3fcc4d.avif?width=300",
+    "card_url": "https://mazoku.cc/card/3e1c391c-e16c-41d7-8725-3f36aa3fcc4d",
+    "card_id": "3e1c391c-e16c-41d7-8725-3f36aa3fcc4d"
+  },
+  {
+    "character_name": "Makima",
+    "series": "Chainsaw Man",
+    "rarity": "R",
+    "image_url": "https://cdn7.mazoku.cc/cards/8db0bb46-5206-4ffe-908c-717dcfce0085.avif?width=300",
+    "card_url": "https://mazoku.cc/card/8db0bb46-5206-4ffe-908c-717dcfce0085",
+    "card_id": "8db0bb46-5206-4ffe-908c-717dcfce0085"
+  },
+  {
+    "character_name": "Makima",
+    "series": "Chainsaw Man",
+    "rarity": "UR",
+    "image_url": "https://cdn7.mazoku.cc/cards/3cd456ef-da97-426b-adff-f24f4893de2b.avif?width=300",
+    "card_url": "https://mazoku.cc/card/3cd456ef-da97-426b-adff-f24f4893de2b",
+    "card_id": "3cd456ef-da97-426b-adff-f24f4893de2b"
+  },
+  {
+    "character_name": "Bond Forger",
+    "series": "SPY x FAMILY",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/9f651ad6-b426-452d-9cb9-7b05527c8082.avif?width=300",
+    "card_url": "https://mazoku.cc/card/9f651ad6-b426-452d-9cb9-7b05527c8082",
+    "card_id": "9f651ad6-b426-452d-9cb9-7b05527c8082"
+  },
+  {
+    "character_name": "Loid Forger",
+    "series": "SPY x FAMILY",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/ec7cad6d-c8f5-4455-86da-50c030b04fd6.avif?width=300",
+    "card_url": "https://mazoku.cc/card/ec7cad6d-c8f5-4455-86da-50c030b04fd6",
+    "card_id": "ec7cad6d-c8f5-4455-86da-50c030b04fd6"
+  },
+  {
+    "character_name": "Yor Forger",
+    "series": "SPY x FAMILY",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/431ceb7a-832f-416d-93cc-821475dd91a7.avif?width=300",
+    "card_url": "https://mazoku.cc/card/431ceb7a-832f-416d-93cc-821475dd91a7",
+    "card_id": "431ceb7a-832f-416d-93cc-821475dd91a7"
+  },
+  {
+    "character_name": "Damian Desmond",
+    "series": "SPY x FAMILY",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/04cb6d21-dba1-4d18-814b-703688e3294e.avif?width=300",
+    "card_url": "https://mazoku.cc/card/04cb6d21-dba1-4d18-814b-703688e3294e",
+    "card_id": "04cb6d21-dba1-4d18-814b-703688e3294e"
+  },
+  {
+    "character_name": "Anya Forger",
+    "series": "SPY x FAMILY",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/981cc4cb-2dfc-45c3-ab7c-ccc529524188.avif?width=300",
+    "card_url": "https://mazoku.cc/card/981cc4cb-2dfc-45c3-ab7c-ccc529524188",
+    "card_id": "981cc4cb-2dfc-45c3-ab7c-ccc529524188"
+  },
+  {
+    "character_name": "Yor Forger",
+    "series": "SPY x FAMILY",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/2be9b9e0-b4cc-471b-892e-988816e5652d.avif?width=300",
+    "card_url": "https://mazoku.cc/card/2be9b9e0-b4cc-471b-892e-988816e5652d",
+    "card_id": "2be9b9e0-b4cc-471b-892e-988816e5652d"
+  },
+  {
+    "character_name": "Loid Forger",
+    "series": "SPY x FAMILY",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/2f1c7116-2154-4faf-acb2-e2facb1864ee.avif?width=300",
+    "card_url": "https://mazoku.cc/card/2f1c7116-2154-4faf-acb2-e2facb1864ee",
+    "card_id": "2f1c7116-2154-4faf-acb2-e2facb1864ee"
+  },
+  {
+    "character_name": "Becky Blackbell",
+    "series": "SPY x FAMILY",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/feeda3f0-d743-4d6a-a0be-0fcca57aca19.avif?width=300",
+    "card_url": "https://mazoku.cc/card/feeda3f0-d743-4d6a-a0be-0fcca57aca19",
+    "card_id": "feeda3f0-d743-4d6a-a0be-0fcca57aca19"
+  },
+  {
+    "character_name": "Camilla",
+    "series": "SPY x FAMILY",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/43b955f7-9ba4-41d3-9fa1-a5201137c26a.avif?width=300",
+    "card_url": "https://mazoku.cc/card/43b955f7-9ba4-41d3-9fa1-a5201137c26a",
+    "card_id": "43b955f7-9ba4-41d3-9fa1-a5201137c26a"
+  },
+  {
+    "character_name": "Emile Elman",
+    "series": "SPY x FAMILY",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/0423f123-ec66-462d-8885-457c98fcc281.avif?width=300",
+    "card_url": "https://mazoku.cc/card/0423f123-ec66-462d-8885-457c98fcc281",
+    "card_id": "0423f123-ec66-462d-8885-457c98fcc281"
+  },
+  {
+    "character_name": "Ewen Egeburg",
+    "series": "SPY x FAMILY",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/269fcef4-4ce7-4a18-bde9-1528e05317ff.avif?width=300",
+    "card_url": "https://mazoku.cc/card/269fcef4-4ce7-4a18-bde9-1528e05317ff",
+    "card_id": "269fcef4-4ce7-4a18-bde9-1528e05317ff"
+  },
+  {
+    "character_name": "Fiona Frost",
+    "series": "SPY x FAMILY",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/70a2fedd-35a4-4288-884c-07fa417caf55.avif?width=300",
+    "card_url": "https://mazoku.cc/card/70a2fedd-35a4-4288-884c-07fa417caf55",
+    "card_id": "70a2fedd-35a4-4288-884c-07fa417caf55"
+  },
+  {
+    "character_name": "Franky Franklin",
+    "series": "SPY x FAMILY",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/00ae5099-b094-40a1-ac1b-7c87966e88fe.avif?width=300",
+    "card_url": "https://mazoku.cc/card/00ae5099-b094-40a1-ac1b-7c87966e88fe",
+    "card_id": "00ae5099-b094-40a1-ac1b-7c87966e88fe"
+  },
+  {
+    "character_name": "Henry Henderson",
+    "series": "SPY x FAMILY",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/a2e98baf-d26d-40a3-a745-30f8d58549f7.avif?width=300",
+    "card_url": "https://mazoku.cc/card/a2e98baf-d26d-40a3-a745-30f8d58549f7",
+    "card_id": "a2e98baf-d26d-40a3-a745-30f8d58549f7"
+  },
+  {
+    "character_name": "Sylvia Sherwood",
+    "series": "SPY x FAMILY",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/960c6558-6267-4375-adbf-3437b653381d.avif?width=300",
+    "card_url": "https://mazoku.cc/card/960c6558-6267-4375-adbf-3437b653381d",
+    "card_id": "960c6558-6267-4375-adbf-3437b653381d"
+  },
+  {
+    "character_name": "Anya Forger",
+    "series": "SPY x FAMILY",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/c4b84a46-3542-49a4-a503-5d5dcfe2e805.avif?width=300",
+    "card_url": "https://mazoku.cc/card/c4b84a46-3542-49a4-a503-5d5dcfe2e805",
+    "card_id": "c4b84a46-3542-49a4-a503-5d5dcfe2e805"
+  },
+  {
+    "character_name": "Anya Forger",
+    "series": "SPY x FAMILY",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/e04d12c8-715b-4f4e-9246-fed779488bfe.avif?width=300",
+    "card_url": "https://mazoku.cc/card/e04d12c8-715b-4f4e-9246-fed779488bfe",
+    "card_id": "e04d12c8-715b-4f4e-9246-fed779488bfe"
+  },
+  {
+    "character_name": "Anya Forger",
+    "series": "SPY x FAMILY",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/6cb9dbc0-aa9c-4e84-959d-3f99e9594699.avif?width=300",
+    "card_url": "https://mazoku.cc/card/6cb9dbc0-aa9c-4e84-959d-3f99e9594699",
+    "card_id": "6cb9dbc0-aa9c-4e84-959d-3f99e9594699"
+  },
+  {
+    "character_name": "Forger Family",
+    "series": "SPY x FAMILY",
+    "rarity": "R",
+    "image_url": "https://cdn7.mazoku.cc/cards/a78a39ff-6f22-41e7-a429-69d20bc33a7d.avif?width=300",
+    "card_url": "https://mazoku.cc/card/a78a39ff-6f22-41e7-a429-69d20bc33a7d",
+    "card_id": "a78a39ff-6f22-41e7-a429-69d20bc33a7d"
+  },
+  {
+    "character_name": "Anya Forger",
+    "series": "SPY x FAMILY",
+    "rarity": "UR",
+    "image_url": "https://cdn7.mazoku.cc/cards/ef9afe11-b9c2-4569-934b-71944101c616.avif?width=300",
+    "card_url": "https://mazoku.cc/card/ef9afe11-b9c2-4569-934b-71944101c616",
+    "card_id": "ef9afe11-b9c2-4569-934b-71944101c616"
+  },
+  {
+    "character_name": "Hae-In Cha",
+    "series": "Solo Leveling",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/8a360448-4c16-4148-851f-25da0efbcbfd.avif?width=300",
+    "card_url": "https://mazoku.cc/card/8a360448-4c16-4148-851f-25da0efbcbfd",
+    "card_id": "8a360448-4c16-4148-851f-25da0efbcbfd"
+  },
+  {
+    "character_name": "Beru",
+    "series": "Solo Leveling",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/788d08f8-913f-48b2-809b-ae8ce3480fe9.avif?width=300",
+    "card_url": "https://mazoku.cc/card/788d08f8-913f-48b2-809b-ae8ce3480fe9",
+    "card_id": "788d08f8-913f-48b2-809b-ae8ce3480fe9"
+  },
+  {
+    "character_name": "Hwang Dong-Su",
+    "series": "Solo Leveling",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/f73bc20e-63f4-42ba-bd0b-c74bd48de10a.avif?width=300",
+    "card_url": "https://mazoku.cc/card/f73bc20e-63f4-42ba-bd0b-c74bd48de10a",
+    "card_id": "f73bc20e-63f4-42ba-bd0b-c74bd48de10a"
+  },
+  {
+    "character_name": "Kang Tae-Shik",
+    "series": "Solo Leveling",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/9948844c-7666-4294-8c18-3b0a86efc3d8.avif?width=300",
+    "card_url": "https://mazoku.cc/card/9948844c-7666-4294-8c18-3b0a86efc3d8",
+    "card_id": "9948844c-7666-4294-8c18-3b0a86efc3d8"
+  },
+  {
+    "character_name": "Kim Sangshik",
+    "series": "Solo Leveling",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/bd9658de-481e-42c2-b382-aafa3f72f9e6.avif?width=300",
+    "card_url": "https://mazoku.cc/card/bd9658de-481e-42c2-b382-aafa3f72f9e6",
+    "card_id": "bd9658de-481e-42c2-b382-aafa3f72f9e6"
+  },
+  {
+    "character_name": "Lee Joo-Hee",
+    "series": "Solo Leveling",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/721571cf-b770-4c16-a48e-d15c17ba63f5.avif?width=300",
+    "card_url": "https://mazoku.cc/card/721571cf-b770-4c16-a48e-d15c17ba63f5",
+    "card_id": "721571cf-b770-4c16-a48e-d15c17ba63f5"
+  },
+  {
+    "character_name": "Song Chi-Yul",
+    "series": "Solo Leveling",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/32437bc9-827d-4009-83c1-f2682e51de76.avif?width=300",
+    "card_url": "https://mazoku.cc/card/32437bc9-827d-4009-83c1-f2682e51de76",
+    "card_id": "32437bc9-827d-4009-83c1-f2682e51de76"
+  },
+  {
+    "character_name": "Sung Jin-Woo",
+    "series": "Solo Leveling",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/3ebd8274-a7f6-427c-b3c9-a5148b34591e.avif?width=300",
+    "card_url": "https://mazoku.cc/card/3ebd8274-a7f6-427c-b3c9-a5148b34591e",
+    "card_id": "3ebd8274-a7f6-427c-b3c9-a5148b34591e"
+  },
+  {
+    "character_name": "Woo Jin-Chul",
+    "series": "Solo Leveling",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/6bf95fb7-8667-410e-a2c5-24f620398959.avif?width=300",
+    "card_url": "https://mazoku.cc/card/6bf95fb7-8667-410e-a2c5-24f620398959",
+    "card_id": "6bf95fb7-8667-410e-a2c5-24f620398959"
+  },
+  {
+    "character_name": "Yoo Jin-Ho",
+    "series": "Solo Leveling",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/9f9aedd9-bbef-45f8-bb43-a05465f3c0d4.avif?width=300",
+    "card_url": "https://mazoku.cc/card/9f9aedd9-bbef-45f8-bb43-a05465f3c0d4",
+    "card_id": "9f9aedd9-bbef-45f8-bb43-a05465f3c0d4"
+  },
+  {
+    "character_name": "Baek Yoon-Ho",
+    "series": "Solo Leveling",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/ba03b2db-1aeb-4967-8709-d6d0bc2d7cb9.avif?width=300",
+    "card_url": "https://mazoku.cc/card/ba03b2db-1aeb-4967-8709-d6d0bc2d7cb9",
+    "card_id": "ba03b2db-1aeb-4967-8709-d6d0bc2d7cb9"
+  },
+  {
+    "character_name": "Choi Jong-in",
+    "series": "Solo Leveling",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/0f115a2a-ee69-4679-a815-a5288eebace5.avif?width=300",
+    "card_url": "https://mazoku.cc/card/0f115a2a-ee69-4679-a815-a5288eebace5",
+    "card_id": "0f115a2a-ee69-4679-a815-a5288eebace5"
+  },
+  {
+    "character_name": "Sung Jin-Ah",
+    "series": "Solo Leveling",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/732f773f-422c-4de9-a7ae-7769661b2aea.avif?width=300",
+    "card_url": "https://mazoku.cc/card/732f773f-422c-4de9-a7ae-7769661b2aea",
+    "card_id": "732f773f-422c-4de9-a7ae-7769661b2aea"
+  },
+  {
+    "character_name": "Igris",
+    "series": "Solo Leveling",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/1ed15cb9-bf55-4ca4-8d9c-1d5d9d2003ab.avif?width=300",
+    "card_url": "https://mazoku.cc/card/1ed15cb9-bf55-4ca4-8d9c-1d5d9d2003ab",
+    "card_id": "1ed15cb9-bf55-4ca4-8d9c-1d5d9d2003ab"
+  },
+  {
+    "character_name": "Go Gun-Hee",
+    "series": "Solo Leveling",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/36199758-361f-4af6-b114-97e427735b59.avif?width=300",
+    "card_url": "https://mazoku.cc/card/36199758-361f-4af6-b114-97e427735b59",
+    "card_id": "36199758-361f-4af6-b114-97e427735b59"
+  },
+  {
+    "character_name": "Cha Hae-In",
+    "series": "Solo Leveling",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/0fee42e2-3bd8-409f-8346-3d3cc6111c51.avif?width=300",
+    "card_url": "https://mazoku.cc/card/0fee42e2-3bd8-409f-8346-3d3cc6111c51",
+    "card_id": "0fee42e2-3bd8-409f-8346-3d3cc6111c51"
+  },
+  {
+    "character_name": "Sung Jin-Woo",
+    "series": "Solo Leveling",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/d9e90840-6e59-4c72-b26b-6dfb18ab4661.avif?width=300",
+    "card_url": "https://mazoku.cc/card/d9e90840-6e59-4c72-b26b-6dfb18ab4661",
+    "card_id": "d9e90840-6e59-4c72-b26b-6dfb18ab4661"
+  },
+  {
+    "character_name": "Alicia Blanche",
+    "series": "Solo Leveling",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/681a1aec-dc78-4c97-944c-9da814271781.avif?width=300",
+    "card_url": "https://mazoku.cc/card/681a1aec-dc78-4c97-944c-9da814271781",
+    "card_id": "681a1aec-dc78-4c97-944c-9da814271781"
+  },
+  {
+    "character_name": "Amamiya Mirei",
+    "series": "Solo Leveling",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/d44335a8-8fb9-4088-8df7-55d220374795.avif?width=300",
+    "card_url": "https://mazoku.cc/card/d44335a8-8fb9-4088-8df7-55d220374795",
+    "card_id": "d44335a8-8fb9-4088-8df7-55d220374795"
+  },
+  {
+    "character_name": "Cha Hae-In",
+    "series": "Solo Leveling",
+    "rarity": "UR",
+    "image_url": "https://cdn7.mazoku.cc/cards/ff0041b5-49a4-4265-a042-87497832b9ac.avif?width=300",
+    "card_url": "https://mazoku.cc/card/ff0041b5-49a4-4265-a042-87497832b9ac",
+    "card_id": "ff0041b5-49a4-4265-a042-87497832b9ac"
+  },
+  {
+    "character_name": "Eisen",
+    "series": "Frieren",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/bbca3e88-ae4a-4436-a4d9-a78db866b10c.avif?width=300",
+    "card_url": "https://mazoku.cc/card/bbca3e88-ae4a-4436-a4d9-a78db866b10c",
+    "card_id": "bbca3e88-ae4a-4436-a4d9-a78db866b10c"
+  },
+  {
+    "character_name": "Fern",
+    "series": "Frieren",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/0c91993f-1dce-4fe0-81fc-bfd855c4967c.avif?width=300",
+    "card_url": "https://mazoku.cc/card/0c91993f-1dce-4fe0-81fc-bfd855c4967c",
+    "card_id": "0c91993f-1dce-4fe0-81fc-bfd855c4967c"
+  },
+  {
+    "character_name": "Frieren",
+    "series": "Frieren",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/2e50da26-1445-4509-8a7e-6363a8fdb043.avif?width=300",
+    "card_url": "https://mazoku.cc/card/2e50da26-1445-4509-8a7e-6363a8fdb043",
+    "card_id": "2e50da26-1445-4509-8a7e-6363a8fdb043"
+  },
+  {
+    "character_name": "Heiter",
+    "series": "Frieren",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/43469982-1784-49b3-902f-80f39da175ae.avif?width=300",
+    "card_url": "https://mazoku.cc/card/43469982-1784-49b3-902f-80f39da175ae",
+    "card_id": "43469982-1784-49b3-902f-80f39da175ae"
+  },
+  {
+    "character_name": "Himmel",
+    "series": "Frieren",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/7bdfdaba-1fc9-4fa8-9513-994d62cd504c.avif?width=300",
+    "card_url": "https://mazoku.cc/card/7bdfdaba-1fc9-4fa8-9513-994d62cd504c",
+    "card_id": "7bdfdaba-1fc9-4fa8-9513-994d62cd504c"
+  },
+  {
+    "character_name": "Sein",
+    "series": "Frieren",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/1e8d3954-a03c-4ba3-91b8-203806a7eb3e.avif?width=300",
+    "card_url": "https://mazoku.cc/card/1e8d3954-a03c-4ba3-91b8-203806a7eb3e",
+    "card_id": "1e8d3954-a03c-4ba3-91b8-203806a7eb3e"
+  },
+  {
+    "character_name": "Stark",
+    "series": "Frieren",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/ab83a43f-aeea-43e4-b736-defa4bb37096.avif?width=300",
+    "card_url": "https://mazoku.cc/card/ab83a43f-aeea-43e4-b736-defa4bb37096",
+    "card_id": "ab83a43f-aeea-43e4-b736-defa4bb37096"
+  },
+  {
+    "character_name": "Aura",
+    "series": "Frieren",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/e737401f-9fc5-42ca-81eb-bce4fc33ab0c.avif?width=300",
+    "card_url": "https://mazoku.cc/card/e737401f-9fc5-42ca-81eb-bce4fc33ab0c",
+    "card_id": "e737401f-9fc5-42ca-81eb-bce4fc33ab0c"
+  },
+  {
+    "character_name": "Kanne",
+    "series": "Frieren",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/84b5971a-59eb-4386-968f-9816de33222b.avif?width=300",
+    "card_url": "https://mazoku.cc/card/84b5971a-59eb-4386-968f-9816de33222b",
+    "card_id": "84b5971a-59eb-4386-968f-9816de33222b"
+  },
+  {
+    "character_name": "Lawine",
+    "series": "Frieren",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/aa608642-206d-47e1-9fd5-aa7be52cfed5.avif?width=300",
+    "card_url": "https://mazoku.cc/card/aa608642-206d-47e1-9fd5-aa7be52cfed5",
+    "card_id": "aa608642-206d-47e1-9fd5-aa7be52cfed5"
+  },
+  {
+    "character_name": "Linie",
+    "series": "Frieren",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/1260eb6b-cc5a-43bb-844e-0df63792b8b6.avif?width=300",
+    "card_url": "https://mazoku.cc/card/1260eb6b-cc5a-43bb-844e-0df63792b8b6",
+    "card_id": "1260eb6b-cc5a-43bb-844e-0df63792b8b6"
+  },
+  {
+    "character_name": "Sense",
+    "series": "Frieren",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/44f4aeb7-88da-41a7-96d7-5340fb010284.avif?width=300",
+    "card_url": "https://mazoku.cc/card/44f4aeb7-88da-41a7-96d7-5340fb010284",
+    "card_id": "44f4aeb7-88da-41a7-96d7-5340fb010284"
+  },
+  {
+    "character_name": "Serie",
+    "series": "Frieren",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/faac1be2-e9b8-4a9c-bb3d-c68510d1e5d1.avif?width=300",
+    "card_url": "https://mazoku.cc/card/faac1be2-e9b8-4a9c-bb3d-c68510d1e5d1",
+    "card_id": "faac1be2-e9b8-4a9c-bb3d-c68510d1e5d1"
+  },
+  {
+    "character_name": "Übel",
+    "series": "Frieren",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/c5360a9e-f495-4407-8392-0358053097d7.avif?width=300",
+    "card_url": "https://mazoku.cc/card/c5360a9e-f495-4407-8392-0358053097d7",
+    "card_id": "c5360a9e-f495-4407-8392-0358053097d7"
+  },
+  {
+    "character_name": "Flamme",
+    "series": "Frieren",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/09a716f5-dad7-47ff-91e8-893cc5f6ea56.avif?width=300",
+    "card_url": "https://mazoku.cc/card/09a716f5-dad7-47ff-91e8-893cc5f6ea56",
+    "card_id": "09a716f5-dad7-47ff-91e8-893cc5f6ea56"
+  },
+  {
+    "character_name": "Frieren",
+    "series": "Frieren",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/fad5d132-a60b-42d7-92c5-f459dc5c2d02.avif?width=300",
+    "card_url": "https://mazoku.cc/card/fad5d132-a60b-42d7-92c5-f459dc5c2d02",
+    "card_id": "fad5d132-a60b-42d7-92c5-f459dc5c2d02"
+  },
+  {
+    "character_name": "Fern",
+    "series": "Frieren",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/8f9bffc5-557f-4782-a283-fbda09dd3a7a.avif?width=300",
+    "card_url": "https://mazoku.cc/card/8f9bffc5-557f-4782-a283-fbda09dd3a7a",
+    "card_id": "8f9bffc5-557f-4782-a283-fbda09dd3a7a"
+  },
+  {
+    "character_name": "Frieren",
+    "series": "Frieren",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/a5ddcb1f-f073-4ee8-927d-2b5b5b210e65.avif?width=300",
+    "card_url": "https://mazoku.cc/card/a5ddcb1f-f073-4ee8-927d-2b5b5b210e65",
+    "card_id": "a5ddcb1f-f073-4ee8-927d-2b5b5b210e65"
+  },
+  {
+    "character_name": "Fern",
+    "series": "Frieren",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/723dd2cc-0ad0-4207-84ea-04fd5a29c239.avif?width=300",
+    "card_url": "https://mazoku.cc/card/723dd2cc-0ad0-4207-84ea-04fd5a29c239",
+    "card_id": "723dd2cc-0ad0-4207-84ea-04fd5a29c239"
+  },
+  {
+    "character_name": "Frieren",
+    "series": "Frieren",
+    "rarity": "UR",
+    "image_url": "https://cdn7.mazoku.cc/cards/6944d03f-cc22-434c-a9fc-4e791dac46ef.avif?width=300",
+    "card_url": "https://mazoku.cc/card/6944d03f-cc22-434c-a9fc-4e791dac46ef",
+    "card_id": "6944d03f-cc22-434c-a9fc-4e791dac46ef"
+  },
+  {
+    "character_name": "Alice Zuberg",
+    "series": "Sword Art Online",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/09ad11df-79f7-41c3-9ecd-487b7031e96d.avif?width=300",
+    "card_url": "https://mazoku.cc/card/09ad11df-79f7-41c3-9ecd-487b7031e96d",
+    "card_id": "09ad11df-79f7-41c3-9ecd-487b7031e96d"
+  },
+  {
+    "character_name": "Ayano Keiko",
+    "series": "Sword Art Online",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/e9e9b35f-c02d-4f60-95c6-33b21e883085.avif?width=300",
+    "card_url": "https://mazoku.cc/card/e9e9b35f-c02d-4f60-95c6-33b21e883085",
+    "card_id": "e9e9b35f-c02d-4f60-95c6-33b21e883085"
+  },
+  {
+    "character_name": "Lisbeth",
+    "series": "Sword Art Online",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/1c8479c9-3c56-4239-bf1c-3326d7479f15.avif?width=300",
+    "card_url": "https://mazoku.cc/card/1c8479c9-3c56-4239-bf1c-3326d7479f15",
+    "card_id": "1c8479c9-3c56-4239-bf1c-3326d7479f15"
+  },
+  {
+    "character_name": "Sinon",
+    "series": "Sword Art Online",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/c74733d2-4813-430b-808d-9f4a0d62c1e0.avif?width=300",
+    "card_url": "https://mazoku.cc/card/c74733d2-4813-430b-808d-9f4a0d62c1e0",
+    "card_id": "c74733d2-4813-430b-808d-9f4a0d62c1e0"
+  },
+  {
+    "character_name": "Alice Zuberg",
+    "series": "Sword Art Online",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/63860aa5-5a70-46ad-baf2-bbaedb74148f.avif?width=300",
+    "card_url": "https://mazoku.cc/card/63860aa5-5a70-46ad-baf2-bbaedb74148f",
+    "card_id": "63860aa5-5a70-46ad-baf2-bbaedb74148f"
+  },
+  {
+    "character_name": "Asuna",
+    "series": "Sword Art Online",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/75c76181-2fa1-4fe3-b9d2-7ff6a76eb4f3.avif?width=300",
+    "card_url": "https://mazoku.cc/card/75c76181-2fa1-4fe3-b9d2-7ff6a76eb4f3",
+    "card_id": "75c76181-2fa1-4fe3-b9d2-7ff6a76eb4f3"
+  },
+  {
+    "character_name": "Kirito",
+    "series": "Sword Art Online",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/f163f6bd-b72c-493f-9d4c-d4c880aa618d.avif?width=300",
+    "card_url": "https://mazoku.cc/card/f163f6bd-b72c-493f-9d4c-d4c880aa618d",
+    "card_id": "f163f6bd-b72c-493f-9d4c-d4c880aa618d"
+  },
+  {
+    "character_name": "Eugeo",
+    "series": "Sword Art Online",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/a0f61ec0-31b2-422b-9f88-9eb70a2e7555.avif?width=300",
+    "card_url": "https://mazoku.cc/card/a0f61ec0-31b2-422b-9f88-9eb70a2e7555",
+    "card_id": "a0f61ec0-31b2-422b-9f88-9eb70a2e7555"
+  },
+  {
+    "character_name": "Yuuki and Asuna",
+    "series": "Sword Art Online",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/39ed8895-61ad-4d25-b73c-0f6e3db67b38.avif?width=300",
+    "card_url": "https://mazoku.cc/card/39ed8895-61ad-4d25-b73c-0f6e3db67b38",
+    "card_id": "39ed8895-61ad-4d25-b73c-0f6e3db67b38"
+  },
+  {
+    "character_name": "Yuuki Konno",
+    "series": "Sword Art Online",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/4c8dcf01-d4b4-4e3c-8e45-62349afac634.avif?width=300",
+    "card_url": "https://mazoku.cc/card/4c8dcf01-d4b4-4e3c-8e45-62349afac634",
+    "card_id": "4c8dcf01-d4b4-4e3c-8e45-62349afac634"
+  },
+  {
+    "character_name": "Quinella",
+    "series": "Sword Art Online",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/84484933-41a9-4359-abb3-6e25b317dd10.avif?width=300",
+    "card_url": "https://mazoku.cc/card/84484933-41a9-4359-abb3-6e25b317dd10",
+    "card_id": "84484933-41a9-4359-abb3-6e25b317dd10"
+  },
+  {
+    "character_name": "Sinon",
+    "series": "Sword Art Online",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/abd2d898-7df7-4846-bc3b-ee804d64f2bd.avif?width=300",
+    "card_url": "https://mazoku.cc/card/abd2d898-7df7-4846-bc3b-ee804d64f2bd",
+    "card_id": "abd2d898-7df7-4846-bc3b-ee804d64f2bd"
+  },
+  {
+    "character_name": "Sinon",
+    "series": "Sword Art Online",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/0a4d1bac-d688-4397-9aa9-333cd0e6ee75.avif?width=300",
+    "card_url": "https://mazoku.cc/card/0a4d1bac-d688-4397-9aa9-333cd0e6ee75",
+    "card_id": "0a4d1bac-d688-4397-9aa9-333cd0e6ee75"
+  },
+  {
+    "character_name": "Strea",
+    "series": "Sword Art Online",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/396aea0c-ce1c-4e24-a6fd-57d270a7b272.avif?width=300",
+    "card_url": "https://mazoku.cc/card/396aea0c-ce1c-4e24-a6fd-57d270a7b272",
+    "card_id": "396aea0c-ce1c-4e24-a6fd-57d270a7b272"
+  },
+  {
+    "character_name": "Leafa",
+    "series": "Sword Art Online",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/c1684cef-23be-44b8-8876-b784a86af129.avif?width=300",
+    "card_url": "https://mazoku.cc/card/c1684cef-23be-44b8-8876-b784a86af129",
+    "card_id": "c1684cef-23be-44b8-8876-b784a86af129"
+  },
+  {
+    "character_name": "Agil",
+    "series": "Sword Art Online",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/f7aea505-e294-405c-ba3e-8d3439f313df.avif?width=300",
+    "card_url": "https://mazoku.cc/card/f7aea505-e294-405c-ba3e-8d3439f313df",
+    "card_id": "f7aea505-e294-405c-ba3e-8d3439f313df"
+  },
+  {
+    "character_name": "Sachi",
+    "series": "Sword Art Online",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/656ecbbd-f366-48cd-bda7-c77cb37db47f.avif?width=300",
+    "card_url": "https://mazoku.cc/card/656ecbbd-f366-48cd-bda7-c77cb37db47f",
+    "card_id": "656ecbbd-f366-48cd-bda7-c77cb37db47f"
+  },
+  {
+    "character_name": "Klein",
+    "series": "Sword Art Online",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/d088e391-c258-438c-8bec-b1108a12d437.avif?width=300",
+    "card_url": "https://mazoku.cc/card/d088e391-c258-438c-8bec-b1108a12d437",
+    "card_id": "d088e391-c258-438c-8bec-b1108a12d437"
+  },
+  {
+    "character_name": "Heathcliff",
+    "series": "Sword Art Online",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/2aec2811-a7d2-4108-af3d-77a99b9f8a16.avif?width=300",
+    "card_url": "https://mazoku.cc/card/2aec2811-a7d2-4108-af3d-77a99b9f8a16",
+    "card_id": "2aec2811-a7d2-4108-af3d-77a99b9f8a16"
+  },
+  {
+    "character_name": "Sinon",
+    "series": "Sword Art Online",
+    "rarity": "UR",
+    "image_url": "https://cdn7.mazoku.cc/cards/31113f90-df17-4504-ad6f-f06f29377712.avif?width=300",
+    "card_url": "https://mazoku.cc/card/31113f90-df17-4504-ad6f-f06f29377712",
+    "card_id": "31113f90-df17-4504-ad6f-f06f29377712"
+  },
+  {
+    "character_name": "Tobio Kageyama",
+    "series": "Haikyuu",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/5ef77206-70fc-4b9a-a278-2d2212a4e133.avif?width=300",
+    "card_url": "https://mazoku.cc/card/5ef77206-70fc-4b9a-a278-2d2212a4e133",
+    "card_id": "5ef77206-70fc-4b9a-a278-2d2212a4e133"
+  },
+  {
+    "character_name": "Asahi Azumane",
+    "series": "Haikyuu",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/932faf81-3f9d-46b9-aa08-e668f2a8dde4.avif?width=300",
+    "card_url": "https://mazoku.cc/card/932faf81-3f9d-46b9-aa08-e668f2a8dde4",
+    "card_id": "932faf81-3f9d-46b9-aa08-e668f2a8dde4"
+  },
+  {
+    "character_name": "Daichi Sawamura",
+    "series": "Haikyuu",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/580badb1-b6ae-45b0-ae6f-07878081dccf.avif?width=300",
+    "card_url": "https://mazoku.cc/card/580badb1-b6ae-45b0-ae6f-07878081dccf",
+    "card_id": "580badb1-b6ae-45b0-ae6f-07878081dccf"
+  },
+  {
+    "character_name": "Kei Tsukishima",
+    "series": "Haikyuu",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/246f899f-eb0f-47ac-a1a0-e7998e54b113.avif?width=300",
+    "card_url": "https://mazoku.cc/card/246f899f-eb0f-47ac-a1a0-e7998e54b113",
+    "card_id": "246f899f-eb0f-47ac-a1a0-e7998e54b113"
+  },
+  {
+    "character_name": "Koushi Sugawara",
+    "series": "Haikyuu",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/033a189a-e32e-4df4-abc6-da8e6e0a561d.avif?width=300",
+    "card_url": "https://mazoku.cc/card/033a189a-e32e-4df4-abc6-da8e6e0a561d",
+    "card_id": "033a189a-e32e-4df4-abc6-da8e6e0a561d"
+  },
+  {
+    "character_name": "Ryunosuke Tanaka",
+    "series": "Haikyuu",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/21a7edba-bfde-43fd-8015-884e05566e6f.avif?width=300",
+    "card_url": "https://mazoku.cc/card/21a7edba-bfde-43fd-8015-884e05566e6f",
+    "card_id": "21a7edba-bfde-43fd-8015-884e05566e6f"
+  },
+  {
+    "character_name": "Tadashi Yamaguchi",
+    "series": "Haikyuu",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/ac0768a1-4b08-4e48-9879-c3fd7ed0b6b0.avif?width=300",
+    "card_url": "https://mazoku.cc/card/ac0768a1-4b08-4e48-9879-c3fd7ed0b6b0",
+    "card_id": "ac0768a1-4b08-4e48-9879-c3fd7ed0b6b0"
+  },
+  {
+    "character_name": "Yuu Nishinoya",
+    "series": "Haikyuu",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/20ebadfd-9c97-431f-b924-e596fa75a201.avif?width=300",
+    "card_url": "https://mazoku.cc/card/20ebadfd-9c97-431f-b924-e596fa75a201",
+    "card_id": "20ebadfd-9c97-431f-b924-e596fa75a201"
+  },
+  {
+    "character_name": "Osamu Miya",
+    "series": "Haikyuu",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/60097283-6fea-4869-b0dc-7b9c95432938.avif?width=300",
+    "card_url": "https://mazoku.cc/card/60097283-6fea-4869-b0dc-7b9c95432938",
+    "card_id": "60097283-6fea-4869-b0dc-7b9c95432938"
+  },
+  {
+    "character_name": "Kotaro Bokuto",
+    "series": "Haikyuu",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/4e9cc0fc-7d1a-4e3d-b35d-aeb4a030da1f.avif?width=300",
+    "card_url": "https://mazoku.cc/card/4e9cc0fc-7d1a-4e3d-b35d-aeb4a030da1f",
+    "card_id": "4e9cc0fc-7d1a-4e3d-b35d-aeb4a030da1f"
+  },
+  {
+    "character_name": "Toru Oikawa",
+    "series": "Haikyuu",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/ffe98233-a2bf-40f1-a1af-99de0cef562e.avif?width=300",
+    "card_url": "https://mazoku.cc/card/ffe98233-a2bf-40f1-a1af-99de0cef562e",
+    "card_id": "ffe98233-a2bf-40f1-a1af-99de0cef562e"
+  },
+  {
+    "character_name": "Kiyoko Shimizu",
+    "series": "Haikyuu",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/0848eadf-ec27-47e1-87e1-c76a7078ff5e.avif?width=300",
+    "card_url": "https://mazoku.cc/card/0848eadf-ec27-47e1-87e1-c76a7078ff5e",
+    "card_id": "0848eadf-ec27-47e1-87e1-c76a7078ff5e"
+  },
+  {
+    "character_name": "Kenma Kozume",
+    "series": "Haikyuu",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/dea2edb6-d4ea-42a2-8169-3cebfae82d6a.avif?width=300",
+    "card_url": "https://mazoku.cc/card/dea2edb6-d4ea-42a2-8169-3cebfae82d6a",
+    "card_id": "dea2edb6-d4ea-42a2-8169-3cebfae82d6a"
+  },
+  {
+    "character_name": "Wakatoshi Ushijima",
+    "series": "Haikyuu",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/aa283e82-697d-4c3f-b23b-6aedeacda760.avif?width=300",
+    "card_url": "https://mazoku.cc/card/aa283e82-697d-4c3f-b23b-6aedeacda760",
+    "card_id": "aa283e82-697d-4c3f-b23b-6aedeacda760"
+  },
+  {
+    "character_name": "Shinsuke Kita",
+    "series": "Haikyuu",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/21d0398a-dee4-484a-af31-cbfad26e3def.avif?width=300",
+    "card_url": "https://mazoku.cc/card/21d0398a-dee4-484a-af31-cbfad26e3def",
+    "card_id": "21d0398a-dee4-484a-af31-cbfad26e3def"
+  },
+  {
+    "character_name": "Tsutomu Goshiki",
+    "series": "Haikyuu",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/c695e618-784e-4dd0-bca4-654b63439ef3.avif?width=300",
+    "card_url": "https://mazoku.cc/card/c695e618-784e-4dd0-bca4-654b63439ef3",
+    "card_id": "c695e618-784e-4dd0-bca4-654b63439ef3"
+  },
+  {
+    "character_name": "Satori Tendou",
+    "series": "Haikyuu",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/4985155e-177f-4654-a364-ef8c26d4d7eb.avif?width=300",
+    "card_url": "https://mazoku.cc/card/4985155e-177f-4654-a364-ef8c26d4d7eb",
+    "card_id": "4985155e-177f-4654-a364-ef8c26d4d7eb"
+  },
+  {
+    "character_name": "Shouyou Hinata",
+    "series": "Haikyuu",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/7b8edaa1-1e46-4f45-b69c-dd2e476ae8d2.avif?width=300",
+    "card_url": "https://mazoku.cc/card/7b8edaa1-1e46-4f45-b69c-dd2e476ae8d2",
+    "card_id": "7b8edaa1-1e46-4f45-b69c-dd2e476ae8d2"
+  },
+  {
+    "character_name": "Hinata & Kageyama",
+    "series": "Haikyuu",
+    "rarity": "R",
+    "image_url": "https://cdn7.mazoku.cc/cards/22d8df5c-f621-4295-b149-615b4a95f593.avif?width=300",
+    "card_url": "https://mazoku.cc/card/22d8df5c-f621-4295-b149-615b4a95f593",
+    "card_id": "22d8df5c-f621-4295-b149-615b4a95f593"
+  },
+  {
+    "character_name": "Shouyou Hinata",
+    "series": "Haikyuu",
+    "rarity": "UR",
+    "image_url": "https://cdn7.mazoku.cc/cards/a1e44546-f82f-4e80-8009-a478746276a4.avif?width=300",
+    "card_url": "https://mazoku.cc/card/a1e44546-f82f-4e80-8009-a478746276a4",
+    "card_id": "a1e44546-f82f-4e80-8009-a478746276a4"
+  },
+  {
+    "character_name": "Yoichi Isagi",
+    "series": "Blue Lock",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/362a5c7e-9e09-492e-b18b-99191e135a5d.avif?width=300",
+    "card_url": "https://mazoku.cc/card/362a5c7e-9e09-492e-b18b-99191e135a5d",
+    "card_id": "362a5c7e-9e09-492e-b18b-99191e135a5d"
+  },
+  {
+    "character_name": "Anri Teieri",
+    "series": "Blue Lock",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/5cb44281-4da5-4b89-8ed3-5788648903c7.avif?width=300",
+    "card_url": "https://mazoku.cc/card/5cb44281-4da5-4b89-8ed3-5788648903c7",
+    "card_id": "5cb44281-4da5-4b89-8ed3-5788648903c7"
+  },
+  {
+    "character_name": "Gurimu Igarashi",
+    "series": "Blue Lock",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/1b60402f-b478-49e0-add0-6e0abc338e62.avif?width=300",
+    "card_url": "https://mazoku.cc/card/1b60402f-b478-49e0-add0-6e0abc338e62",
+    "card_id": "1b60402f-b478-49e0-add0-6e0abc338e62"
+  },
+  {
+    "character_name": "Hyoma Chigiri",
+    "series": "Blue Lock",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/f746238b-3e86-4db0-86a6-d2995a9b91a6.avif?width=300",
+    "card_url": "https://mazoku.cc/card/f746238b-3e86-4db0-86a6-d2995a9b91a6",
+    "card_id": "f746238b-3e86-4db0-86a6-d2995a9b91a6"
+  },
+  {
+    "character_name": "Ikki Niko",
+    "series": "Blue Lock",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/503065f3-a578-4b9c-af9c-235d8041830e.avif?width=300",
+    "card_url": "https://mazoku.cc/card/503065f3-a578-4b9c-af9c-235d8041830e",
+    "card_id": "503065f3-a578-4b9c-af9c-235d8041830e"
+  },
+  {
+    "character_name": "Jingo Raichi",
+    "series": "Blue Lock",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/a93b5f8a-71d9-47d7-aa68-43281767f62f.avif?width=300",
+    "card_url": "https://mazoku.cc/card/a93b5f8a-71d9-47d7-aa68-43281767f62f",
+    "card_id": "a93b5f8a-71d9-47d7-aa68-43281767f62f"
+  },
+  {
+    "character_name": "Jinpachi Ego",
+    "series": "Blue Lock",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/ca3ceaa6-e0cb-4a85-9224-b1ed107b97b4.avif?width=300",
+    "card_url": "https://mazoku.cc/card/ca3ceaa6-e0cb-4a85-9224-b1ed107b97b4",
+    "card_id": "ca3ceaa6-e0cb-4a85-9224-b1ed107b97b4"
+  },
+  {
+    "character_name": "Meguru Bachira",
+    "series": "Blue Lock",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/1bc5112f-f7bb-4be7-8588-3902f5999b2e.avif?width=300",
+    "card_url": "https://mazoku.cc/card/1bc5112f-f7bb-4be7-8588-3902f5999b2e",
+    "card_id": "1bc5112f-f7bb-4be7-8588-3902f5999b2e"
+  },
+  {
+    "character_name": "Reo Mikage",
+    "series": "Blue Lock",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/d21326a2-1eb6-4658-9eea-babd1d4d56d7.avif?width=300",
+    "card_url": "https://mazoku.cc/card/d21326a2-1eb6-4658-9eea-babd1d4d56d7",
+    "card_id": "d21326a2-1eb6-4658-9eea-babd1d4d56d7"
+  },
+  {
+    "character_name": "Shouei Barou",
+    "series": "Blue Lock",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/8b5e39b2-4fd4-4e76-9082-0a007d66e26a.avif?width=300",
+    "card_url": "https://mazoku.cc/card/8b5e39b2-4fd4-4e76-9082-0a007d66e26a",
+    "card_id": "8b5e39b2-4fd4-4e76-9082-0a007d66e26a"
+  },
+  {
+    "character_name": "Zantetsu Tsuguri",
+    "series": "Blue Lock",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/6ebf5c2a-c926-4a43-9bdd-729eaee3ab37.avif?width=300",
+    "card_url": "https://mazoku.cc/card/6ebf5c2a-c926-4a43-9bdd-729eaee3ab37",
+    "card_id": "6ebf5c2a-c926-4a43-9bdd-729eaee3ab37"
+  },
+  {
+    "character_name": "Gin Gagamaru",
+    "series": "Blue Lock",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/9f88e1a8-b28a-4d63-a8cd-294121eee593.avif?width=300",
+    "card_url": "https://mazoku.cc/card/9f88e1a8-b28a-4d63-a8cd-294121eee593",
+    "card_id": "9f88e1a8-b28a-4d63-a8cd-294121eee593"
+  },
+  {
+    "character_name": "Sae Itoshi",
+    "series": "Blue Lock",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/247e09ec-43e6-40d9-ba26-45b914b7ea11.avif?width=300",
+    "card_url": "https://mazoku.cc/card/247e09ec-43e6-40d9-ba26-45b914b7ea11",
+    "card_id": "247e09ec-43e6-40d9-ba26-45b914b7ea11"
+  },
+  {
+    "character_name": "Aoshi Tokimitsu",
+    "series": "Blue Lock",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/998a7996-7fa6-4e46-b5e9-9b1d25f12d5f.avif?width=300",
+    "card_url": "https://mazoku.cc/card/998a7996-7fa6-4e46-b5e9-9b1d25f12d5f",
+    "card_id": "998a7996-7fa6-4e46-b5e9-9b1d25f12d5f"
+  },
+  {
+    "character_name": "Eita Otoya",
+    "series": "Blue Lock",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/cd055f9e-6701-46c2-9aa5-70a137057f08.avif?width=300",
+    "card_url": "https://mazoku.cc/card/cd055f9e-6701-46c2-9aa5-70a137057f08",
+    "card_id": "cd055f9e-6701-46c2-9aa5-70a137057f08"
+  },
+  {
+    "character_name": "Jyubei Aryu",
+    "series": "Blue Lock",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/4ca904e2-97c7-4c90-b67e-45d2de8d06cb.avif?width=300",
+    "card_url": "https://mazoku.cc/card/4ca904e2-97c7-4c90-b67e-45d2de8d06cb",
+    "card_id": "4ca904e2-97c7-4c90-b67e-45d2de8d06cb"
+  },
+  {
+    "character_name": "Kenyu Yukimiya",
+    "series": "Blue Lock",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/01012d00-fb0c-4dd2-9591-2e2ef5bad7cf.avif?width=300",
+    "card_url": "https://mazoku.cc/card/01012d00-fb0c-4dd2-9591-2e2ef5bad7cf",
+    "card_id": "01012d00-fb0c-4dd2-9591-2e2ef5bad7cf"
+  },
+  {
+    "character_name": "Nijiro Nanase",
+    "series": "Blue Lock",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/32254b67-a03c-4ba0-99ec-a0ef86f50158.avif?width=300",
+    "card_url": "https://mazoku.cc/card/32254b67-a03c-4ba0-99ec-a0ef86f50158",
+    "card_id": "32254b67-a03c-4ba0-99ec-a0ef86f50158"
+  },
+  {
+    "character_name": "Ryusei Shido",
+    "series": "Blue Lock",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/03cbe1eb-9eb2-4b49-8f3a-739a1170a5af.avif?width=300",
+    "card_url": "https://mazoku.cc/card/03cbe1eb-9eb2-4b49-8f3a-739a1170a5af",
+    "card_id": "03cbe1eb-9eb2-4b49-8f3a-739a1170a5af"
+  },
+  {
+    "character_name": "Rin Itoshi",
+    "series": "Blue Lock",
+    "rarity": "UR",
+    "image_url": "https://cdn7.mazoku.cc/cards/2e3cd62c-117d-4c2e-8048-1ac001bf9d69.avif?width=300",
+    "card_url": "https://mazoku.cc/card/2e3cd62c-117d-4c2e-8048-1ac001bf9d69",
+    "card_id": "2e3cd62c-117d-4c2e-8048-1ac001bf9d69"
+  },
+  {
+    "character_name": "Ram",
+    "series": "Re:Zero",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/38ffa294-36ba-49b3-a60e-cbd6d28f2c2d.avif?width=300",
+    "card_url": "https://mazoku.cc/card/38ffa294-36ba-49b3-a60e-cbd6d28f2c2d",
+    "card_id": "38ffa294-36ba-49b3-a60e-cbd6d28f2c2d"
+  },
+  {
+    "character_name": "Rem",
+    "series": "Re:Zero",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/7cebe0e2-5115-4009-8594-fd7c9d07dcfa.avif?width=300",
+    "card_url": "https://mazoku.cc/card/7cebe0e2-5115-4009-8594-fd7c9d07dcfa",
+    "card_id": "7cebe0e2-5115-4009-8594-fd7c9d07dcfa"
+  },
+  {
+    "character_name": "Beatrice",
+    "series": "Re:Zero",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/62041cc8-f142-4975-9c5d-dcdaa065b4fa.avif?width=300",
+    "card_url": "https://mazoku.cc/card/62041cc8-f142-4975-9c5d-dcdaa065b4fa",
+    "card_id": "62041cc8-f142-4975-9c5d-dcdaa065b4fa"
+  },
+  {
+    "character_name": "Garfiel Tinzel",
+    "series": "Re:Zero",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/5e1b1f62-f420-43cb-8d4a-303ec6518a52.avif?width=300",
+    "card_url": "https://mazoku.cc/card/5e1b1f62-f420-43cb-8d4a-303ec6518a52",
+    "card_id": "5e1b1f62-f420-43cb-8d4a-303ec6518a52"
+  },
+  {
+    "character_name": "Regulus Corneas",
+    "series": "Re:Zero",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/01dd49de-b9d3-454b-8d57-58239b9fbb5c.avif?width=300",
+    "card_url": "https://mazoku.cc/card/01dd49de-b9d3-454b-8d57-58239b9fbb5c",
+    "card_id": "01dd49de-b9d3-454b-8d57-58239b9fbb5c"
+  },
+  {
+    "character_name": "Subaru Natsuki",
+    "series": "Re:Zero",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/ed6da7fe-b147-4df9-8326-7d63388a12a6.avif?width=300",
+    "card_url": "https://mazoku.cc/card/ed6da7fe-b147-4df9-8326-7d63388a12a6",
+    "card_id": "ed6da7fe-b147-4df9-8326-7d63388a12a6"
+  },
+  {
+    "character_name": "Echidna",
+    "series": "Re:Zero",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/760f6b68-f086-4297-bdbc-84d6f5e90c09.avif?width=300",
+    "card_url": "https://mazoku.cc/card/760f6b68-f086-4297-bdbc-84d6f5e90c09",
+    "card_id": "760f6b68-f086-4297-bdbc-84d6f5e90c09"
+  },
+  {
+    "character_name": "Emilia",
+    "series": "Re:Zero",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/dd93ba2a-1e2b-466a-bdd7-d1aad9855bd4.avif?width=300",
+    "card_url": "https://mazoku.cc/card/dd93ba2a-1e2b-466a-bdd7-d1aad9855bd4",
+    "card_id": "dd93ba2a-1e2b-466a-bdd7-d1aad9855bd4"
+  },
+  {
+    "character_name": "Rem",
+    "series": "Re:Zero",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/1b856ff7-8e87-41e3-b588-e81352decee7.avif?width=300",
+    "card_url": "https://mazoku.cc/card/1b856ff7-8e87-41e3-b588-e81352decee7",
+    "card_id": "1b856ff7-8e87-41e3-b588-e81352decee7"
+  },
+  {
+    "character_name": "Emilia",
+    "series": "Re:Zero",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/6467444b-6f05-4dce-9502-cf47a4901d95.avif?width=300",
+    "card_url": "https://mazoku.cc/card/6467444b-6f05-4dce-9502-cf47a4901d95",
+    "card_id": "6467444b-6f05-4dce-9502-cf47a4901d95"
+  },
+  {
+    "character_name": "Ram",
+    "series": "Re:Zero",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/454b7cc5-399c-4914-9c85-de676b152c08.avif?width=300",
+    "card_url": "https://mazoku.cc/card/454b7cc5-399c-4914-9c85-de676b152c08",
+    "card_id": "454b7cc5-399c-4914-9c85-de676b152c08"
+  },
+  {
+    "character_name": "Aldebaran",
+    "series": "Re:Zero",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/36c7e559-9041-468b-bd13-065d8536c358.avif?width=300",
+    "card_url": "https://mazoku.cc/card/36c7e559-9041-468b-bd13-065d8536c358",
+    "card_id": "36c7e559-9041-468b-bd13-065d8536c358"
+  },
+  {
+    "character_name": "Anastasia Hoshin",
+    "series": "Re:Zero",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/8c855622-779d-47b0-a63e-ef6c15fdceb5.avif?width=300",
+    "card_url": "https://mazoku.cc/card/8c855622-779d-47b0-a63e-ef6c15fdceb5",
+    "card_id": "8c855622-779d-47b0-a63e-ef6c15fdceb5"
+  },
+  {
+    "character_name": "Crusch Karsten",
+    "series": "Re:Zero",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/5830217d-dbfc-4bca-a8cd-e70d30deecdf.avif?width=300",
+    "card_url": "https://mazoku.cc/card/5830217d-dbfc-4bca-a8cd-e70d30deecdf",
+    "card_id": "5830217d-dbfc-4bca-a8cd-e70d30deecdf"
+  },
+  {
+    "character_name": "Elsa Granhiert",
+    "series": "Re:Zero",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/c7d7d8cf-20f3-4fc8-89c0-e3aaade02701.avif?width=300",
+    "card_url": "https://mazoku.cc/card/c7d7d8cf-20f3-4fc8-89c0-e3aaade02701",
+    "card_id": "c7d7d8cf-20f3-4fc8-89c0-e3aaade02701"
+  },
+  {
+    "character_name": "Felt",
+    "series": "Re:Zero",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/96c2b853-1ac4-4dab-ad29-57cdd2898a95.avif?width=300",
+    "card_url": "https://mazoku.cc/card/96c2b853-1ac4-4dab-ad29-57cdd2898a95",
+    "card_id": "96c2b853-1ac4-4dab-ad29-57cdd2898a95"
+  },
+  {
+    "character_name": "Julius Juukulius",
+    "series": "Re:Zero",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/23802c72-93af-4082-9ee5-727ef69a8b2e.avif?width=300",
+    "card_url": "https://mazoku.cc/card/23802c72-93af-4082-9ee5-727ef69a8b2e",
+    "card_id": "23802c72-93af-4082-9ee5-727ef69a8b2e"
+  },
+  {
+    "character_name": "Liliana Masquerade",
+    "series": "Re:Zero",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/555eb521-84fd-417a-b440-4324698dabf0.avif?width=300",
+    "card_url": "https://mazoku.cc/card/555eb521-84fd-417a-b440-4324698dabf0",
+    "card_id": "555eb521-84fd-417a-b440-4324698dabf0"
+  },
+  {
+    "character_name": "Minerva",
+    "series": "Re:Zero",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/4b86c276-d9e7-4f0c-a299-037f34742551.avif?width=300",
+    "card_url": "https://mazoku.cc/card/4b86c276-d9e7-4f0c-a299-037f34742551",
+    "card_id": "4b86c276-d9e7-4f0c-a299-037f34742551"
+  },
+  {
+    "character_name": "Rem",
+    "series": "Re:Zero",
+    "rarity": "UR",
+    "image_url": "https://cdn7.mazoku.cc/cards/a7d1caa8-8a2b-49f9-81c0-5bef3e150e44.avif?width=300",
+    "card_url": "https://mazoku.cc/card/a7d1caa8-8a2b-49f9-81c0-5bef3e150e44",
+    "card_id": "a7d1caa8-8a2b-49f9-81c0-5bef3e150e44"
+  },
+  {
+    "character_name": "Noelle Silva",
+    "series": "Black Clover",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/e7ba1b9b-3e20-4882-85a6-784a97348171.avif?width=300",
+    "card_url": "https://mazoku.cc/card/e7ba1b9b-3e20-4882-85a6-784a97348171",
+    "card_id": "e7ba1b9b-3e20-4882-85a6-784a97348171"
+  },
+  {
+    "character_name": "Yami Sukehiro",
+    "series": "Black Clover",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/d529e76c-01e7-4ee2-9934-6ab3e4aa56da.avif?width=300",
+    "card_url": "https://mazoku.cc/card/d529e76c-01e7-4ee2-9934-6ab3e4aa56da",
+    "card_id": "d529e76c-01e7-4ee2-9934-6ab3e4aa56da"
+  },
+  {
+    "character_name": "Yuno Grinberryall",
+    "series": "Black Clover",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/e357ab12-89f6-4c74-81a6-ee67b1a454e1.avif?width=300",
+    "card_url": "https://mazoku.cc/card/e357ab12-89f6-4c74-81a6-ee67b1a454e1",
+    "card_id": "e357ab12-89f6-4c74-81a6-ee67b1a454e1"
+  },
+  {
+    "character_name": "Gauche Adlai",
+    "series": "Black Clover",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/9810993c-d010-41a7-acc4-918568b3cbe4.avif?width=300",
+    "card_url": "https://mazoku.cc/card/9810993c-d010-41a7-acc4-918568b3cbe4",
+    "card_id": "9810993c-d010-41a7-acc4-918568b3cbe4"
+  },
+  {
+    "character_name": "Henry Legolant",
+    "series": "Black Clover",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/cd44dd22-f77f-45b7-9b4c-9696b7c30e40.avif?width=300",
+    "card_url": "https://mazoku.cc/card/cd44dd22-f77f-45b7-9b4c-9696b7c30e40",
+    "card_id": "cd44dd22-f77f-45b7-9b4c-9696b7c30e40"
+  },
+  {
+    "character_name": "Magna Swing",
+    "series": "Black Clover",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/7ef95c3a-0eaa-4b48-9ff0-e9bee6762065.avif?width=300",
+    "card_url": "https://mazoku.cc/card/7ef95c3a-0eaa-4b48-9ff0-e9bee6762065",
+    "card_id": "7ef95c3a-0eaa-4b48-9ff0-e9bee6762065"
+  },
+  {
+    "character_name": "Asta",
+    "series": "Black Clover",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/6593d41e-6212-404b-9999-b4cb90710326.avif?width=300",
+    "card_url": "https://mazoku.cc/card/6593d41e-6212-404b-9999-b4cb90710326",
+    "card_id": "6593d41e-6212-404b-9999-b4cb90710326"
+  },
+  {
+    "character_name": "Charmy Pappitson",
+    "series": "Black Clover",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/c7354a6e-ff72-4f18-b2d4-a6f3911e0c6d.avif?width=300",
+    "card_url": "https://mazoku.cc/card/c7354a6e-ff72-4f18-b2d4-a6f3911e0c6d",
+    "card_id": "c7354a6e-ff72-4f18-b2d4-a6f3911e0c6d"
+  },
+  {
+    "character_name": "Klaus Lunettes",
+    "series": "Black Clover",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/76f7b830-e2bc-4608-9436-94704ff94a2b.avif?width=300",
+    "card_url": "https://mazoku.cc/card/76f7b830-e2bc-4608-9436-94704ff94a2b",
+    "card_id": "76f7b830-e2bc-4608-9436-94704ff94a2b"
+  },
+  {
+    "character_name": "Luck Voltia",
+    "series": "Black Clover",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/000250d7-f2d5-47a3-ab06-d13b2dd739a9.avif?width=300",
+    "card_url": "https://mazoku.cc/card/000250d7-f2d5-47a3-ab06-d13b2dd739a9",
+    "card_id": "000250d7-f2d5-47a3-ab06-d13b2dd739a9"
+  },
+  {
+    "character_name": "Vanessa Enoteca",
+    "series": "Black Clover",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/14c399ad-a7ed-440d-9ab1-9ecaa222bbcd.avif?width=300",
+    "card_url": "https://mazoku.cc/card/14c399ad-a7ed-440d-9ab1-9ecaa222bbcd",
+    "card_id": "14c399ad-a7ed-440d-9ab1-9ecaa222bbcd"
+  },
+  {
+    "character_name": "Gordon Agrippa",
+    "series": "Black Clover",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/d7608072-c9a1-43f6-ae7e-ee67f85e7a44.avif?width=300",
+    "card_url": "https://mazoku.cc/card/d7608072-c9a1-43f6-ae7e-ee67f85e7a44",
+    "card_id": "d7608072-c9a1-43f6-ae7e-ee67f85e7a44"
+  },
+  {
+    "character_name": "Solid Silva",
+    "series": "Black Clover",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/25e12416-1e6b-45d6-b28b-c69cb73dd86e.avif?width=300",
+    "card_url": "https://mazoku.cc/card/25e12416-1e6b-45d6-b28b-c69cb73dd86e",
+    "card_id": "25e12416-1e6b-45d6-b28b-c69cb73dd86e"
+  },
+  {
+    "character_name": "Finral Roulacase",
+    "series": "Black Clover",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/e7f2b413-cc88-442f-9982-9d7055acc5f9.avif?width=300",
+    "card_url": "https://mazoku.cc/card/e7f2b413-cc88-442f-9982-9d7055acc5f9",
+    "card_id": "e7f2b413-cc88-442f-9982-9d7055acc5f9"
+  },
+  {
+    "character_name": "Mereoleona Vermillion",
+    "series": "Black Clover",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/8bb97fdf-0604-4197-97f9-dd3fe7fe6b8d.avif?width=300",
+    "card_url": "https://mazoku.cc/card/8bb97fdf-0604-4197-97f9-dd3fe7fe6b8d",
+    "card_id": "8bb97fdf-0604-4197-97f9-dd3fe7fe6b8d"
+  },
+  {
+    "character_name": "Mimosa Vermillion",
+    "series": "Black Clover",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/4599dc30-8795-48a8-be8b-f6550661667e.avif?width=300",
+    "card_url": "https://mazoku.cc/card/4599dc30-8795-48a8-be8b-f6550661667e",
+    "card_id": "4599dc30-8795-48a8-be8b-f6550661667e"
+  },
+  {
+    "character_name": "Nebra Silva",
+    "series": "Black Clover",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/b1a0fcfe-4ae4-490f-b6a0-782f5cf8ab7f.avif?width=300",
+    "card_url": "https://mazoku.cc/card/b1a0fcfe-4ae4-490f-b6a0-782f5cf8ab7f",
+    "card_id": "b1a0fcfe-4ae4-490f-b6a0-782f5cf8ab7f"
+  },
+  {
+    "character_name": "Catherine",
+    "series": "Black Clover",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/38d11839-12a3-48ed-9e8d-2ce8da5aa304.avif?width=300",
+    "card_url": "https://mazoku.cc/card/38d11839-12a3-48ed-9e8d-2ce8da5aa304",
+    "card_id": "38d11839-12a3-48ed-9e8d-2ce8da5aa304"
+  },
+  {
+    "character_name": "Charlotte Roselei",
+    "series": "Black Clover",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/23ef95ef-6334-4358-af89-7fcac32e5b1f.avif?width=300",
+    "card_url": "https://mazoku.cc/card/23ef95ef-6334-4358-af89-7fcac32e5b1f",
+    "card_id": "23ef95ef-6334-4358-af89-7fcac32e5b1f"
+  },
+  {
+    "character_name": "Julius Novachrono",
+    "series": "Black Clover",
+    "rarity": "UR",
+    "image_url": "https://cdn7.mazoku.cc/cards/e49af0d0-656a-4f19-9025-7f53e8820716.avif?width=300",
+    "card_url": "https://mazoku.cc/card/e49af0d0-656a-4f19-9025-7f53e8820716",
+    "card_id": "e49af0d0-656a-4f19-9025-7f53e8820716"
+  },
+  {
+    "character_name": "Akira Otoishi & Red Hot Chili Pepper",
+    "series": "JoJo",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/2fdf3e08-a7a7-4ee1-b70e-d8730014327a.avif?width=300",
+    "card_url": "https://mazoku.cc/card/2fdf3e08-a7a7-4ee1-b70e-d8730014327a",
+    "card_id": "2fdf3e08-a7a7-4ee1-b70e-d8730014327a"
+  },
+  {
+    "character_name": "Leone Abbacchio",
+    "series": "JoJo",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/9f44e797-e9c3-4077-9de3-aed24baf1b68.avif?width=300",
+    "card_url": "https://mazoku.cc/card/9f44e797-e9c3-4077-9de3-aed24baf1b68",
+    "card_id": "9f44e797-e9c3-4077-9de3-aed24baf1b68"
+  },
+  {
+    "character_name": "Pannacotta Fugo",
+    "series": "JoJo",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/b84177ab-29b3-4d13-accf-6236a0789e4c.avif?width=300",
+    "card_url": "https://mazoku.cc/card/b84177ab-29b3-4d13-accf-6236a0789e4c",
+    "card_id": "b84177ab-29b3-4d13-accf-6236a0789e4c"
+  },
+  {
+    "character_name": "Diego Brando",
+    "series": "JoJo",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/dae2336b-93df-4cf0-9241-41a16ba65bde.avif?width=300",
+    "card_url": "https://mazoku.cc/card/dae2336b-93df-4cf0-9241-41a16ba65bde",
+    "card_id": "dae2336b-93df-4cf0-9241-41a16ba65bde"
+  },
+  {
+    "character_name": "Gyro Zeppeli",
+    "series": "JoJo",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/1618d4db-ffd4-410e-868f-eb75d12f738b.avif?width=300",
+    "card_url": "https://mazoku.cc/card/1618d4db-ffd4-410e-868f-eb75d12f738b",
+    "card_id": "1618d4db-ffd4-410e-868f-eb75d12f738b"
+  },
+  {
+    "character_name": "Giorno Giovanna",
+    "series": "JoJo",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/eb4886e1-f99e-44a9-8b94-8b942701b4a1.avif?width=300",
+    "card_url": "https://mazoku.cc/card/eb4886e1-f99e-44a9-8b94-8b942701b4a1",
+    "card_id": "eb4886e1-f99e-44a9-8b94-8b942701b4a1"
+  },
+  {
+    "character_name": "Jean Pierre Polnareff",
+    "series": "JoJo",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/19673fa7-4932-41d2-8727-ec53607adefb.avif?width=300",
+    "card_url": "https://mazoku.cc/card/19673fa7-4932-41d2-8727-ec53607adefb",
+    "card_id": "19673fa7-4932-41d2-8727-ec53607adefb"
+  },
+  {
+    "character_name": "Enrico Pucci",
+    "series": "JoJo",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/d7752969-fd1e-4666-992e-8b9c8089c570.avif?width=300",
+    "card_url": "https://mazoku.cc/card/d7752969-fd1e-4666-992e-8b9c8089c570",
+    "card_id": "d7752969-fd1e-4666-992e-8b9c8089c570"
+  },
+  {
+    "character_name": "Shigekiyo Yangu",
+    "series": "JoJo",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/49e52bd6-c83e-4e33-8b3c-0326197c7f25.avif?width=300",
+    "card_url": "https://mazoku.cc/card/49e52bd6-c83e-4e33-8b3c-0326197c7f25",
+    "card_id": "49e52bd6-c83e-4e33-8b3c-0326197c7f25"
+  },
+  {
+    "character_name": "Koichi Hirose",
+    "series": "JoJo",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/03ca61b5-8532-4984-a42f-e4743cd53d7b.avif?width=300",
+    "card_url": "https://mazoku.cc/card/03ca61b5-8532-4984-a42f-e4743cd53d7b",
+    "card_id": "03ca61b5-8532-4984-a42f-e4743cd53d7b"
+  },
+  {
+    "character_name": "Pesci",
+    "series": "JoJo",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/57775f88-82e5-4bac-b1c8-7fc6edcd8afe.avif?width=300",
+    "card_url": "https://mazoku.cc/card/57775f88-82e5-4bac-b1c8-7fc6edcd8afe",
+    "card_id": "57775f88-82e5-4bac-b1c8-7fc6edcd8afe"
+  },
+  {
+    "character_name": "Jonathan Joestar",
+    "series": "JoJo",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/f20192d6-513a-4b55-bd1a-47d6255f9ba2.avif?width=300",
+    "card_url": "https://mazoku.cc/card/f20192d6-513a-4b55-bd1a-47d6255f9ba2",
+    "card_id": "f20192d6-513a-4b55-bd1a-47d6255f9ba2"
+  },
+  {
+    "character_name": "Will Anthonio Zeppeli",
+    "series": "JoJo",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/db353221-26e2-4627-9327-dc2f6627bae2.avif?width=300",
+    "card_url": "https://mazoku.cc/card/db353221-26e2-4627-9327-dc2f6627bae2",
+    "card_id": "db353221-26e2-4627-9327-dc2f6627bae2"
+  },
+  {
+    "character_name": "Robert E. O. Speedwagon",
+    "series": "JoJo",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/54254847-df3e-46da-bc8e-a73ff7793be3.avif?width=300",
+    "card_url": "https://mazoku.cc/card/54254847-df3e-46da-bc8e-a73ff7793be3",
+    "card_id": "54254847-df3e-46da-bc8e-a73ff7793be3"
+  },
+  {
+    "character_name": "Caesar Anthonio Zeppeli",
+    "series": "JoJo",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/e2362826-455d-41d4-bbe1-d820d010766a.avif?width=300",
+    "card_url": "https://mazoku.cc/card/e2362826-455d-41d4-bbe1-d820d010766a",
+    "card_id": "e2362826-455d-41d4-bbe1-d820d010766a"
+  },
+  {
+    "character_name": "Bruford",
+    "series": "JoJo",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/c525063f-2aa7-436b-b085-07827c81737d.avif?width=300",
+    "card_url": "https://mazoku.cc/card/c525063f-2aa7-436b-b085-07827c81737d",
+    "card_id": "c525063f-2aa7-436b-b085-07827c81737d"
+  },
+  {
+    "character_name": "Tarkus",
+    "series": "JoJo",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/b62329d8-a949-4b60-8242-c03a2f8e7779.avif?width=300",
+    "card_url": "https://mazoku.cc/card/b62329d8-a949-4b60-8242-c03a2f8e7779",
+    "card_id": "b62329d8-a949-4b60-8242-c03a2f8e7779"
+  },
+  {
+    "character_name": "Mariah",
+    "series": "JoJo",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/f28e78b9-ad98-4e12-a662-8d6c06688445.avif?width=300",
+    "card_url": "https://mazoku.cc/card/f28e78b9-ad98-4e12-a662-8d6c06688445",
+    "card_id": "f28e78b9-ad98-4e12-a662-8d6c06688445"
+  },
+  {
+    "character_name": "Rudol von Stroheim",
+    "series": "JoJo",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/a8f1d859-c6f0-4d2f-8aed-66057a442f08.avif?width=300",
+    "card_url": "https://mazoku.cc/card/a8f1d859-c6f0-4d2f-8aed-66057a442f08",
+    "card_id": "a8f1d859-c6f0-4d2f-8aed-66057a442f08"
+  },
+  {
+    "character_name": "Dio Brando",
+    "series": "JoJo",
+    "rarity": "UR",
+    "image_url": "https://cdn7.mazoku.cc/cards/6ba152fc-d405-4c33-8d9e-f4148fd54d92.avif?width=300",
+    "card_url": "https://mazoku.cc/card/6ba152fc-d405-4c33-8d9e-f4148fd54d92",
+    "card_id": "6ba152fc-d405-4c33-8d9e-f4148fd54d92"
+  },
+  {
+    "character_name": "Erza Scarlet",
+    "series": "Fairy Tail",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/4842fea9-a998-491e-b834-aab06b709399.avif?width=300",
+    "card_url": "https://mazoku.cc/card/4842fea9-a998-491e-b834-aab06b709399",
+    "card_id": "4842fea9-a998-491e-b834-aab06b709399"
+  },
+  {
+    "character_name": "Gray Fullbuster",
+    "series": "Fairy Tail",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/c7854e3a-c07c-4dcd-8222-deb862b1dae1.avif?width=300",
+    "card_url": "https://mazoku.cc/card/c7854e3a-c07c-4dcd-8222-deb862b1dae1",
+    "card_id": "c7854e3a-c07c-4dcd-8222-deb862b1dae1"
+  },
+  {
+    "character_name": "Happy",
+    "series": "Fairy Tail",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/8f729aa8-de5f-4fd7-9425-b62556265df5.avif?width=300",
+    "card_url": "https://mazoku.cc/card/8f729aa8-de5f-4fd7-9425-b62556265df5",
+    "card_id": "8f729aa8-de5f-4fd7-9425-b62556265df5"
+  },
+  {
+    "character_name": "Lucy Heartfilia",
+    "series": "Fairy Tail",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/783e092e-6697-4928-b919-00ab4b228e21.avif?width=300",
+    "card_url": "https://mazoku.cc/card/783e092e-6697-4928-b919-00ab4b228e21",
+    "card_id": "783e092e-6697-4928-b919-00ab4b228e21"
+  },
+  {
+    "character_name": "Mavis Vermillion",
+    "series": "Fairy Tail",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/c585036b-9808-427c-b820-c4f9d5346492.avif?width=300",
+    "card_url": "https://mazoku.cc/card/c585036b-9808-427c-b820-c4f9d5346492",
+    "card_id": "c585036b-9808-427c-b820-c4f9d5346492"
+  },
+  {
+    "character_name": "Natsu Dragneel",
+    "series": "Fairy Tail",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/ad5c8dba-fe7d-4104-b1a2-a5166d93aaa1.avif?width=300",
+    "card_url": "https://mazoku.cc/card/ad5c8dba-fe7d-4104-b1a2-a5166d93aaa1",
+    "card_id": "ad5c8dba-fe7d-4104-b1a2-a5166d93aaa1"
+  },
+  {
+    "character_name": "Wendy Marvell",
+    "series": "Fairy Tail",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/ce30324f-51dc-4163-bb5e-3d1b4c471097.avif?width=300",
+    "card_url": "https://mazoku.cc/card/ce30324f-51dc-4163-bb5e-3d1b4c471097",
+    "card_id": "ce30324f-51dc-4163-bb5e-3d1b4c471097"
+  },
+  {
+    "character_name": "Erza Scarlet",
+    "series": "Fairy Tail",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/7078f835-5aca-4984-8e6a-2f160f672604.avif?width=300",
+    "card_url": "https://mazoku.cc/card/7078f835-5aca-4984-8e6a-2f160f672604",
+    "card_id": "7078f835-5aca-4984-8e6a-2f160f672604"
+  },
+  {
+    "character_name": "Lucy Heartfilia",
+    "series": "Fairy Tail",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/8ef770f1-3dfc-4989-a9be-dd9c9b0d296b.avif?width=300",
+    "card_url": "https://mazoku.cc/card/8ef770f1-3dfc-4989-a9be-dd9c9b0d296b",
+    "card_id": "8ef770f1-3dfc-4989-a9be-dd9c9b0d296b"
+  },
+  {
+    "character_name": "Yukino Agria",
+    "series": "Fairy Tail",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/0e9ca7ff-a1f9-48c5-b8da-7043983a27ed.avif?width=300",
+    "card_url": "https://mazoku.cc/card/0e9ca7ff-a1f9-48c5-b8da-7043983a27ed",
+    "card_id": "0e9ca7ff-a1f9-48c5-b8da-7043983a27ed"
+  },
+  {
+    "character_name": "Juvia Lockser",
+    "series": "Fairy Tail",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/ee0a7013-52bc-4ce7-8aad-3838a2637e3f.avif?width=300",
+    "card_url": "https://mazoku.cc/card/ee0a7013-52bc-4ce7-8aad-3838a2637e3f",
+    "card_id": "ee0a7013-52bc-4ce7-8aad-3838a2637e3f"
+  },
+  {
+    "character_name": "Brandish",
+    "series": "Fairy Tail",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/02b869e7-3acc-45bc-8964-0f0ed77c8ca0.avif?width=300",
+    "card_url": "https://mazoku.cc/card/02b869e7-3acc-45bc-8964-0f0ed77c8ca0",
+    "card_id": "02b869e7-3acc-45bc-8964-0f0ed77c8ca0"
+  },
+  {
+    "character_name": "Erza Scarlet",
+    "series": "Fairy Tail",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/05e43785-4166-4561-b1a2-4daecc70da85.avif?width=300",
+    "card_url": "https://mazoku.cc/card/05e43785-4166-4561-b1a2-4daecc70da85",
+    "card_id": "05e43785-4166-4561-b1a2-4daecc70da85"
+  },
+  {
+    "character_name": "Juvia & Gray",
+    "series": "Fairy Tail",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/4b2edc04-e17f-4dc1-9cda-00abbf85b869.avif?width=300",
+    "card_url": "https://mazoku.cc/card/4b2edc04-e17f-4dc1-9cda-00abbf85b869",
+    "card_id": "4b2edc04-e17f-4dc1-9cda-00abbf85b869"
+  },
+  {
+    "character_name": "Lucy Heartfilia",
+    "series": "Fairy Tail",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/9fc14255-e37d-4129-ad91-152285dfcbd7.avif?width=300",
+    "card_url": "https://mazoku.cc/card/9fc14255-e37d-4129-ad91-152285dfcbd7",
+    "card_id": "9fc14255-e37d-4129-ad91-152285dfcbd7"
+  },
+  {
+    "character_name": "Mirajane Strauss",
+    "series": "Fairy Tail",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/f211c62a-2f65-4c32-9e14-c968847bce99.avif?width=300",
+    "card_url": "https://mazoku.cc/card/f211c62a-2f65-4c32-9e14-c968847bce99",
+    "card_id": "f211c62a-2f65-4c32-9e14-c968847bce99"
+  },
+  {
+    "character_name": "Lucy Heartfilia",
+    "series": "Fairy Tail",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/5bacf72b-553e-41fe-b8b2-5bc09aa51ef2.avif?width=300",
+    "card_url": "https://mazoku.cc/card/5bacf72b-553e-41fe-b8b2-5bc09aa51ef2",
+    "card_id": "5bacf72b-553e-41fe-b8b2-5bc09aa51ef2"
+  },
+  {
+    "character_name": "Juvia Lockser",
+    "series": "Fairy Tail",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/d23c0bfe-f179-44fb-94ae-ae86af6d1a5c.avif?width=300",
+    "card_url": "https://mazoku.cc/card/d23c0bfe-f179-44fb-94ae-ae86af6d1a5c",
+    "card_id": "d23c0bfe-f179-44fb-94ae-ae86af6d1a5c"
+  },
+  {
+    "character_name": "Mirajane Strauss",
+    "series": "Fairy Tail",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/f98db386-0e8d-4f62-a71e-fc4a3d21add6.avif?width=300",
+    "card_url": "https://mazoku.cc/card/f98db386-0e8d-4f62-a71e-fc4a3d21add6",
+    "card_id": "f98db386-0e8d-4f62-a71e-fc4a3d21add6"
+  },
+  {
+    "character_name": "Wendy & Carla",
+    "series": "Fairy Tail",
+    "rarity": "UR",
+    "image_url": "https://cdn7.mazoku.cc/cards/1efb5605-6493-49fd-b651-2c615bdc5a51.avif?width=300",
+    "card_url": "https://mazoku.cc/card/1efb5605-6493-49fd-b651-2c615bdc5a51",
+    "card_id": "1efb5605-6493-49fd-b651-2c615bdc5a51"
+  },
+  {
+    "character_name": "Asuka Langley",
+    "series": "Neon Genesis Evangelion",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/ea299c26-d525-4999-80d7-689292b2df6f.avif?width=300",
+    "card_url": "https://mazoku.cc/card/ea299c26-d525-4999-80d7-689292b2df6f",
+    "card_id": "ea299c26-d525-4999-80d7-689292b2df6f"
+  },
+  {
+    "character_name": "Rei Ayanami",
+    "series": "Neon Genesis Evangelion",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/0e27dfaf-5dfb-4188-9a99-22780884e3aa.avif?width=300",
+    "card_url": "https://mazoku.cc/card/0e27dfaf-5dfb-4188-9a99-22780884e3aa",
+    "card_id": "0e27dfaf-5dfb-4188-9a99-22780884e3aa"
+  },
+  {
+    "character_name": "Kaworu Nagisa",
+    "series": "Neon Genesis Evangelion",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/732a81cb-4a65-476a-88f2-fe15ad0e3a02.avif?width=300",
+    "card_url": "https://mazoku.cc/card/732a81cb-4a65-476a-88f2-fe15ad0e3a02",
+    "card_id": "732a81cb-4a65-476a-88f2-fe15ad0e3a02"
+  },
+  {
+    "character_name": "Shinji Ikari",
+    "series": "Neon Genesis Evangelion",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/0856e052-de7d-49d6-bc15-1aa92eabec09.avif?width=300",
+    "card_url": "https://mazoku.cc/card/0856e052-de7d-49d6-bc15-1aa92eabec09",
+    "card_id": "0856e052-de7d-49d6-bc15-1aa92eabec09"
+  },
+  {
+    "character_name": "Rei Ayanami",
+    "series": "Neon Genesis Evangelion",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/315f4a62-bc9a-429f-b80e-93b77ca4600a.avif?width=300",
+    "card_url": "https://mazoku.cc/card/315f4a62-bc9a-429f-b80e-93b77ca4600a",
+    "card_id": "315f4a62-bc9a-429f-b80e-93b77ca4600a"
+  },
+  {
+    "character_name": "Kaworu Nagisa",
+    "series": "Neon Genesis Evangelion",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/0d107fd7-6b11-46f7-b277-2e4976097e0e.avif?width=300",
+    "card_url": "https://mazoku.cc/card/0d107fd7-6b11-46f7-b277-2e4976097e0e",
+    "card_id": "0d107fd7-6b11-46f7-b277-2e4976097e0e"
+  },
+  {
+    "character_name": "Asuka Langley",
+    "series": "Neon Genesis Evangelion",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/76a71733-efe1-49a8-a0dc-63db7275cd62.avif?width=300",
+    "card_url": "https://mazoku.cc/card/76a71733-efe1-49a8-a0dc-63db7275cd62",
+    "card_id": "76a71733-efe1-49a8-a0dc-63db7275cd62"
+  },
+  {
+    "character_name": "Misato and Pen Pen",
+    "series": "Neon Genesis Evangelion",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/d5d19810-1ac5-409b-adfd-c413e5027936.avif?width=300",
+    "card_url": "https://mazoku.cc/card/d5d19810-1ac5-409b-adfd-c413e5027936",
+    "card_id": "d5d19810-1ac5-409b-adfd-c413e5027936"
+  },
+  {
+    "character_name": "Mari Makinami Illustrious",
+    "series": "Neon Genesis Evangelion",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/f6c0cc11-529a-4066-b8be-e08c1fb6119e.avif?width=300",
+    "card_url": "https://mazoku.cc/card/f6c0cc11-529a-4066-b8be-e08c1fb6119e",
+    "card_id": "f6c0cc11-529a-4066-b8be-e08c1fb6119e"
+  },
+  {
+    "character_name": "Rei Ayanami",
+    "series": "Neon Genesis Evangelion",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/9558bae6-85bc-4d53-8b1c-584b4a80a92c.avif?width=300",
+    "card_url": "https://mazoku.cc/card/9558bae6-85bc-4d53-8b1c-584b4a80a92c",
+    "card_id": "9558bae6-85bc-4d53-8b1c-584b4a80a92c"
+  },
+  {
+    "character_name": "Asuka Langley",
+    "series": "Neon Genesis Evangelion",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/26ca9f17-72bd-4cc8-a432-b492e4a64863.avif?width=300",
+    "card_url": "https://mazoku.cc/card/26ca9f17-72bd-4cc8-a432-b492e4a64863",
+    "card_id": "26ca9f17-72bd-4cc8-a432-b492e4a64863"
+  },
+  {
+    "character_name": "Rei Ayanami",
+    "series": "Neon Genesis Evangelion",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/da4e5f34-0ef0-47cf-a95e-3ebb1925fdd3.avif?width=300",
+    "card_url": "https://mazoku.cc/card/da4e5f34-0ef0-47cf-a95e-3ebb1925fdd3",
+    "card_id": "da4e5f34-0ef0-47cf-a95e-3ebb1925fdd3"
+  },
+  {
+    "character_name": "Kaworu Nagisa",
+    "series": "Neon Genesis Evangelion",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/0a7c4eda-c211-4cb9-8392-c5550b96aaec.avif?width=300",
+    "card_url": "https://mazoku.cc/card/0a7c4eda-c211-4cb9-8392-c5550b96aaec",
+    "card_id": "0a7c4eda-c211-4cb9-8392-c5550b96aaec"
+  },
+  {
+    "character_name": "Shinji Ikari",
+    "series": "Neon Genesis Evangelion",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/b34c1d52-f4ed-433b-9c77-338a02fe923f.avif?width=300",
+    "card_url": "https://mazoku.cc/card/b34c1d52-f4ed-433b-9c77-338a02fe923f",
+    "card_id": "b34c1d52-f4ed-433b-9c77-338a02fe923f"
+  },
+  {
+    "character_name": "Asuka Langley",
+    "series": "Neon Genesis Evangelion",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/ef8530fe-8a2e-4bc1-95bd-3d546c796854.avif?width=300",
+    "card_url": "https://mazoku.cc/card/ef8530fe-8a2e-4bc1-95bd-3d546c796854",
+    "card_id": "ef8530fe-8a2e-4bc1-95bd-3d546c796854"
+  },
+  {
+    "character_name": "Rei Ayanami",
+    "series": "Neon Genesis Evangelion",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/8851ad8b-56a1-4420-b967-3ceedc5d9aac.avif?width=300",
+    "card_url": "https://mazoku.cc/card/8851ad8b-56a1-4420-b967-3ceedc5d9aac",
+    "card_id": "8851ad8b-56a1-4420-b967-3ceedc5d9aac"
+  },
+  {
+    "character_name": "Misato Katsuragi",
+    "series": "Neon Genesis Evangelion",
+    "rarity": "R",
+    "image_url": "https://cdn7.mazoku.cc/cards/6698d71e-85ed-49ba-afe1-a42bf9459a46.avif?width=300",
+    "card_url": "https://mazoku.cc/card/6698d71e-85ed-49ba-afe1-a42bf9459a46",
+    "card_id": "6698d71e-85ed-49ba-afe1-a42bf9459a46"
+  },
+  {
+    "character_name": "Rei & Asuka",
+    "series": "Neon Genesis Evangelion",
+    "rarity": "R",
+    "image_url": "https://cdn7.mazoku.cc/cards/a016abe3-d318-4a99-a284-defbf2cf8b9c.avif?width=300",
+    "card_url": "https://mazoku.cc/card/a016abe3-d318-4a99-a284-defbf2cf8b9c",
+    "card_id": "a016abe3-d318-4a99-a284-defbf2cf8b9c"
+  },
+  {
+    "character_name": "Rei Ayanami",
+    "series": "Neon Genesis Evangelion",
+    "rarity": "R",
+    "image_url": "https://cdn7.mazoku.cc/cards/6d14df0e-bbf7-409e-b2e4-9175df4d0c82.avif?width=300",
+    "card_url": "https://mazoku.cc/card/6d14df0e-bbf7-409e-b2e4-9175df4d0c82",
+    "card_id": "6d14df0e-bbf7-409e-b2e4-9175df4d0c82"
+  },
+  {
+    "character_name": "Asuka Langley",
+    "series": "Neon Genesis Evangelion",
+    "rarity": "UR",
+    "image_url": "https://cdn7.mazoku.cc/cards/76d31976-3430-45e0-97d3-8d511d940d54.avif?width=300",
+    "card_url": "https://mazoku.cc/card/76d31976-3430-45e0-97d3-8d511d940d54",
+    "card_id": "76d31976-3430-45e0-97d3-8d511d940d54"
+  },
+  {
+    "character_name": "Senku Ishigami",
+    "series": "Dr. Stone",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/fd12d728-6459-4dec-ab72-328d4436b0f0.avif?width=300",
+    "card_url": "https://mazoku.cc/card/fd12d728-6459-4dec-ab72-328d4436b0f0",
+    "card_id": "fd12d728-6459-4dec-ab72-328d4436b0f0"
+  },
+  {
+    "character_name": "Chrome",
+    "series": "Dr. Stone",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/c2cf28c8-0ee2-4582-a5c3-e6d783c099be.avif?width=300",
+    "card_url": "https://mazoku.cc/card/c2cf28c8-0ee2-4582-a5c3-e6d783c099be",
+    "card_id": "c2cf28c8-0ee2-4582-a5c3-e6d783c099be"
+  },
+  {
+    "character_name": "Gen Asagiri",
+    "series": "Dr. Stone",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/cc089092-a227-4688-8036-08293fe5d4df.avif?width=300",
+    "card_url": "https://mazoku.cc/card/cc089092-a227-4688-8036-08293fe5d4df",
+    "card_id": "cc089092-a227-4688-8036-08293fe5d4df"
+  },
+  {
+    "character_name": "Ryusui Nanami",
+    "series": "Dr. Stone",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/b767d406-9594-4fff-a918-cd59536e1f30.avif?width=300",
+    "card_url": "https://mazoku.cc/card/b767d406-9594-4fff-a918-cd59536e1f30",
+    "card_id": "b767d406-9594-4fff-a918-cd59536e1f30"
+  },
+  {
+    "character_name": "Stanley Snyder",
+    "series": "Dr. Stone",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/eac20303-6448-4efb-92e0-250d63d7ea27.avif?width=300",
+    "card_url": "https://mazoku.cc/card/eac20303-6448-4efb-92e0-250d63d7ea27",
+    "card_id": "eac20303-6448-4efb-92e0-250d63d7ea27"
+  },
+  {
+    "character_name": "Tsukasa Shishio",
+    "series": "Dr. Stone",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/92300f15-8ce3-451a-a888-84e6d3b8d1fd.avif?width=300",
+    "card_url": "https://mazoku.cc/card/92300f15-8ce3-451a-a888-84e6d3b8d1fd",
+    "card_id": "92300f15-8ce3-451a-a888-84e6d3b8d1fd"
+  },
+  {
+    "character_name": "Xeno Wingfield",
+    "series": "Dr. Stone",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/46d29c2b-0bcc-4a14-9130-20c0d9d083c0.avif?width=300",
+    "card_url": "https://mazoku.cc/card/46d29c2b-0bcc-4a14-9130-20c0d9d083c0",
+    "card_id": "46d29c2b-0bcc-4a14-9130-20c0d9d083c0"
+  },
+  {
+    "character_name": "Taiju Oki",
+    "series": "Dr. Stone",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/8f189c73-3f45-447c-a9f4-33a46f05a075.avif?width=300",
+    "card_url": "https://mazoku.cc/card/8f189c73-3f45-447c-a9f4-33a46f05a075",
+    "card_id": "8f189c73-3f45-447c-a9f4-33a46f05a075"
+  },
+  {
+    "character_name": "Moz",
+    "series": "Dr. Stone",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/9e6a9ec2-1216-4a3b-9bfc-2e3f73f5231e.avif?width=300",
+    "card_url": "https://mazoku.cc/card/9e6a9ec2-1216-4a3b-9bfc-2e3f73f5231e",
+    "card_id": "9e6a9ec2-1216-4a3b-9bfc-2e3f73f5231e"
+  },
+  {
+    "character_name": "Kinro",
+    "series": "Dr. Stone",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/d88d7e51-bef8-42e2-9f5a-fe09ecff6317.avif?width=300",
+    "card_url": "https://mazoku.cc/card/d88d7e51-bef8-42e2-9f5a-fe09ecff6317",
+    "card_id": "d88d7e51-bef8-42e2-9f5a-fe09ecff6317"
+  },
+  {
+    "character_name": "Byakuya Ishigami",
+    "series": "Dr. Stone",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/37996766-30cc-4095-9af4-e9bbe11fd976.avif?width=300",
+    "card_url": "https://mazoku.cc/card/37996766-30cc-4095-9af4-e9bbe11fd976",
+    "card_id": "37996766-30cc-4095-9af4-e9bbe11fd976"
+  },
+  {
+    "character_name": "Soyuz",
+    "series": "Dr. Stone",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/49e701cf-9e3e-40af-bf7c-6d4d3a520c57.avif?width=300",
+    "card_url": "https://mazoku.cc/card/49e701cf-9e3e-40af-bf7c-6d4d3a520c57",
+    "card_id": "49e701cf-9e3e-40af-bf7c-6d4d3a520c57"
+  },
+  {
+    "character_name": "Ginro",
+    "series": "Dr. Stone",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/0e0529f2-f24e-4839-b3d9-594309228524.avif?width=300",
+    "card_url": "https://mazoku.cc/card/0e0529f2-f24e-4839-b3d9-594309228524",
+    "card_id": "0e0529f2-f24e-4839-b3d9-594309228524"
+  },
+  {
+    "character_name": "Hyoga",
+    "series": "Dr. Stone",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/224797e4-f4bf-42b0-9335-150f05f41683.avif?width=300",
+    "card_url": "https://mazoku.cc/card/224797e4-f4bf-42b0-9335-150f05f41683",
+    "card_id": "224797e4-f4bf-42b0-9335-150f05f41683"
+  },
+  {
+    "character_name": "Homura Momiji",
+    "series": "Dr. Stone",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/f53c3363-de31-437e-9357-8fd56af4de3a.avif?width=300",
+    "card_url": "https://mazoku.cc/card/f53c3363-de31-437e-9357-8fd56af4de3a",
+    "card_id": "f53c3363-de31-437e-9357-8fd56af4de3a"
+  },
+  {
+    "character_name": "Kaseki",
+    "series": "Dr. Stone",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/fb89c82d-037d-417a-be89-abf430282db2.avif?width=300",
+    "card_url": "https://mazoku.cc/card/fb89c82d-037d-417a-be89-abf430282db2",
+    "card_id": "fb89c82d-037d-417a-be89-abf430282db2"
+  },
+  {
+    "character_name": "Ukyo Saionji",
+    "series": "Dr. Stone",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/f644aa89-720a-4bcf-8002-bd90ba5e72fd.avif?width=300",
+    "card_url": "https://mazoku.cc/card/f644aa89-720a-4bcf-8002-bd90ba5e72fd",
+    "card_id": "f644aa89-720a-4bcf-8002-bd90ba5e72fd"
+  },
+  {
+    "character_name": "Yo Uei",
+    "series": "Dr. Stone",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/1bdfdca2-820d-4aa5-b19a-15c4f74d6d02.avif?width=300",
+    "card_url": "https://mazoku.cc/card/1bdfdca2-820d-4aa5-b19a-15c4f74d6d02",
+    "card_id": "1bdfdca2-820d-4aa5-b19a-15c4f74d6d02"
+  },
+  {
+    "character_name": "Suika",
+    "series": "Dr. Stone",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/21d1b0bb-3525-4ca1-88da-65b4440b094d.avif?width=300",
+    "card_url": "https://mazoku.cc/card/21d1b0bb-3525-4ca1-88da-65b4440b094d",
+    "card_id": "21d1b0bb-3525-4ca1-88da-65b4440b094d"
+  },
+  {
+    "character_name": "Kohaku",
+    "series": "Dr. Stone",
+    "rarity": "UR",
+    "image_url": "https://cdn7.mazoku.cc/cards/05777c3e-2f15-4bc6-913e-c25f9319e3cb.avif?width=300",
+    "card_url": "https://mazoku.cc/card/05777c3e-2f15-4bc6-913e-c25f9319e3cb",
+    "card_id": "05777c3e-2f15-4bc6-913e-c25f9319e3cb"
+  },
+  {
+    "character_name": "Souma Yukihira",
+    "series": "Food Wars",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/9bb779d1-4ce8-410f-96c1-79c37f6831cc.avif?width=300",
+    "card_url": "https://mazoku.cc/card/9bb779d1-4ce8-410f-96c1-79c37f6831cc",
+    "card_id": "9bb779d1-4ce8-410f-96c1-79c37f6831cc"
+  },
+  {
+    "character_name": "Alice Nakiri",
+    "series": "Food Wars",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/afa22af6-6191-4029-9d17-1481a7da73d2.avif?width=300",
+    "card_url": "https://mazoku.cc/card/afa22af6-6191-4029-9d17-1481a7da73d2",
+    "card_id": "afa22af6-6191-4029-9d17-1481a7da73d2"
+  },
+  {
+    "character_name": "Rindo Kobayashi",
+    "series": "Food Wars",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/c13e7944-6ee9-493e-9532-7fbb497edea0.avif?width=300",
+    "card_url": "https://mazoku.cc/card/c13e7944-6ee9-493e-9532-7fbb497edea0",
+    "card_id": "c13e7944-6ee9-493e-9532-7fbb497edea0"
+  },
+  {
+    "character_name": "Megumi Tadokoro",
+    "series": "Food Wars",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/90f04583-285a-4f31-98ed-93aa0b8415f6.avif?width=300",
+    "card_url": "https://mazoku.cc/card/90f04583-285a-4f31-98ed-93aa0b8415f6",
+    "card_id": "90f04583-285a-4f31-98ed-93aa0b8415f6"
+  },
+  {
+    "character_name": "Erina and Alice",
+    "series": "Food Wars",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/1e078516-59c7-4de2-97fa-9cbef8750ad5.avif?width=300",
+    "card_url": "https://mazoku.cc/card/1e078516-59c7-4de2-97fa-9cbef8750ad5",
+    "card_id": "1e078516-59c7-4de2-97fa-9cbef8750ad5"
+  },
+  {
+    "character_name": "Ryoko Sakaki",
+    "series": "Food Wars",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/d0a90e9d-38af-49d4-843c-477be0651a0b.avif?width=300",
+    "card_url": "https://mazoku.cc/card/d0a90e9d-38af-49d4-843c-477be0651a0b",
+    "card_id": "d0a90e9d-38af-49d4-843c-477be0651a0b"
+  },
+  {
+    "character_name": "Takumi Aldini",
+    "series": "Food Wars",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/f3668f3b-e97b-45dc-b8fa-a69dd180692c.avif?width=300",
+    "card_url": "https://mazoku.cc/card/f3668f3b-e97b-45dc-b8fa-a69dd180692c",
+    "card_id": "f3668f3b-e97b-45dc-b8fa-a69dd180692c"
+  },
+  {
+    "character_name": "Akira Hayama",
+    "series": "Food Wars",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/8cf00bfd-4149-41d7-ba29-c8dd1583bd4a.avif?width=300",
+    "card_url": "https://mazoku.cc/card/8cf00bfd-4149-41d7-ba29-c8dd1583bd4a",
+    "card_id": "8cf00bfd-4149-41d7-ba29-c8dd1583bd4a"
+  },
+  {
+    "character_name": "Ikumi Mito",
+    "series": "Food Wars",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/8843c510-fc93-4a65-9af9-0d5950736ba9.avif?width=300",
+    "card_url": "https://mazoku.cc/card/8843c510-fc93-4a65-9af9-0d5950736ba9",
+    "card_id": "8843c510-fc93-4a65-9af9-0d5950736ba9"
+  },
+  {
+    "character_name": "Megumi Tadokoro",
+    "series": "Food Wars",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/37a0686a-831d-4cec-a730-f38be49b7427.avif?width=300",
+    "card_url": "https://mazoku.cc/card/37a0686a-831d-4cec-a730-f38be49b7427",
+    "card_id": "37a0686a-831d-4cec-a730-f38be49b7427"
+  },
+  {
+    "character_name": "Azami Nakiri",
+    "series": "Food Wars",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/acbcbd27-5029-430e-945e-e637c1fc6ef3.avif?width=300",
+    "card_url": "https://mazoku.cc/card/acbcbd27-5029-430e-945e-e637c1fc6ef3",
+    "card_id": "acbcbd27-5029-430e-945e-e637c1fc6ef3"
+  },
+  {
+    "character_name": "Isami Aldini",
+    "series": "Food Wars",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/dacf6ad9-aeeb-4231-9589-163cf8c9d237.avif?width=300",
+    "card_url": "https://mazoku.cc/card/dacf6ad9-aeeb-4231-9589-163cf8c9d237",
+    "card_id": "dacf6ad9-aeeb-4231-9589-163cf8c9d237"
+  },
+  {
+    "character_name": "Satoshi Isshiki",
+    "series": "Food Wars",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/08ae071b-2486-4de3-b7ac-79666af81669.avif?width=300",
+    "card_url": "https://mazoku.cc/card/08ae071b-2486-4de3-b7ac-79666af81669",
+    "card_id": "08ae071b-2486-4de3-b7ac-79666af81669"
+  },
+  {
+    "character_name": "Yuki Yoshino",
+    "series": "Food Wars",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/52ac537e-e0cc-49ab-8780-16dc68d0fd6b.avif?width=300",
+    "card_url": "https://mazoku.cc/card/52ac537e-e0cc-49ab-8780-16dc68d0fd6b",
+    "card_id": "52ac537e-e0cc-49ab-8780-16dc68d0fd6b"
+  },
+  {
+    "character_name": "Senzaemon Nakiri",
+    "series": "Food Wars",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/5dc814a1-da7c-4984-ac95-e68acf35f584.avif?width=300",
+    "card_url": "https://mazoku.cc/card/5dc814a1-da7c-4984-ac95-e68acf35f584",
+    "card_id": "5dc814a1-da7c-4984-ac95-e68acf35f584"
+  },
+  {
+    "character_name": "Erina & Megumi",
+    "series": "Food Wars",
+    "rarity": "R",
+    "image_url": "https://cdn7.mazoku.cc/cards/436c8ec8-047f-417c-9ca8-da497a7c22f3.avif?width=300",
+    "card_url": "https://mazoku.cc/card/436c8ec8-047f-417c-9ca8-da497a7c22f3",
+    "card_id": "436c8ec8-047f-417c-9ca8-da497a7c22f3"
+  },
+  {
+    "character_name": "Megumi, Yuuki & Ryouko",
+    "series": "Food Wars",
+    "rarity": "R",
+    "image_url": "https://cdn7.mazoku.cc/cards/009216a2-9cd9-4876-b2d5-b744655eb69a.avif?width=300",
+    "card_url": "https://mazoku.cc/card/009216a2-9cd9-4876-b2d5-b744655eb69a",
+    "card_id": "009216a2-9cd9-4876-b2d5-b744655eb69a"
+  },
+  {
+    "character_name": "Erina & Alice",
+    "series": "Food Wars",
+    "rarity": "R",
+    "image_url": "https://cdn7.mazoku.cc/cards/bf7c283f-8f77-417b-be05-461d0f752df9.avif?width=300",
+    "card_url": "https://mazoku.cc/card/bf7c283f-8f77-417b-be05-461d0f752df9",
+    "card_id": "bf7c283f-8f77-417b-be05-461d0f752df9"
+  },
+  {
+    "character_name": "Souma & Erina",
+    "series": "Food Wars",
+    "rarity": "R",
+    "image_url": "https://cdn7.mazoku.cc/cards/c2be14f5-5d81-4262-a979-7b12f45d3a70.avif?width=300",
+    "card_url": "https://mazoku.cc/card/c2be14f5-5d81-4262-a979-7b12f45d3a70",
+    "card_id": "c2be14f5-5d81-4262-a979-7b12f45d3a70"
+  },
+  {
+    "character_name": "Erina Nakiri",
+    "series": "Food Wars",
+    "rarity": "UR",
+    "image_url": "https://cdn7.mazoku.cc/cards/461a82af-3103-4105-92ed-cb1ce74d9aab.avif?width=300",
+    "card_url": "https://mazoku.cc/card/461a82af-3103-4105-92ed-cb1ce74d9aab",
+    "card_id": "461a82af-3103-4105-92ed-cb1ce74d9aab"
+  },
+  {
+    "character_name": "C.C.",
+    "series": "Code Geass",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/a5909fa3-4c74-4b9a-a96a-ba718a9012a0.avif?width=300",
+    "card_url": "https://mazoku.cc/card/a5909fa3-4c74-4b9a-a96a-ba718a9012a0",
+    "card_id": "a5909fa3-4c74-4b9a-a96a-ba718a9012a0"
+  },
+  {
+    "character_name": "Leila Malcal",
+    "series": "Code Geass",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/345419f3-9722-4eb3-830b-0c4d1b8ad7de.avif?width=300",
+    "card_url": "https://mazoku.cc/card/345419f3-9722-4eb3-830b-0c4d1b8ad7de",
+    "card_id": "345419f3-9722-4eb3-830b-0c4d1b8ad7de"
+  },
+  {
+    "character_name": "Kallen Kozuki",
+    "series": "Code Geass",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/a8e03f89-8356-4eeb-88dd-0054bbab46f5.avif?width=300",
+    "card_url": "https://mazoku.cc/card/a8e03f89-8356-4eeb-88dd-0054bbab46f5",
+    "card_id": "a8e03f89-8356-4eeb-88dd-0054bbab46f5"
+  },
+  {
+    "character_name": "Cornelia li Britannia",
+    "series": "Code Geass",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/d136f615-c6b6-45bf-aad1-a3032e272545.avif?width=300",
+    "card_url": "https://mazoku.cc/card/d136f615-c6b6-45bf-aad1-a3032e272545",
+    "card_id": "d136f615-c6b6-45bf-aad1-a3032e272545"
+  },
+  {
+    "character_name": "Gigi",
+    "series": "Code Geass",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/9bf0e2b2-0e03-4388-ab0f-96d4bb80c393.avif?width=300",
+    "card_url": "https://mazoku.cc/card/9bf0e2b2-0e03-4388-ab0f-96d4bb80c393",
+    "card_id": "9bf0e2b2-0e03-4388-ab0f-96d4bb80c393"
+  },
+  {
+    "character_name": "Lelouch vi Britannia",
+    "series": "Code Geass",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/61cac0f0-eb4f-44c7-b04f-92ee0843fe9c.avif?width=300",
+    "card_url": "https://mazoku.cc/card/61cac0f0-eb4f-44c7-b04f-92ee0843fe9c",
+    "card_id": "61cac0f0-eb4f-44c7-b04f-92ee0843fe9c"
+  },
+  {
+    "character_name": "Kaguya Sumeragi",
+    "series": "Code Geass",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/c8d56eec-bfe6-468b-af28-d82aa085a495.avif?width=300",
+    "card_url": "https://mazoku.cc/card/c8d56eec-bfe6-468b-af28-d82aa085a495",
+    "card_id": "c8d56eec-bfe6-468b-af28-d82aa085a495"
+  },
+  {
+    "character_name": "Villetta Nu",
+    "series": "Code Geass",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/61c936e9-a459-4c11-9ba1-db85a9dbd1fc.avif?width=300",
+    "card_url": "https://mazoku.cc/card/61c936e9-a459-4c11-9ba1-db85a9dbd1fc",
+    "card_id": "61c936e9-a459-4c11-9ba1-db85a9dbd1fc"
+  },
+  {
+    "character_name": "Euphemia li Britannia",
+    "series": "Code Geass",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/5d8a7a5a-2988-41c1-8c3b-ad49da9e1007.avif?width=300",
+    "card_url": "https://mazoku.cc/card/5d8a7a5a-2988-41c1-8c3b-ad49da9e1007",
+    "card_id": "5d8a7a5a-2988-41c1-8c3b-ad49da9e1007"
+  },
+  {
+    "character_name": "Jeremiah Gottwald",
+    "series": "Code Geass",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/84bdfd9d-3ae8-496d-bfaa-81e75e7175b8.avif?width=300",
+    "card_url": "https://mazoku.cc/card/84bdfd9d-3ae8-496d-bfaa-81e75e7175b8",
+    "card_id": "84bdfd9d-3ae8-496d-bfaa-81e75e7175b8"
+  },
+  {
+    "character_name": "Futaba Sumeragi",
+    "series": "Code Geass",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/a012925c-d596-4718-b227-d3477cf5a3ee.avif?width=300",
+    "card_url": "https://mazoku.cc/card/a012925c-d596-4718-b227-d3477cf5a3ee",
+    "card_id": "a012925c-d596-4718-b227-d3477cf5a3ee"
+  },
+  {
+    "character_name": "Maya Disel",
+    "series": "Code Geass",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/0448fb78-7697-410b-b766-3edeaa8e7439.avif?width=300",
+    "card_url": "https://mazoku.cc/card/0448fb78-7697-410b-b766-3edeaa8e7439",
+    "card_id": "0448fb78-7697-410b-b766-3edeaa8e7439"
+  },
+  {
+    "character_name": "Sakuya Sumeragi",
+    "series": "Code Geass",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/f483667e-c988-4f02-b6a9-3869f2f0ca8c.avif?width=300",
+    "card_url": "https://mazoku.cc/card/f483667e-c988-4f02-b6a9-3869f2f0ca8c",
+    "card_id": "f483667e-c988-4f02-b6a9-3869f2f0ca8c"
+  },
+  {
+    "character_name": "C.C.",
+    "series": "Code Geass",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/a585de39-58bc-48dc-8290-feba7bb05d25.avif?width=300",
+    "card_url": "https://mazoku.cc/card/a585de39-58bc-48dc-8290-feba7bb05d25",
+    "card_id": "a585de39-58bc-48dc-8290-feba7bb05d25"
+  },
+  {
+    "character_name": "Suzaku Kururugi",
+    "series": "Code Geass",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/76cb0454-f2b7-4a8c-bb4e-69193d5fce42.avif?width=300",
+    "card_url": "https://mazoku.cc/card/76cb0454-f2b7-4a8c-bb4e-69193d5fce42",
+    "card_id": "76cb0454-f2b7-4a8c-bb4e-69193d5fce42"
+  },
+  {
+    "character_name": "Ar",
+    "series": "Code Geass",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/1ad9d264-d4a4-4052-87b4-5d1e3c942089.avif?width=300",
+    "card_url": "https://mazoku.cc/card/1ad9d264-d4a4-4052-87b4-5d1e3c942089",
+    "card_id": "1ad9d264-d4a4-4052-87b4-5d1e3c942089"
+  },
+  {
+    "character_name": "Nunnally Lamperouge",
+    "series": "Code Geass",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/4987ba8b-bcb0-4b2a-a18d-7eb42a8243f8.avif?width=300",
+    "card_url": "https://mazoku.cc/card/4987ba8b-bcb0-4b2a-a18d-7eb42a8243f8",
+    "card_id": "4987ba8b-bcb0-4b2a-a18d-7eb42a8243f8"
+  },
+  {
+    "character_name": "Ashley Ashra",
+    "series": "Code Geass",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/879d7fe2-b09c-4ee1-8fc6-8ca7ff79e3f3.avif?width=300",
+    "card_url": "https://mazoku.cc/card/879d7fe2-b09c-4ee1-8fc6-8ca7ff79e3f3",
+    "card_id": "879d7fe2-b09c-4ee1-8fc6-8ca7ff79e3f3"
+  },
+  {
+    "character_name": "Ryo Sayama",
+    "series": "Code Geass",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/f7363843-8ace-4896-8590-9905e4498922.avif?width=300",
+    "card_url": "https://mazoku.cc/card/f7363843-8ace-4896-8590-9905e4498922",
+    "card_id": "f7363843-8ace-4896-8590-9905e4498922"
+  },
+  {
+    "character_name": "C.C.",
+    "series": "Code Geass",
+    "rarity": "UR",
+    "image_url": "https://cdn7.mazoku.cc/cards/3831c8be-adef-4109-a804-3683e4feb3af.avif?width=300",
+    "card_url": "https://mazoku.cc/card/3831c8be-adef-4109-a804-3683e4feb3af",
+    "card_id": "3831c8be-adef-4109-a804-3683e4feb3af"
+  },
+  {
+    "character_name": "Aquamarine Hoshino",
+    "series": "Oshi no Ko",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/0b54ed79-8a8e-43af-879f-613e4a0d6aef.avif?width=300",
+    "card_url": "https://mazoku.cc/card/0b54ed79-8a8e-43af-879f-613e4a0d6aef",
+    "card_id": "0b54ed79-8a8e-43af-879f-613e4a0d6aef"
+  },
+  {
+    "character_name": "Kana Arima",
+    "series": "Oshi no Ko",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/2a5a3d96-e9fb-4f9e-8da7-048c4cdc2c3d.avif?width=300",
+    "card_url": "https://mazoku.cc/card/2a5a3d96-e9fb-4f9e-8da7-048c4cdc2c3d",
+    "card_id": "2a5a3d96-e9fb-4f9e-8da7-048c4cdc2c3d"
+  },
+  {
+    "character_name": "Mem-cho",
+    "series": "Oshi no Ko",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/37cb7cc0-aa19-44bd-93ff-591972922de4.avif?width=300",
+    "card_url": "https://mazoku.cc/card/37cb7cc0-aa19-44bd-93ff-591972922de4",
+    "card_id": "37cb7cc0-aa19-44bd-93ff-591972922de4"
+  },
+  {
+    "character_name": "Ruby Hoshino",
+    "series": "Oshi no Ko",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/0b28a40e-8848-4a4f-820a-81b458304cca.avif?width=300",
+    "card_url": "https://mazoku.cc/card/0b28a40e-8848-4a4f-820a-81b458304cca",
+    "card_id": "0b28a40e-8848-4a4f-820a-81b458304cca"
+  },
+  {
+    "character_name": "Ai Hoshino",
+    "series": "Oshi no Ko",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/45b0069d-4d92-4fa4-8a00-65f3a2779ebd.avif?width=300",
+    "card_url": "https://mazoku.cc/card/45b0069d-4d92-4fa4-8a00-65f3a2779ebd",
+    "card_id": "45b0069d-4d92-4fa4-8a00-65f3a2779ebd"
+  },
+  {
+    "character_name": "Kana Arima",
+    "series": "Oshi no Ko",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/d1ddc844-1dc9-496c-be7e-d4f6fefe066d.avif?width=300",
+    "card_url": "https://mazoku.cc/card/d1ddc844-1dc9-496c-be7e-d4f6fefe066d",
+    "card_id": "d1ddc844-1dc9-496c-be7e-d4f6fefe066d"
+  },
+  {
+    "character_name": "Aqua Hoshino",
+    "series": "Oshi no Ko",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/54524e28-bde8-401d-8643-e112d474ed9d.avif?width=300",
+    "card_url": "https://mazoku.cc/card/54524e28-bde8-401d-8643-e112d474ed9d",
+    "card_id": "54524e28-bde8-401d-8643-e112d474ed9d"
+  },
+  {
+    "character_name": "Ruby Hoshino",
+    "series": "Oshi no Ko",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/1bd37fd1-d00b-4c9f-93ec-5fae58e1db93.avif?width=300",
+    "card_url": "https://mazoku.cc/card/1bd37fd1-d00b-4c9f-93ec-5fae58e1db93",
+    "card_id": "1bd37fd1-d00b-4c9f-93ec-5fae58e1db93"
+  },
+  {
+    "character_name": "Kana Arima",
+    "series": "Oshi no Ko",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/8663a72f-33a8-4623-b708-4adb977099b4.avif?width=300",
+    "card_url": "https://mazoku.cc/card/8663a72f-33a8-4623-b708-4adb977099b4",
+    "card_id": "8663a72f-33a8-4623-b708-4adb977099b4"
+  },
+  {
+    "character_name": "Akane Kurokawa",
+    "series": "Oshi no Ko",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/2a62366d-fff5-461b-b68c-18f3fd15694b.avif?width=300",
+    "card_url": "https://mazoku.cc/card/2a62366d-fff5-461b-b68c-18f3fd15694b",
+    "card_id": "2a62366d-fff5-461b-b68c-18f3fd15694b"
+  },
+  {
+    "character_name": "Ai Hoshino",
+    "series": "Oshi no Ko",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/daf65a0a-0323-489d-bc9f-558b9d96b100.avif?width=300",
+    "card_url": "https://mazoku.cc/card/daf65a0a-0323-489d-bc9f-558b9d96b100",
+    "card_id": "daf65a0a-0323-489d-bc9f-558b9d96b100"
+  },
+  {
+    "character_name": "Ai Hoshino",
+    "series": "Oshi no Ko",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/ccea0436-d4f1-4b86-95f3-7124f4934146.avif?width=300",
+    "card_url": "https://mazoku.cc/card/ccea0436-d4f1-4b86-95f3-7124f4934146",
+    "card_id": "ccea0436-d4f1-4b86-95f3-7124f4934146"
+  },
+  {
+    "character_name": "Ruby Hoshino",
+    "series": "Oshi no Ko",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/3bbba087-4ccb-43bd-9c71-50caef3e8adf.avif?width=300",
+    "card_url": "https://mazoku.cc/card/3bbba087-4ccb-43bd-9c71-50caef3e8adf",
+    "card_id": "3bbba087-4ccb-43bd-9c71-50caef3e8adf"
+  },
+  {
+    "character_name": "Ruby Hoshino",
+    "series": "Oshi no Ko",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/275dbfc5-0502-4601-8ea8-1296d72adbf0.avif?width=300",
+    "card_url": "https://mazoku.cc/card/275dbfc5-0502-4601-8ea8-1296d72adbf0",
+    "card_id": "275dbfc5-0502-4601-8ea8-1296d72adbf0"
+  },
+  {
+    "character_name": "Mem-Cho",
+    "series": "Oshi no Ko",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/625cf9d1-e3a5-44b0-b545-477dc8d00bbd.avif?width=300",
+    "card_url": "https://mazoku.cc/card/625cf9d1-e3a5-44b0-b545-477dc8d00bbd",
+    "card_id": "625cf9d1-e3a5-44b0-b545-477dc8d00bbd"
+  },
+  {
+    "character_name": "Ruby Hoshino",
+    "series": "Oshi no Ko",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/39d1b306-cc9a-4107-bc6b-975330b90cf6.avif?width=300",
+    "card_url": "https://mazoku.cc/card/39d1b306-cc9a-4107-bc6b-975330b90cf6",
+    "card_id": "39d1b306-cc9a-4107-bc6b-975330b90cf6"
+  },
+  {
+    "character_name": "Akane Kurokawa",
+    "series": "Oshi no Ko",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/64ac6570-e70d-4c30-9b93-37477701ffbe.avif?width=300",
+    "card_url": "https://mazoku.cc/card/64ac6570-e70d-4c30-9b93-37477701ffbe",
+    "card_id": "64ac6570-e70d-4c30-9b93-37477701ffbe"
+  },
+  {
+    "character_name": "Ai Hoshino",
+    "series": "Oshi no Ko",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/9a9a919a-37a9-4224-9e2a-16b432208468.avif?width=300",
+    "card_url": "https://mazoku.cc/card/9a9a919a-37a9-4224-9e2a-16b432208468",
+    "card_id": "9a9a919a-37a9-4224-9e2a-16b432208468"
+  },
+  {
+    "character_name": "Mem-Cho",
+    "series": "Oshi no Ko",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/22eb021d-9386-4458-a58b-eef369faa4b2.avif?width=300",
+    "card_url": "https://mazoku.cc/card/22eb021d-9386-4458-a58b-eef369faa4b2",
+    "card_id": "22eb021d-9386-4458-a58b-eef369faa4b2"
+  },
+  {
+    "character_name": "Akane Kurokawa",
+    "series": "Oshi no Ko",
+    "rarity": "UR",
+    "image_url": "https://cdn7.mazoku.cc/cards/476c4509-3b74-4704-ab19-7ee9f357358a.avif?width=300",
+    "card_url": "https://mazoku.cc/card/476c4509-3b74-4704-ab19-7ee9f357358a",
+    "card_id": "476c4509-3b74-4704-ab19-7ee9f357358a"
+  },
+  {
+    "character_name": "Elinalise Dragonroad",
+    "series": "Mushoku Tensei",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/db9ffcff-cbc1-43d2-9ee5-3cd2e65c5595.avif?width=300",
+    "card_url": "https://mazoku.cc/card/db9ffcff-cbc1-43d2-9ee5-3cd2e65c5595",
+    "card_id": "db9ffcff-cbc1-43d2-9ee5-3cd2e65c5595"
+  },
+  {
+    "character_name": "Paul Greyrat",
+    "series": "Mushoku Tensei",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/62ddb1a2-a0e3-4038-bde9-686e6a3bd36f.avif?width=300",
+    "card_url": "https://mazoku.cc/card/62ddb1a2-a0e3-4038-bde9-686e6a3bd36f",
+    "card_id": "62ddb1a2-a0e3-4038-bde9-686e6a3bd36f"
+  },
+  {
+    "character_name": "Roxy Migurdia",
+    "series": "Mushoku Tensei",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/78a30bab-ced8-4e85-81d7-cf4b5dc577f3.avif?width=300",
+    "card_url": "https://mazoku.cc/card/78a30bab-ced8-4e85-81d7-cf4b5dc577f3",
+    "card_id": "78a30bab-ced8-4e85-81d7-cf4b5dc577f3"
+  },
+  {
+    "character_name": "Sylphiette",
+    "series": "Mushoku Tensei",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/2c63b894-c077-45e7-a6a4-44f0005b3c4f.avif?width=300",
+    "card_url": "https://mazoku.cc/card/2c63b894-c077-45e7-a6a4-44f0005b3c4f",
+    "card_id": "2c63b894-c077-45e7-a6a4-44f0005b3c4f"
+  },
+  {
+    "character_name": "Zenith Greyrat",
+    "series": "Mushoku Tensei",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/dade5a1d-43d9-4db1-bc2a-99feb3dda2df.avif?width=300",
+    "card_url": "https://mazoku.cc/card/dade5a1d-43d9-4db1-bc2a-99feb3dda2df",
+    "card_id": "dade5a1d-43d9-4db1-bc2a-99feb3dda2df"
+  },
+  {
+    "character_name": "Eris Boreas Greyrat",
+    "series": "Mushoku Tensei",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/48832f90-56cc-4fe8-816f-ccf263568ea9.avif?width=300",
+    "card_url": "https://mazoku.cc/card/48832f90-56cc-4fe8-816f-ccf263568ea9",
+    "card_id": "48832f90-56cc-4fe8-816f-ccf263568ea9"
+  },
+  {
+    "character_name": "Rudeus Greyrat",
+    "series": "Mushoku Tensei",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/22382d95-59d8-4fbd-a6e2-a240fa53c91b.avif?width=300",
+    "card_url": "https://mazoku.cc/card/22382d95-59d8-4fbd-a6e2-a240fa53c91b",
+    "card_id": "22382d95-59d8-4fbd-a6e2-a240fa53c91b"
+  },
+  {
+    "character_name": "Aisha Greyrat",
+    "series": "Mushoku Tensei",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/a2cec97b-4628-4acc-8b4c-f0f800d5afb3.avif?width=300",
+    "card_url": "https://mazoku.cc/card/a2cec97b-4628-4acc-8b4c-f0f800d5afb3",
+    "card_id": "a2cec97b-4628-4acc-8b4c-f0f800d5afb3"
+  },
+  {
+    "character_name": "Ghislaine Dedoldia",
+    "series": "Mushoku Tensei",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/ca2c14ba-491e-4bb5-8a0d-18f89d17b4ad.avif?width=300",
+    "card_url": "https://mazoku.cc/card/ca2c14ba-491e-4bb5-8a0d-18f89d17b4ad",
+    "card_id": "ca2c14ba-491e-4bb5-8a0d-18f89d17b4ad"
+  },
+  {
+    "character_name": "Sylphiette",
+    "series": "Mushoku Tensei",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/d0298ca1-b522-4583-b807-d853582b9fc7.avif?width=300",
+    "card_url": "https://mazoku.cc/card/d0298ca1-b522-4583-b807-d853582b9fc7",
+    "card_id": "d0298ca1-b522-4583-b807-d853582b9fc7"
+  },
+  {
+    "character_name": "Roxy Migurdia",
+    "series": "Mushoku Tensei",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/f694f363-b723-4108-8134-3a6c9bf927c3.avif?width=300",
+    "card_url": "https://mazoku.cc/card/f694f363-b723-4108-8134-3a6c9bf927c3",
+    "card_id": "f694f363-b723-4108-8134-3a6c9bf927c3"
+  },
+  {
+    "character_name": "Rudeus Greyrat",
+    "series": "Mushoku Tensei",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/ddf3844f-e253-4f68-83a3-37a2a03513ce.avif?width=300",
+    "card_url": "https://mazoku.cc/card/ddf3844f-e253-4f68-83a3-37a2a03513ce",
+    "card_id": "ddf3844f-e253-4f68-83a3-37a2a03513ce"
+  },
+  {
+    "character_name": "Eris Boreas Greyrat",
+    "series": "Mushoku Tensei",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/eb00be75-4417-40d5-b700-227262506859.avif?width=300",
+    "card_url": "https://mazoku.cc/card/eb00be75-4417-40d5-b700-227262506859",
+    "card_id": "eb00be75-4417-40d5-b700-227262506859"
+  },
+  {
+    "character_name": "Eris Boreas Greyrat",
+    "series": "Mushoku Tensei",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/d4fdf9d8-0ed3-4d6f-8e45-e64a0bc65aef.avif?width=300",
+    "card_url": "https://mazoku.cc/card/d4fdf9d8-0ed3-4d6f-8e45-e64a0bc65aef",
+    "card_id": "d4fdf9d8-0ed3-4d6f-8e45-e64a0bc65aef"
+  },
+  {
+    "character_name": "Eris Boreas Greyrat",
+    "series": "Mushoku Tensei",
+    "rarity": "R",
+    "image_url": "https://cdn7.mazoku.cc/cards/b71aa00a-4672-4a6f-a9a4-0ef4388ac73b.avif?width=300",
+    "card_url": "https://mazoku.cc/card/b71aa00a-4672-4a6f-a9a4-0ef4388ac73b",
+    "card_id": "b71aa00a-4672-4a6f-a9a4-0ef4388ac73b"
+  },
+  {
+    "character_name": "Roxy Migurdia",
+    "series": "Mushoku Tensei",
+    "rarity": "R",
+    "image_url": "https://cdn7.mazoku.cc/cards/9fb742f9-d6b6-441d-b143-826adb7fd250.avif?width=300",
+    "card_url": "https://mazoku.cc/card/9fb742f9-d6b6-441d-b143-826adb7fd250",
+    "card_id": "9fb742f9-d6b6-441d-b143-826adb7fd250"
+  },
+  {
+    "character_name": "Eris Boreas Greyrat",
+    "series": "Mushoku Tensei",
+    "rarity": "R",
+    "image_url": "https://cdn7.mazoku.cc/cards/5f5bb4c8-f2bc-4407-ab33-4ee5f35f4df4.avif?width=300",
+    "card_url": "https://mazoku.cc/card/5f5bb4c8-f2bc-4407-ab33-4ee5f35f4df4",
+    "card_id": "5f5bb4c8-f2bc-4407-ab33-4ee5f35f4df4"
+  },
+  {
+    "character_name": "Roxy Migurdia",
+    "series": "Mushoku Tensei",
+    "rarity": "R",
+    "image_url": "https://cdn7.mazoku.cc/cards/3e73b8b7-f1b0-44ac-9499-2c2ef591be38.avif?width=300",
+    "card_url": "https://mazoku.cc/card/3e73b8b7-f1b0-44ac-9499-2c2ef591be38",
+    "card_id": "3e73b8b7-f1b0-44ac-9499-2c2ef591be38"
+  },
+  {
+    "character_name": "Rudeus, Sylphiette, Aisha & Norn",
+    "series": "Mushoku Tensei",
+    "rarity": "R",
+    "image_url": "https://cdn7.mazoku.cc/cards/5e621e21-ab67-427c-ab3d-74641e3a4b9a.avif?width=300",
+    "card_url": "https://mazoku.cc/card/5e621e21-ab67-427c-ab3d-74641e3a4b9a",
+    "card_id": "5e621e21-ab67-427c-ab3d-74641e3a4b9a"
+  },
+  {
+    "character_name": "Rudeus Greyrat",
+    "series": "Mushoku Tensei",
+    "rarity": "UR",
+    "image_url": "https://cdn7.mazoku.cc/cards/de9c7c9c-267e-4052-88e6-3c93af4fcede.avif?width=300",
+    "card_url": "https://mazoku.cc/card/de9c7c9c-267e-4052-88e6-3c93af4fcede",
+    "card_id": "de9c7c9c-267e-4052-88e6-3c93af4fcede"
+  },
+  {
+    "character_name": "Kyouko Hori",
+    "series": "Horimiya",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/ce457cc7-ab0c-4368-98bc-160e5231e4ad.avif?width=300",
+    "card_url": "https://mazoku.cc/card/ce457cc7-ab0c-4368-98bc-160e5231e4ad",
+    "card_id": "ce457cc7-ab0c-4368-98bc-160e5231e4ad"
+  },
+  {
+    "character_name": "Kyouko Hori",
+    "series": "Horimiya",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/19aaac7b-9f63-4025-8253-8108d4d3f0da.avif?width=300",
+    "card_url": "https://mazoku.cc/card/19aaac7b-9f63-4025-8253-8108d4d3f0da",
+    "card_id": "19aaac7b-9f63-4025-8253-8108d4d3f0da"
+  },
+  {
+    "character_name": "Izumi Miyamura",
+    "series": "Horimiya",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/8b7a9726-c699-4b14-9221-69212ba8d620.avif?width=300",
+    "card_url": "https://mazoku.cc/card/8b7a9726-c699-4b14-9221-69212ba8d620",
+    "card_id": "8b7a9726-c699-4b14-9221-69212ba8d620"
+  },
+  {
+    "character_name": "Akane Yanagi",
+    "series": "Horimiya",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/a56927bc-3d1d-4377-888f-5442a7e38b9e.avif?width=300",
+    "card_url": "https://mazoku.cc/card/a56927bc-3d1d-4377-888f-5442a7e38b9e",
+    "card_id": "a56927bc-3d1d-4377-888f-5442a7e38b9e"
+  },
+  {
+    "character_name": "Kakeru Sengoku",
+    "series": "Horimiya",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/84fde90d-36bb-4056-8561-f02130778fb1.avif?width=300",
+    "card_url": "https://mazoku.cc/card/84fde90d-36bb-4056-8561-f02130778fb1",
+    "card_id": "84fde90d-36bb-4056-8561-f02130778fb1"
+  },
+  {
+    "character_name": "Remi Ayasaki",
+    "series": "Horimiya",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/bf5106a1-fcf8-4f11-b762-195716b2f002.avif?width=300",
+    "card_url": "https://mazoku.cc/card/bf5106a1-fcf8-4f11-b762-195716b2f002",
+    "card_id": "bf5106a1-fcf8-4f11-b762-195716b2f002"
+  },
+  {
+    "character_name": "Sakura Kouno",
+    "series": "Horimiya",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/6c79beee-9645-4a5e-b780-7f39ed07bb76.avif?width=300",
+    "card_url": "https://mazoku.cc/card/6c79beee-9645-4a5e-b780-7f39ed07bb76",
+    "card_id": "6c79beee-9645-4a5e-b780-7f39ed07bb76"
+  },
+  {
+    "character_name": "Shuu Iura",
+    "series": "Horimiya",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/00c7259c-59f4-42b4-a8aa-dcd826dac91b.avif?width=300",
+    "card_url": "https://mazoku.cc/card/00c7259c-59f4-42b4-a8aa-dcd826dac91b",
+    "card_id": "00c7259c-59f4-42b4-a8aa-dcd826dac91b"
+  },
+  {
+    "character_name": "Tooru Ishikawa",
+    "series": "Horimiya",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/97a484bc-e351-4264-8aff-27df1b28422a.avif?width=300",
+    "card_url": "https://mazoku.cc/card/97a484bc-e351-4264-8aff-27df1b28422a",
+    "card_id": "97a484bc-e351-4264-8aff-27df1b28422a"
+  },
+  {
+    "character_name": "Yuki Yoshikawa",
+    "series": "Horimiya",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/4fc16ddc-2e17-4b2f-8bfd-4f8aa153aa4e.avif?width=300",
+    "card_url": "https://mazoku.cc/card/4fc16ddc-2e17-4b2f-8bfd-4f8aa153aa4e",
+    "card_id": "4fc16ddc-2e17-4b2f-8bfd-4f8aa153aa4e"
+  },
+  {
+    "character_name": "Kyouko Hori",
+    "series": "Horimiya",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/2cdd2f2b-8567-4961-8c30-bfc255f28e9e.avif?width=300",
+    "card_url": "https://mazoku.cc/card/2cdd2f2b-8567-4961-8c30-bfc255f28e9e",
+    "card_id": "2cdd2f2b-8567-4961-8c30-bfc255f28e9e"
+  },
+  {
+    "character_name": "Izumi Miyamura",
+    "series": "Horimiya",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/07797f25-607a-4885-8c53-14a7f10bd7fd.avif?width=300",
+    "card_url": "https://mazoku.cc/card/07797f25-607a-4885-8c53-14a7f10bd7fd",
+    "card_id": "07797f25-607a-4885-8c53-14a7f10bd7fd"
+  },
+  {
+    "character_name": "Hori & Miyamura",
+    "series": "Horimiya",
+    "rarity": "R",
+    "image_url": "https://cdn7.mazoku.cc/cards/321533ff-7149-4923-9810-51ef76185a55.avif?width=300",
+    "card_url": "https://mazoku.cc/card/321533ff-7149-4923-9810-51ef76185a55",
+    "card_id": "321533ff-7149-4923-9810-51ef76185a55"
+  },
+  {
+    "character_name": "Izumi Miyamura",
+    "series": "Horimiya",
+    "rarity": "R",
+    "image_url": "https://cdn7.mazoku.cc/cards/a23a6ded-42c3-40ef-b516-a80fbe35c9f0.avif?width=300",
+    "card_url": "https://mazoku.cc/card/a23a6ded-42c3-40ef-b516-a80fbe35c9f0",
+    "card_id": "a23a6ded-42c3-40ef-b516-a80fbe35c9f0"
+  },
+  {
+    "character_name": "Kyouko Hori",
+    "series": "Horimiya",
+    "rarity": "R",
+    "image_url": "https://cdn7.mazoku.cc/cards/8f5d4aeb-b28d-4b72-9ca6-d6c35e2f9164.avif?width=300",
+    "card_url": "https://mazoku.cc/card/8f5d4aeb-b28d-4b72-9ca6-d6c35e2f9164",
+    "card_id": "8f5d4aeb-b28d-4b72-9ca6-d6c35e2f9164"
+  },
+  {
+    "character_name": "Kyouko Hori",
+    "series": "Horimiya",
+    "rarity": "SR",
+    "image_url": "https://cdn7.mazoku.cc/cards/93f5b6fa-3c2c-45e7-9132-28b1d2fd504a.avif?width=300",
+    "card_url": "https://mazoku.cc/card/93f5b6fa-3c2c-45e7-9132-28b1d2fd504a",
+    "card_id": "93f5b6fa-3c2c-45e7-9132-28b1d2fd504a"
+  },
+  {
+    "character_name": "Izumi Miyamura",
+    "series": "Horimiya",
+    "rarity": "SR",
+    "image_url": "https://cdn7.mazoku.cc/cards/7478b3bc-6669-4386-984b-26241665aaa1.avif?width=300",
+    "card_url": "https://mazoku.cc/card/7478b3bc-6669-4386-984b-26241665aaa1",
+    "card_id": "7478b3bc-6669-4386-984b-26241665aaa1"
+  },
+  {
+    "character_name": "Akane Yanagi",
+    "series": "Horimiya",
+    "rarity": "SR",
+    "image_url": "https://cdn7.mazoku.cc/cards/ed1d623b-e349-4f80-bc74-639542b7a704.avif?width=300",
+    "card_url": "https://mazoku.cc/card/ed1d623b-e349-4f80-bc74-639542b7a704",
+    "card_id": "ed1d623b-e349-4f80-bc74-639542b7a704"
+  },
+  {
+    "character_name": "Hori and Miyamura",
+    "series": "Horimiya",
+    "rarity": "SSR",
+    "image_url": "https://cdn7.mazoku.cc/cards/894e59a3-5e6a-4258-bb07-9fe19298c1f4.avif?width=300",
+    "card_url": "https://mazoku.cc/card/894e59a3-5e6a-4258-bb07-9fe19298c1f4",
+    "card_id": "894e59a3-5e6a-4258-bb07-9fe19298c1f4"
+  },
+  {
+    "character_name": "Izumi Miyamura",
+    "series": "Horimiya",
+    "rarity": "UR",
+    "image_url": "https://cdn7.mazoku.cc/cards/aa30f945-f9eb-4358-9be7-6d41da7c5512.avif?width=300",
+    "card_url": "https://mazoku.cc/card/aa30f945-f9eb-4358-9be7-6d41da7c5512",
+    "card_id": "aa30f945-f9eb-4358-9be7-6d41da7c5512"
+  },
+  {
+    "character_name": "Miyuki Shirogane",
+    "series": "Kaguya-sama",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/55c0f2eb-2ab3-4626-893e-35070270a270.avif?width=300",
+    "card_url": "https://mazoku.cc/card/55c0f2eb-2ab3-4626-893e-35070270a270",
+    "card_id": "55c0f2eb-2ab3-4626-893e-35070270a270"
+  },
+  {
+    "character_name": "Ai Hayasaka",
+    "series": "Kaguya-sama",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/c7a3493d-d481-4e95-906f-2ae3396e2077.avif?width=300",
+    "card_url": "https://mazoku.cc/card/c7a3493d-d481-4e95-906f-2ae3396e2077",
+    "card_id": "c7a3493d-d481-4e95-906f-2ae3396e2077"
+  },
+  {
+    "character_name": "Chika Fujiwara",
+    "series": "Kaguya-sama",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/d9ed0a72-88f2-4ffd-9cce-b119bcc4ac8c.avif?width=300",
+    "card_url": "https://mazoku.cc/card/d9ed0a72-88f2-4ffd-9cce-b119bcc4ac8c",
+    "card_id": "d9ed0a72-88f2-4ffd-9cce-b119bcc4ac8c"
+  },
+  {
+    "character_name": "Miko Iino",
+    "series": "Kaguya-sama",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/2e3e880a-9e2e-479d-a4a9-48a094068650.avif?width=300",
+    "card_url": "https://mazoku.cc/card/2e3e880a-9e2e-479d-a4a9-48a094068650",
+    "card_id": "2e3e880a-9e2e-479d-a4a9-48a094068650"
+  },
+  {
+    "character_name": "Yuu Ishigami",
+    "series": "Kaguya-sama",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/c6dc387c-9261-4f58-8f35-6df64251906c.avif?width=300",
+    "card_url": "https://mazoku.cc/card/c6dc387c-9261-4f58-8f35-6df64251906c",
+    "card_id": "c6dc387c-9261-4f58-8f35-6df64251906c"
+  },
+  {
+    "character_name": "Ai Hayasaka",
+    "series": "Kaguya-sama",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/efa61132-57fa-41d9-9dcd-11da104ec62a.avif?width=300",
+    "card_url": "https://mazoku.cc/card/efa61132-57fa-41d9-9dcd-11da104ec62a",
+    "card_id": "efa61132-57fa-41d9-9dcd-11da104ec62a"
+  },
+  {
+    "character_name": "Kaguya Shinomiya",
+    "series": "Kaguya-sama",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/4ea04db4-dc17-40fc-a848-1da017b9e5a4.avif?width=300",
+    "card_url": "https://mazoku.cc/card/4ea04db4-dc17-40fc-a848-1da017b9e5a4",
+    "card_id": "4ea04db4-dc17-40fc-a848-1da017b9e5a4"
+  },
+  {
+    "character_name": "Miko Iino",
+    "series": "Kaguya-sama",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/c8253e19-232f-45ae-b5f0-375151ffee26.avif?width=300",
+    "card_url": "https://mazoku.cc/card/c8253e19-232f-45ae-b5f0-375151ffee26",
+    "card_id": "c8253e19-232f-45ae-b5f0-375151ffee26"
+  },
+  {
+    "character_name": "Miyuki Shirogane",
+    "series": "Kaguya-sama",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/6c9e8926-3c89-41f2-8a4c-898ec1a9befd.avif?width=300",
+    "card_url": "https://mazoku.cc/card/6c9e8926-3c89-41f2-8a4c-898ec1a9befd",
+    "card_id": "6c9e8926-3c89-41f2-8a4c-898ec1a9befd"
+  },
+  {
+    "character_name": "Yuu Ishigami",
+    "series": "Kaguya-sama",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/f03b2fd7-f85a-417a-9471-ef132cabdf20.avif?width=300",
+    "card_url": "https://mazoku.cc/card/f03b2fd7-f85a-417a-9471-ef132cabdf20",
+    "card_id": "f03b2fd7-f85a-417a-9471-ef132cabdf20"
+  },
+  {
+    "character_name": "Chika Fujiwara",
+    "series": "Kaguya-sama",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/8c795178-04c1-424b-b003-75b85edb4e72.avif?width=300",
+    "card_url": "https://mazoku.cc/card/8c795178-04c1-424b-b003-75b85edb4e72",
+    "card_id": "8c795178-04c1-424b-b003-75b85edb4e72"
+  },
+  {
+    "character_name": "Kei Shirogane",
+    "series": "Kaguya-sama",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/6377c825-efba-44e1-a8d2-f0cbb351eba5.avif?width=300",
+    "card_url": "https://mazoku.cc/card/6377c825-efba-44e1-a8d2-f0cbb351eba5",
+    "card_id": "6377c825-efba-44e1-a8d2-f0cbb351eba5"
+  },
+  {
+    "character_name": "Maki Shijo",
+    "series": "Kaguya-sama",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/65dc35f3-246c-43c6-9ed8-570f9c4cfed1.avif?width=300",
+    "card_url": "https://mazoku.cc/card/65dc35f3-246c-43c6-9ed8-570f9c4cfed1",
+    "card_id": "65dc35f3-246c-43c6-9ed8-570f9c4cfed1"
+  },
+  {
+    "character_name": "Kaguya Shinomiya",
+    "series": "Kaguya-sama",
+    "rarity": "C",
+    "image_url": "https://cdn7.mazoku.cc/cards/12dd19c4-e75e-480b-8885-cb905764f636.avif?width=300",
+    "card_url": "https://mazoku.cc/card/12dd19c4-e75e-480b-8885-cb905764f636",
+    "card_id": "12dd19c4-e75e-480b-8885-cb905764f636"
+  },
+  {
+    "character_name": "Chika Fujiwara",
+    "series": "Kaguya-sama",
+    "rarity": "R",
+    "image_url": "https://cdn7.mazoku.cc/cards/68fd0578-02b2-454a-bdbb-c66866a10f39.avif?width=300",
+    "card_url": "https://mazoku.cc/card/68fd0578-02b2-454a-bdbb-c66866a10f39",
+    "card_id": "68fd0578-02b2-454a-bdbb-c66866a10f39"
+  },
+  {
+    "character_name": "Chika Fujiwara",
+    "series": "Kaguya-sama",
+    "rarity": "R",
+    "image_url": "https://cdn7.mazoku.cc/cards/763151ff-7c5c-4560-a680-ed138e76138d.avif?width=300",
+    "card_url": "https://mazoku.cc/card/763151ff-7c5c-4560-a680-ed138e76138d",
+    "card_id": "763151ff-7c5c-4560-a680-ed138e76138d"
+  },
+  {
+    "character_name": "Kaguya Shinomiya",
+    "series": "Kaguya-sama",
+    "rarity": "R",
+    "image_url": "https://cdn7.mazoku.cc/cards/c5555c3c-f1ce-41cc-a1c1-67c35e34a8be.avif?width=300",
+    "card_url": "https://mazoku.cc/card/c5555c3c-f1ce-41cc-a1c1-67c35e34a8be",
+    "card_id": "c5555c3c-f1ce-41cc-a1c1-67c35e34a8be"
+  },
+  {
+    "character_name": "Miyuki Shirogane",
+    "series": "Kaguya-sama",
+    "rarity": "R",
+    "image_url": "https://cdn7.mazoku.cc/cards/79d0d2f9-eaa3-43b1-be8c-e5e37af06cf6.avif?width=300",
+    "card_url": "https://mazoku.cc/card/79d0d2f9-eaa3-43b1-be8c-e5e37af06cf6",
+    "card_id": "79d0d2f9-eaa3-43b1-be8c-e5e37af06cf6"
+  },
+  {
+    "character_name": "Yuu Ishigami",
+    "series": "Kaguya-sama",
+    "rarity": "R",
+    "image_url": "https://cdn7.mazoku.cc/cards/5c4e4156-6cc9-4a3d-862c-560b40c16117.avif?width=300",
+    "card_url": "https://mazoku.cc/card/5c4e4156-6cc9-4a3d-862c-560b40c16117",
+    "card_id": "5c4e4156-6cc9-4a3d-862c-560b40c16117"
+  },
+  {
+    "character_name": "Kaguya Shinomiya",
+    "series": "Kaguya-sama",
+    "rarity": "UR",
+    "image_url": "https://cdn7.mazoku.cc/cards/27fa3c03-a9f3-420e-a47b-fb9fdb306def.avif?width=300",
+    "card_url": "https://mazoku.cc/card/27fa3c03-a9f3-420e-a47b-fb9fdb306def",
+    "card_id": "27fa3c03-a9f3-420e-a47b-fb9fdb306def"
+  }
+]

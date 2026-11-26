@@ -1,3 +1,4 @@
+import { type CardArtwork, loadCardArtwork } from './cardBattleArtwork.ts';
 import { createRequire } from 'node:module';
 const cardBattleRequire = createRequire(import.meta.url);
 const cardBattleAdapter = cardBattleRequire('./cardBattle/adapter.cjs');
@@ -299,7 +300,7 @@ export function persistState(): void {
   }
 }
 
-export function tickCardBattle(): Array<{group: string; text: string; imagePath?: string}> {
+export function tickCardBattle(): Array<{group: string; text: string; artwork?: CardArtwork}> {
   if (!botState.cardBattle) return [];
   const draft = structuredClone(botState.cardBattle);
   const notices = cardBattleAdapter.tick(draft);
@@ -1623,7 +1624,16 @@ async function handleIncomingMessageInternal(params: IncomingParams): Promise<Bo
           for (const event of visual.events || []) if (event.winner) event.winner = label(event.winner);
           reply.imageBuffer = await cardBattleRenderer.renderBattle(visual, { effectsEnabled: Boolean(draft.settings?.effectsEnabled) });
         }
-        else if (result.imagePath) reply.imageBuffer = fs.readFileSync(result.imagePath);
+        else if (result.artwork) {
+          const artwork: CardArtwork = result.artwork;
+          if (params.source === 'baileys') {
+            reply.imageBuffer = await loadCardArtwork(artwork);
+            if (!reply.imageBuffer) reply.text += `\n\nCard art: ${artwork.pageUrl}`;
+          } else {
+            reply.imageUrl = artwork.imageUrl;
+            reply.imageCaption = reply.text;
+          }
+        }
         if (reply.imageBuffer && reply.text.length <= 1024) { reply.hideText = true; reply.imageCaption = reply.text; }
       } catch (err) { console.warn('[Card Battle] Image rendering failed; using text', err); }
       recordLog(params, input, reply, Date.now() - started);

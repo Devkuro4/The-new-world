@@ -3,11 +3,36 @@ import { registerHooks, createRequire } from 'node:module';
 import { mkdtempSync, rmSync, readFileSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
+import { loadCardArtwork } from './cardBattleArtwork.ts';
 import { accountIds, identityJids, selectTarget } from './whatsappIdentity.ts';
 
 const require = createRequire(import.meta.url);
-const { run, services } = require('./cardBattle/adapter.cjs');
-const { getCard } = require('./cardBattle/registry.cjs');
+const { run, services, tick } = require('./cardBattle/adapter.cjs');
+const { getCard, getCollectible, collectibleList, isBattleReady, cardArtwork, spritePath } = require('./cardBattle/registry.cjs');
+const catalog = require('./cardBattle/mazoku-cards.json');
+const artworkMap = require('./cardBattle/card-artwork-map.json');
+assert.equal(catalog.length,491);
+assert.equal(collectibleList().length,491);
+assert.equal(new Set(collectibleList().map(card => card.id)).size,491);
+assert.equal(collectibleList().filter(card => card.battleReady).length,20);
+assert.equal(collectibleList().filter(card => !card.battleReady).length,471);
+assert.equal(Object.keys(artworkMap).length,20);
+for (const id of Object.keys(artworkMap)) {
+  assert.equal(getCard(id).id,id);
+  assert.match(cardArtwork(id).imageUrl,/^https:\/\/cdn7\.mazoku\.cc\/cards\//);
+  assert.match(spritePath(id),/sprites/);
+}
+assert.ok(cardArtwork('satoru-gojo-base'));
+assert.ok(cardArtwork('kyoko-hori-base'));
+assert.ok(cardArtwork('l-lawliet-base'));
+assert.equal(cardArtwork('choso-base'),undefined);
+assert.equal(await loadCardArtwork({imageUrl:'https://example.test/image.avif',pageUrl:''}),undefined);
+const catalogGojo=collectibleList().find(card=>card.name==='Gojo Satoru');
+assert.ok(catalogGojo?.battleReady);
+assert.equal(isBattleReady(catalogGojo.id),true);
+const catalogNonBattle=collectibleList().find(card=>!card.battleReady);
+assert.equal(isBattleReady(catalogNonBattle.id),false);
+assert.equal(getCollectible(catalogNonBattle.id).catalogId,catalogNonBattle.catalogId);
 const meta = [{ id: '900@lid', phoneNumber: '123@s.whatsapp.net' }];
 assert.deepEqual(identityJids('900:2@lid', undefined, meta), ['900@lid', '123@s.whatsapp.net']);
 assert.deepEqual(accountIds(identityJids('123@lid'), '123'), ['wa-lid-123']);
@@ -31,6 +56,29 @@ assert.equal(starter.cards.length, 4);
 assert.equal(starter.credits, 500);
 assert.equal(new Set(starter.cards.map(card => card.id)).size, 3);
 assert.ok(starter.cards.every(card => card.level === 5 && ['Common','Uncommon'].includes(getCard(card.id).rarity)));
+assert.match(call(a,'catalog').text,/491\/491 cards · Page 1\/25/);
+assert.match(call(a,'catalog','Horimiya').text,/Horimiya/);
+assert.match(call(a,'ss').text,/Attack on Titan · 10 cards/);
+assert.match(call(a,'ss','Jujutsu','Kaisen').text,/10 cards · Page 1\/1/);
+assert.match(call(a,'ss','Jujutsu','Kaisen').text,/Gojo Satoru/);
+assert.match(call(a,'ci','Gojo','Satoru','C').text,/1 cards · Tier C · Page 1\/1/);
+assert.match(call(a,'ci','Gojo','Satoru','C').text,/Gojo Satoru · Jujutsu Kaisen · ⚔/);
+assert.match(call(a,'ci','UR').text,/Tier UR/);
+assert.match(call(a,'ci','Gojo','UR').text,/No cards matched that name and tier/);
+state.economy.players.a.items.universal=1;
+const pack=call(a,'openpack');
+const packed=state.economy.players.a.cards.slice(-4);
+assert.ok(packed.every(card=>card.id.startsWith('catalog:')));
+assert.ok(pack.artwork?.imageUrl);
+const lockedIndex=state.economy.players.a.cards.findIndex(card=>!isBattleReady(card.id))+1;
+assert.ok(lockedIndex>0);
+assert.match(call(a,'card',String(lockedIndex)).text,/Battle support is coming later/);
+assert.throws(()=>call(a,'card',String(lockedIndex),'moves'),/Moves will be available/);
+assert.throws(()=>call(a,'deck',String(lockedIndex)),/battle-ready/);
+state.economy.players.a.cards.push({id:catalogGojo.id,uid:'catalog-gojo',level:5,xp:0});
+const gojoIndex=state.economy.players.a.cards.findIndex(card=>card.id===catalogGojo.id)+1;
+call(a,'deck',String(gojoIndex));
+assert.equal(services(state).deck('a').length,1);
 assert.throws(() => call({ ...a, target:'b' }, 'pvp', '@b'), /needs to claim starter/);
 call(b, 'start');
 call(a, 'deck', '2', '1');
@@ -48,6 +96,13 @@ const firstCard = services(state).wild.get(a.group).card.id;
 assert.match(first.text,/WILD CARD SPOTTED/);
 call(a,'wild');
 assert.notEqual(services(state).wild.get(a.group).card.id, firstCard);
+assert.deepEqual(first.artwork,cardArtwork(firstCard));
+assert.equal(first.imagePath,undefined);
+const scheduled = { nextSpawn:{[a.group]:0} };
+const [notice] = tick(scheduled);
+assert.equal(notice.group,a.group);
+assert.deepEqual(notice.artwork,cardArtwork(services(scheduled).wild.get(a.group).card.id));
+assert.equal(notice.imagePath,undefined);
 call(a,'claim');
 const battleEncounter = services(state).wild.get(a.group).id;
 assert.match(call(b,'wild').text,/IN PROGRESS/);
@@ -261,6 +316,33 @@ try {
     delete globalThis.auditExecFile;
   }
 
+  assert.match((await command('.ss Jujutsu Kaisen',{source:'simulator'})).text,/Gojo Satoru/);
+  const catalogSearch = await command('.ci Gojo Satoru C',{source:'simulator'});
+  assert.match(catalogSearch.text,/1 cards · Tier C/);
+  assert.equal(catalogSearch.imageUrl,cardArtwork(catalogGojo.id).imageUrl);
+
+  const collection = botState.cardBattle.economy.players[playerA].cards;
+  collection.push({id:'satoru-gojo-base',uid:'audit-art',level:5,xp:0});
+  const cardCommand = `.card ${collection.length}`;
+  const cardDisplay = await command(cardCommand,{source:'simulator'});
+  assert.equal(cardDisplay.imageUrl,cardArtwork('satoru-gojo-base').imageUrl);
+  assert.equal(cardDisplay.imageBuffer,undefined);
+  assert.equal((await command(cardCommand+' moves',{source:'simulator'})).imageUrl,undefined);
+  const updatedCollection = botState.cardBattle.economy.players[playerA].cards;
+  updatedCollection.push({id:'choso-base',uid:'audit-no-art',level:5,xp:0});
+  const missing = await command(`.card ${updatedCollection.length}`,{source:'simulator'});
+  assert.equal(missing.imageUrl,undefined);
+  assert.equal(missing.imageBuffer,undefined);
+  assert.match(missing.text,/Choso/i);
+  globalThis.fetch = async () => new Response(null,{status:503});
+  try {
+    const fallback = await command(cardCommand);
+    assert.match(fallback.text,/https:\/\/mazoku\.cc\/card\//);
+    assert.equal(fallback.imageBuffer,undefined);
+  } finally {
+    globalThis.fetch = originalFetch;
+  }
+
   const save = join(scratch, 'pieck-state.json');
   const persisted = JSON.parse(readFileSync(save,'utf8'));
   const legacyCard = 'audit-card';
@@ -282,4 +364,4 @@ try {
   hooks.deregister();
   rmSync(scratch,{recursive:true,force:true});
 }
-console.log('WhatsApp identity, general commands, playback fallback, Gold, saved data and Card Battle regressions passed.');
+console.log('WhatsApp identity, general commands, playback fallback, card art, Gold, saved data and Card Battle regressions passed.');
