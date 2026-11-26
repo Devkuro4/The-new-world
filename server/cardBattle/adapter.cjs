@@ -48,6 +48,15 @@ function settle(v){
 }
 const UI=require('./presentation.cjs');
 function battleReply(b,ctx,extra=''){return {text:UI.battleText(b,ctx,extra),battle:b};}
+function outcomeText(outcome){
+  if(!outcome)return '';
+  const reward=outcome.rewards||outcome,lines=[];
+  if(Number.isFinite(reward.credits)&&reward.credits>0)lines.push(`Credits earned: +${reward.credits}`);
+  if(Number.isFinite(reward.superPacks)&&reward.superPacks>0)lines.push(`Super Packs: +${reward.superPacks}`);
+  if(Number.isFinite(reward.ascensionCores)&&reward.ascensionCores>0)lines.push(`Ascension Cores: +${reward.ascensionCores}`);
+  if(outcome.captured){const card=meta(outcome.captured);lines.push(`Card claimed: ${card.name} · ${card.rarity}`);}
+  return lines.length?`*BATTLE REWARDS*\n${lines.join('\n')}`:'';
+}
 function run(state,ctx,command,args){
   const v=services(state),{economy:e,wild,pvp,tower,exped,busy,deck,selected}=v;
   settle(v);
@@ -77,16 +86,15 @@ function run(state,ctx,command,args){
   case 'start':{
     const prior=info();
     if(prior.receipts['starter-v1']||prior.receipts['starter-v2'])return reply(`Your account is ready. Use ${ctx.prefix}cards`);
-    const eligible=R.list().filter(c=>['Common','Uncommon'].includes(c.rarity));
+    const eligible=R.list().filter(c=>['Common','Uncommon'].includes(c.rarity)&&ownerCount(e,c.id)<3);
     const picks=[];
     while(picks.length<4&&eligible.length){
       picks.push(eligible.splice(e.roll(eligible.length),1)[0]);
     }
-    if(picks.length===3)picks.push(picks[e.roll(picks.length)]);
     if(picks.length!==4)throw Error('Starter roster is incomplete');
     const cards=picks.map(c=>({id:c.id,level:5}));
-    e.grant(p,'starter-v2',{credits:500,cards});
-    return reply('Starter cards · 500 Credits\n'+cards.map(cardLine).join('\n'));
+    e.grant(p,'starter-v2',{credits:250,cards});
+    return reply('Starter cards · 250 Credits\n'+cards.map(cardLine).join('\n'));
   }
   case 'collection':{
     const pageToken=args.at(-1),page=/^\d+$/.test(pageToken||'')?Number(pageToken):1;
@@ -226,7 +234,7 @@ function run(state,ctx,command,args){
       '',
       '*BATTLE STARTING...*'
     ].join('\n');
-    const outcomeLine=result.outcome?JSON.stringify(result.outcome.rewards||{credits:result.outcome.credits,captured:result.outcome.captured?.id}):'';
+    const outcomeLine=outcomeText(result.outcome);
     return {
       text: intro,
       followUp: battleReply(result.battle,ctx,outcomeLine),
@@ -252,7 +260,8 @@ function run(state,ctx,command,args){
     if(!a)return reply(`${header}\n\n${ctx.prefix}cardshop 1 — Packs\n${ctx.prefix}cardshop 2 — Consumables`);
     const items=e.shop(n);
     state.shop[p]=n;
-    return reply(`${header}\n\n`+items.map(x=>`${x.index}. ${x.name} — ${x.price} Credits`).join('\n')+`\n\n${pre}buy <number>`);
+    const rates=n===1?'\n\n*Universal Pack*\n3 cards · 5% chance of a fourth\nC 65% · UC 25% · R 8%\nSR 1.7% · SSR 0.25% · UR 0.05%':'';
+    return reply(`${header}\n\n`+items.map(x=>`${x.index}. ${x.name} — ${x.price} Credits`).join('\n')+rates+`\n\n${pre}buy <number>`);
   }
   case 'buy':{const r=e.buy(p,state.shop[p]||1,n);return reply(`Purchased ${r.name}. Balance: ${r.balance} Credits.`);}
   case 'openpack':case 'openspack':{const r=e.open(p,command==='openpack'?'universal':'super');return displayCard(UI.title('PACK OPENED')+'\n\n'+r.cards.map(cardLine).join('\n')+`\n\nUse ${ctx.prefix}cards to view your collection.`,r.cards[0].id);}
@@ -266,7 +275,7 @@ function run(state,ctx,command,args){
   if(result.playerEvents)result.battle.events=[...result.playerEvents,...result.battle.events.filter(x=>!result.playerEvents.some(y=>JSON.stringify(x)===JSON.stringify(y)))];
   if(result.events)result.battle.events=result.events;
   const outcome=result.outcome;
-  return battleReply(result.battle,ctx,[result.dialogue,result.floor?`Floor ${result.floor}`:'',outcome?JSON.stringify(outcome.rewards||{credits:outcome.credits,captured:outcome.captured?.id}):''].filter(Boolean).join('\n'));
+  return battleReply(result.battle,ctx,[result.dialogue,result.floor?`Floor ${result.floor}`:'',outcomeText(outcome)].filter(Boolean).join('\n'));
 }
 function tick(state){const v=services(state),notices=[];for(const r of v.exped.sweep())notices.push({group:r.group,text:`🏕️ Expedition completed for ${r.player}. Rewards: ${r.rewards.credits} Credits, ${r.rewards.trainingMaterials} training materials.`});settle(v);for(const [group,due] of Object.entries(state.nextSpawn)){if(!group.endsWith('@g.us')||Date.now()<due||v.wild.get(group))continue;if(due===0){state.nextSpawn[group]=Date.now()+state.settings.spawnCooldownMs;continue;}state.nextSpawn[group]=Date.now()+state.settings.spawnCooldownMs;if(Math.random()>state.settings.spawnChance)continue;const r=spawnAvailable(v.economy,v.wild,group);const c=v.wild.get(group).card;notices.push({group,...displayCard(`*WILD CARD SPOTTED*\n\n${r.name}\nLv. ${r.level} · ${r.rarity} · ${r.type}\n\n.claim — Challenge`,c.id)});}return notices;}
 module.exports={run,services,settle,tick};

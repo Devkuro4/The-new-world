@@ -1,4 +1,4 @@
-const R=require('./registry.cjs'),M=require('./moves.cjs'),B=require('./battle.cjs');
+const R=require('./registry.cjs'),M=require('./moves.cjs'),B=require('./battle.cjs'),P=require('./progression.cjs');
 const title=s=>`*${s}*`;
 const bar=(hp,max)=>{const n=Math.max(0,Math.min(10,Math.ceil(10*hp/max)));return '█'.repeat(n)+'░'.repeat(10-n)};
 const category=m=>({attack:'',healing:' [Heal]',ultimate:' [Ultimate]'}[m.category]||'');
@@ -29,6 +29,7 @@ function cardInfo(c,pre,index,sourceCmd='card'){
     title((collectibleCard?.name||m.name).toUpperCase()),
     collectibleCard?.series||m.series,
     `${displayRarity} · ${m.type} · Lv. ${c.level}`,
+    `XP: ${c.xp||0}/${c.level===100?'MAX':P.xpRequired(c.level)}`,
     '',
     `${bar(hp,s.HP)} ${hp}/${s.HP} HP`,
     '',

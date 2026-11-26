@@ -81,7 +81,7 @@
   },
   {
     "id": "variant-0fee42e2-3bd8-409f-8346-3d3cc6111c51",
-    "name": "Cha Hae-In",
+    "name": "Cha Hae-In — Café Special",
     "series": "Solo Leveling",
     "version": "0fee42e2-3bd8-409f-8346-3d3cc6111c51",
     "type": "Strength",
@@ -101,7 +101,7 @@
   },
   {
     "id": "variant-ff0041b5-49a4-4265-a042-87497832b9ac",
-    "name": "Cha Hae-In",
+    "name": "Cha Hae-In — Combat Variant",
     "series": "Solo Leveling",
     "version": "ff0041b5-49a4-4265-a042-87497832b9ac",
     "type": "Agility",
@@ -321,7 +321,7 @@
   },
   {
     "id": "variant-3ebd8274-a7f6-427c-b3c9-a5148b34591e",
-    "name": "Sung Jin-Woo",
+    "name": "Sung Jin-Woo — Blue Hoodie",
     "series": "Solo Leveling",
     "version": "3ebd8274-a7f6-427c-b3c9-a5148b34591e",
     "type": "Strength",
@@ -341,7 +341,7 @@
   },
   {
     "id": "variant-d9e90840-6e59-4c72-b26b-6dfb18ab4661",
-    "name": "Sung Jin-Woo",
+    "name": "Sung Jin-Woo — Café Special",
     "series": "Solo Leveling",
     "version": "d9e90840-6e59-4c72-b26b-6dfb18ab4661",
     "type": "Vitality",
@@ -401,7 +401,7 @@
   },
   {
     "id": "variant-6cb9dbc0-aa9c-4e84-959d-3f99e9594699",
-    "name": "Anya Forger",
+    "name": "Anya Forger — Sailor Special",
     "series": "SPY x FAMILY",
     "version": "6cb9dbc0-aa9c-4e84-959d-3f99e9594699",
     "type": "Arcane",
@@ -421,7 +421,7 @@
   },
   {
     "id": "variant-981cc4cb-2dfc-45c3-ab7c-ccc529524188",
-    "name": "Anya Forger",
+    "name": "Anya Forger — Christmas Special",
     "series": "SPY x FAMILY",
     "version": "981cc4cb-2dfc-45c3-ab7c-ccc529524188",
     "type": "Agility",
@@ -441,7 +441,7 @@
   },
   {
     "id": "variant-c4b84a46-3542-49a4-a503-5d5dcfe2e805",
-    "name": "Anya Forger",
+    "name": "Anya Forger — Maid Café",
     "series": "SPY x FAMILY",
     "version": "c4b84a46-3542-49a4-a503-5d5dcfe2e805",
     "type": "Agility",
@@ -461,7 +461,7 @@
   },
   {
     "id": "variant-e04d12c8-715b-4f4e-9246-fed779488bfe",
-    "name": "Anya Forger",
+    "name": "Anya Forger — Summer Special — Watermelon",
     "series": "SPY x FAMILY",
     "version": "e04d12c8-715b-4f4e-9246-fed779488bfe",
     "type": "Agility",
@@ -481,7 +481,7 @@
   },
   {
     "id": "variant-ef9afe11-b9c2-4569-934b-71944101c616",
-    "name": "Anya Forger",
+    "name": "Anya Forger — Eden Uniform",
     "series": "SPY x FAMILY",
     "version": "ef9afe11-b9c2-4569-934b-71944101c616",
     "type": "Vitality",
@@ -701,7 +701,7 @@
   },
   {
     "id": "variant-2f1c7116-2154-4faf-acb2-e2facb1864ee",
-    "name": "Loid Forger",
+    "name": "Loid Forger — Christmas Special",
     "series": "SPY x FAMILY",
     "version": "2f1c7116-2154-4faf-acb2-e2facb1864ee",
     "type": "Strength",
@@ -721,7 +721,7 @@
   },
   {
     "id": "variant-ec7cad6d-c8f5-4455-86da-50c030b04fd6",
-    "name": "Loid Forger",
+    "name": "Loid Forger — Base Form",
     "series": "SPY x FAMILY",
     "version": "ec7cad6d-c8f5-4455-86da-50c030b04fd6",
     "type": "Agility",
@@ -761,7 +761,7 @@
   },
   {
     "id": "variant-2be9b9e0-b4cc-471b-892e-988816e5652d",
-    "name": "Yor Forger",
+    "name": "Yor Forger — Christmas Special",
     "series": "SPY x FAMILY",
     "version": "2be9b9e0-b4cc-471b-892e-988816e5652d",
     "type": "Vitality",
@@ -781,7 +781,7 @@
   },
   {
     "id": "variant-431ceb7a-832f-416d-93cc-821475dd91a7",
-    "name": "Yor Forger",
+    "name": "Yor Forger — Base Form",
     "series": "SPY x FAMILY",
     "version": "431ceb7a-832f-416d-93cc-821475dd91a7",
     "type": "Vitality",
@@ -821,7 +821,7 @@
   },
   {
     "id": "variant-09ad11df-79f7-41c3-9ecd-487b7031e96d",
-    "name": "Alice Zuberg",
+    "name": "Alice Zuberg — Variant 1",
     "series": "Sword Art Online",
     "version": "09ad11df-79f7-41c3-9ecd-487b7031e96d",
     "type": "Vitality",
@@ -841,7 +841,7 @@
   },
   {
     "id": "variant-63860aa5-5a70-46ad-baf2-bbaedb74148f",
-    "name": "Alice Zuberg",
+    "name": "Alice Zuberg — Variant 2",
     "series": "Sword Art Online",
     "version": "63860aa5-5a70-46ad-baf2-bbaedb74148f",
     "type": "Vitality",
@@ -1061,7 +1061,7 @@
   },
   {
     "id": "variant-0a4d1bac-d688-4397-9aa9-333cd0e6ee75",
-    "name": "Sinon",
+    "name": "Sinon — Variant 1",
     "series": "Sword Art Online",
     "version": "0a4d1bac-d688-4397-9aa9-333cd0e6ee75",
     "type": "Arcane",
@@ -1081,7 +1081,7 @@
   },
   {
     "id": "variant-31113f90-df17-4504-ad6f-f06f29377712",
-    "name": "Sinon",
+    "name": "Sinon — Variant 2",
     "series": "Sword Art Online",
     "version": "31113f90-df17-4504-ad6f-f06f29377712",
     "type": "Strength",
@@ -1101,7 +1101,7 @@
   },
   {
     "id": "variant-abd2d898-7df7-4846-bc3b-ee804d64f2bd",
-    "name": "Sinon",
+    "name": "Sinon — Variant 3",
     "series": "Sword Art Online",
     "version": "abd2d898-7df7-4846-bc3b-ee804d64f2bd",
     "type": "Strength",
@@ -1121,7 +1121,7 @@
   },
   {
     "id": "variant-c74733d2-4813-430b-808d-9f4a0d62c1e0",
-    "name": "Sinon",
+    "name": "Sinon — Variant 4",
     "series": "Sword Art Online",
     "version": "c74733d2-4813-430b-808d-9f4a0d62c1e0",
     "type": "Vitality",

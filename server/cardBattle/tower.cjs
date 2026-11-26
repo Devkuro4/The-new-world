@@ -5,7 +5,7 @@ const FLOORS=Object.freeze([1,1,2,2,3,3,3,4,4,5].map((count,i)=>Object.freeze({f
 const day=now=>new Date(now+3600000).toISOString().slice(0,10);
 const closed=b=>['ended','cancelled'].includes(b.phase);
 class CardTower {
- constructor({state={},now=Date.now,random=Math.random,canBattle=()=>true,getDeck,reward=()=>({credits:1000,ascensionCores:10,superPacks:1})}={}){this.state=state;for(const k of ['attempts','runs','outbox'])this.state[k]??={};Object.assign(this,{now,random,canBattle,getDeck,reward});}
+ constructor({state={},now=Date.now,random=Math.random,canBattle=()=>true,getDeck,reward=()=>({credits:600,ascensionCores:6,superPacks:1})}={}){this.state=state;for(const k of ['attempts','runs','outbox'])this.state[k]??={};Object.assign(this,{now,random,canBattle,getDeck,reward});}
  active(player){return Object.values(this.state.runs).find(r=>r.player===player);}
  info(player){const attempt=Object.hasOwn(this.state.attempts,player)?this.state.attempts[player]:null;return {floors:FLOORS,active:!!this.active(player),available:attempt?.day!==day(this.now())&&!this.active(player),cleared:attempt?.day===day(this.now())&&attempt.cleared};}
  start(group,player){this.sweep();if(!this.info(player).available||!this.canBattle(player))throw Error('Tower unavailable');if(!this.getDeck)throw Error('Deck provider required');const cards=structuredClone(this.getDeck(player));const r={id:randomUUID(),player,group,day:day(this.now()),floor:1,cleared:0,enemiesDefeated:0,bossUsed:[],battle:null};r.battle=this.makeBattle(r,cards);Object.defineProperty(this.state.attempts,player,{value:{day:r.day,cleared:false},enumerable:true,writable:true,configurable:true});this.state.runs[r.id]=r;return this.advance(r);}

@@ -44,7 +44,7 @@ function randomCharacterId(random,roster,previous){
   return candidates[Math.floor(random()*candidates.length)].id;
 }
 class WildEncounters {
- constructor({state={},random=Math.random,now=Date.now,credits=level=>50+level*5,canBattle=()=>true}={}){this.state=state;this.state.groups??={};this.state.outbox??={};this.state.previous??={};this.random=random;this.now=now;this.credits=credits;this.canBattle=canBattle;}
+ constructor({state={},random=Math.random,now=Date.now,credits=level=>25+level*2,canBattle=()=>true}={}){this.state=state;this.state.groups??={};this.state.outbox??={};this.state.previous??={};this.random=random;this.now=now;this.credits=credits;this.canBattle=canBattle;}
  get(group){return Object.hasOwn(this.state.groups,group)?this.state.groups[group]:null;}
  spawn(group,{id,level}={}){this.sweep();if(this.get(group))throw Error('Wild Card already active');const roster=R.list();id??=randomCharacterId(this.random,roster,this.state.previous[group]);level??=rollWildLevel(this.random);const c=R.getCard(id);R.statsAt(id,level);const e={id:randomUUID(),card:{id,level},expires:this.now()+TTL,failed:[],battle:null};Object.defineProperty(this.state.groups,group,{value:e,writable:true,enumerable:true,configurable:true});return {heading:'WILD CARD SPOTTED',encounter:e.id,name:c.name,level,type:c.type,rarity:c.rarity,command:'.claim'};}
  replaceIdle(group){

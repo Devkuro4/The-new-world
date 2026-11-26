@@ -2,7 +2,7 @@ const {randomUUID}=require('node:crypto');
 const R=require('./registry.cjs');
 const DIFFICULTIES=Object.freeze(['Easy','Normal','Hard','Extreme','Nightmare'].map((name,i)=>Object.freeze({id:i+1,name,minLevel:[1,15,30,50,75][i],hours:[1,3,6,12,24][i]})));
 function difficulty(id){const d=DIFFICULTIES.find(d=>d.id===id);if(!d)throw Error('Unknown expedition difficulty');return d;}
-function defaultReward(d,random){return {credits:[50,130,260,500,1000][d.id-1],trainingMaterials:[1,2,4,7,12][d.id-1],ascensionCores:Math.floor(random()*(d.id+1))};}
+function defaultReward(d,random){return {credits:[30,80,170,350,700][d.id-1],trainingMaterials:[1,2,4,7,12][d.id-1],ascensionCores:Math.floor(random()*(d.id+1))};}
 class Expeditions{
  constructor({state={},now=Date.now,random=Math.random,getCollection,canAssign=()=>true,reward=defaultReward}={}){this.state=state;for(const k of ['drafts','runs','outbox'])this.state[k]??={};Object.assign(this,{now,random,getCollection,canAssign,reward});}
  draft(p){return Object.hasOwn(this.state.drafts,p)?this.state.drafts[p]:null;}

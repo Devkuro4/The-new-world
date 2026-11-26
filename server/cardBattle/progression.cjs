@@ -1,8 +1,8 @@
 const registry = require('./registry.cjs');
 const MAX_LEVEL=100;
-function xpRequired(level){if(!Number.isInteger(level)||level<1||level>100)throw RangeError('Invalid level');return level===100?0:Math.floor(50+15*level+2*level**2);}
+function xpRequired(level){if(!Number.isInteger(level)||level<1||level>100)throw RangeError('Invalid level');return level===100?0:Math.floor(80+20*level+3*level**2);}
 function gainXP(card,amount){let {level,xp=0}=card; if(!Number.isSafeInteger(amount)||amount<0||!Number.isSafeInteger(xp)||xp<0||!Number.isInteger(level)||level<1||level>100)throw RangeError('Invalid progression'); if(level<100&&xp>=xpRequired(level))throw RangeError('Invalid stored XP');xp+=amount;if(!Number.isSafeInteger(xp))throw RangeError('XP overflow');while(level<100&&xp>=xpRequired(level)){xp-=xpRequired(level);level++;}return {...card,level,xp:level===100?0:xp};}
-function encounterXP(enemyLevel){xpRequired(enemyLevel);return 20+enemyLevel*4;}
+function encounterXP(enemyLevel){xpRequired(enemyLevel);return 12+enemyLevel*3;}
 function distributeXP(participants,enemies){const total=enemies.reduce((n,e)=>n+encounterXP(e.level),0);const unique=[...new Set(participants)];return unique.map(id=>({id,xp:total}));}
 function damage({attacker,defender,power=1,kind='physical',random=Math.random}){if(!['physical','arcane'].includes(kind)||!Number.isFinite(power)||power<=0)throw RangeError('Invalid move');const a=registry.statsAt(attacker.id,attacker.level),d=registry.statsAt(defender.id,defender.level);const type=registry.multiplier(registry.getCard(attacker.id).type,registry.getCard(defender.id).type);const critical=random()<a.CRT/100;const amount=Math.max(1,Math.round(a[kind==='physical'?'ATK':'ARC']*power*100/(100+d.DEF)*type*(critical?1.5:1)));return {amount,critical,multiplier:type};}
 module.exports={MAX_LEVEL,xpRequired,gainXP,encounterXP,distributeXP,damage};
