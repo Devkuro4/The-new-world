@@ -186,6 +186,7 @@ export interface BotReplyPayload {
   /** Server-side temp video file (sent by the Baileys runner, then deleted). */
   videoPath?: string;
   buttons?: WhatsAppSimButton[];
+  followUp?: BotReplyPayload;
   handler: string;
   status?: 'ok' | 'blocked' | 'error';
 }
@@ -288,12 +289,14 @@ export const DEFAULT_COMMANDS: BotCommandDef[] = [
   // Cards
   { name: 'cb', category: 'Cards', description: 'Open the Card Battle command directory', usage: '.cb [command]', role: 'everyone', enabled: true },
   { name: 'starter', aliases: ['start'], category: 'Cards', description: 'Claim four low-rarity starter cards and 500 Credits', usage: '.starter', role: 'everyone', enabled: true },
-  { name: 'cards', aliases: ['col', 'collection'], category: 'Cards', description: 'Browse and search your owned card collection', usage: '.cards [page|search]', role: 'everyone', enabled: true },
+  { name: 'cards', aliases: ['collection'], category: 'Cards', description: 'Browse and search your owned card collection', usage: '.cards [page|search]', role: 'everyone', enabled: true },
   { name: 'catalog', category: 'Cards', description: 'Browse and search all 491 collectible cards', usage: '.catalog [page|search]', role: 'everyone', enabled: true },
   { name: 'ss', category: 'Cards', description: 'Search collectible cards by anime or series', usage: '.ss <series> [page]', role: 'everyone', enabled: true },
-  { name: 'ci', category: 'Cards', description: 'Search cards by character name and optional tier', usage: '.ci <name> [C|R|SR|SSR|UR] [page]', role: 'everyone', enabled: true },
+  { name: 'ci', category: 'Cards', description: 'Search cards by character name and optional tier', usage: '.ci <name> [C|UC|R|SR|SSR|UR] [page]', role: 'everyone', enabled: true },
   { name: 'card', category: 'Cards', description: 'Display an owned card and its battle details', usage: '.card <collection number> [moves]', role: 'everyone', enabled: true },
-  { name: 'deck', category: 'Cards', description: 'View or select up to six battle-ready cards', usage: '.deck [collection numbers]', role: 'everyone', enabled: true },
+  { name: 'deck', category: 'Cards', description: 'View a Battle Deck card, view your deck, or select up to six battle-ready cards', usage: '.deck [number|collection numbers]', role: 'everyone', enabled: true },
+  { name: 'swap', category: 'Cards', description: 'Exchange the positions of two cards in your Battle Deck', usage: '.swap <slot1> <slot2>', role: 'everyone', enabled: true },
+  { name: 't2col', category: 'Cards', description: 'Exchange a Battle Deck card with a card from your collection', usage: '.t2col <deck slot> <collection number>', role: 'everyone', enabled: true },
   { name: 'wild', category: 'Cards', description: 'Spawn or display the current Wild Card encounter', usage: '.wild', role: 'everyone', enabled: true },
   { name: 'claim', category: 'Cards', description: 'Challenge the current Wild Card', usage: '.claim', role: 'everyone', enabled: true },
   { name: 'pvp', category: 'Cards', description: 'Challenge another player or answer a PvP challenge', usage: '.pvp @user | .pvp accept|decline', role: 'everyone', enabled: true },
@@ -356,7 +359,6 @@ export const DEFAULT_COMMANDS: BotCommandDef[] = [
   { name: 'heist', category: 'Economy', description: 'Launch a dungeon vault Gold heist', usage: '.heist', role: 'everyone', enabled: true },
 
   // Games
-  { name: 'startbattle', category: 'Games', description: 'Fight a Floor Boss in The new world with your active card deck', usage: '.startbattle', role: 'everyone', enabled: true },
   { name: 'c4', category: 'Games', description: 'Play interactive Connect-4 against Pieck', usage: '.c4 [1–7|reset]', role: 'everyone', enabled: true },
   { name: 'wcg', category: 'Games', description: 'Start or play a Word Chain round', usage: '.wcg [word|reset]', role: 'everyone', enabled: true },
   { name: 'chess', category: 'Games', description: 'Show chess availability', usage: '.chess', role: 'everyone', enabled: true },

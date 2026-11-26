@@ -339,9 +339,19 @@ async function startServer() {
       quotedImageUrl,
     });
 
-    const { imageBuffer: _imgBuf, ...publicReply } = reply;
+    const toPublicReply = (payload: typeof reply): Record<string, unknown> => {
+      const { imageBuffer, followUp, ...rest } = payload;
+      const out: Record<string, unknown> = { ...rest };
+      if (!out.imageUrl && imageBuffer) {
+        out.imageUrl = `data:image/png;base64,${Buffer.from(imageBuffer).toString('base64')}`;
+      }
+      if (followUp) {
+        out.followUp = toPublicReply(followUp);
+      }
+      return out;
+    };
     res.json({
-      reply: publicReply,
+      reply: toPublicReply(reply),
       players: Object.values(botState.players),
       auctions: botState.auctions,
       groupSettings: botState.groupSettings,

@@ -77,7 +77,7 @@
     },
     {
       "id": "hiromi-higuruma-base:6",
-      "name": "Executioner's Sword",
+      "name": "Deadly Sentencing",
       "category": "ultimate",
       "level": 20,
       "power": 2.6,
@@ -120,7 +120,7 @@
     },
     {
       "id": "hiromi-higuruma-base:9",
-      "name": "Verdict Blow \u2014 Mastery",
+      "name": "Verdict Blow — Mastery",
       "category": "attack",
       "level": 80,
       "power": 2.1,
@@ -212,7 +212,7 @@
     },
     {
       "id": "light-yagami-base:6",
-      "name": "Death Note Gambit",
+      "name": "Death Note",
       "category": "ultimate",
       "level": 20,
       "power": 2.6,
@@ -255,7 +255,7 @@
     },
     {
       "id": "light-yagami-base:9",
-      "name": "Final Deduction \u2014 Mastery",
+      "name": "Final Deduction — Mastery",
       "category": "attack",
       "level": 80,
       "power": 2.1,
@@ -390,7 +390,7 @@
     },
     {
       "id": "choso-base:9",
-      "name": "Blood Meteor \u2014 Mastery",
+      "name": "Blood Meteor — Mastery",
       "category": "attack",
       "level": 80,
       "power": 2.1,
@@ -482,7 +482,7 @@
     },
     {
       "id": "toji-fushiguro-base:6",
-      "name": "Inverted Spear Assault",
+      "name": "Inverted Spear of Heaven",
       "category": "ultimate",
       "level": 20,
       "power": 2.6,
@@ -525,7 +525,7 @@
     },
     {
       "id": "toji-fushiguro-base:9",
-      "name": "Weapon Barrage \u2014 Mastery",
+      "name": "Weapon Barrage — Mastery",
       "category": "attack",
       "level": 80,
       "power": 2.1,
@@ -660,7 +660,7 @@
     },
     {
       "id": "toge-inumaki-base:9",
-      "name": "Crushing Voice \u2014 Mastery",
+      "name": "Crushing Voice — Mastery",
       "category": "attack",
       "level": 80,
       "power": 2.1,
@@ -752,7 +752,7 @@
     },
     {
       "id": "panda-base:6",
-      "name": "Gorilla Rampage",
+      "name": "Gorilla Mode",
       "category": "ultimate",
       "level": 20,
       "power": 2.6,
@@ -795,7 +795,7 @@
     },
     {
       "id": "panda-base:9",
-      "name": "Heavy Barrage \u2014 Mastery",
+      "name": "Heavy Barrage — Mastery",
       "category": "attack",
       "level": 80,
       "power": 2.1,
@@ -930,7 +930,7 @@
     },
     {
       "id": "mei-mei-base:9",
-      "name": "Aerial Cleave \u2014 Mastery",
+      "name": "Aerial Cleave — Mastery",
       "category": "attack",
       "level": 80,
       "power": 2.1,
@@ -1022,7 +1022,7 @@
     },
     {
       "id": "yuta-okkotsu-base:6",
-      "name": "True Love Beam",
+      "name": "Authentic Mutual Love",
       "category": "ultimate",
       "level": 20,
       "power": 2.6,
@@ -1065,7 +1065,7 @@
     },
     {
       "id": "yuta-okkotsu-base:9",
-      "name": "Copied Technique \u2014 Mastery",
+      "name": "Copied Technique — Mastery",
       "category": "attack",
       "level": 80,
       "power": 2.1,
@@ -1200,7 +1200,7 @@
     },
     {
       "id": "yuji-itadori-base:9",
-      "name": "Impact Barrage \u2014 Mastery",
+      "name": "Impact Barrage — Mastery",
       "category": "attack",
       "level": 80,
       "power": 2.1,
@@ -1335,7 +1335,7 @@
     },
     {
       "id": "rias-gremory-base:9",
-      "name": "Ruin Barrage \u2014 Mastery",
+      "name": "Ruin Barrage — Mastery",
       "category": "attack",
       "level": 80,
       "power": 2.1,
@@ -1470,7 +1470,7 @@
     },
     {
       "id": "suguru-geto-base:9",
-      "name": "Spirit Barrage \u2014 Mastery",
+      "name": "Spirit Barrage — Mastery",
       "category": "attack",
       "level": 80,
       "power": 2.1,
@@ -1562,7 +1562,7 @@
     },
     {
       "id": "jogo-base:6",
-      "name": "Maximum Meteor",
+      "name": "Coffin of the Iron Mountain",
       "category": "ultimate",
       "level": 20,
       "power": 2.6,
@@ -1605,7 +1605,7 @@
     },
     {
       "id": "jogo-base:9",
-      "name": "Fire Barrage \u2014 Mastery",
+      "name": "Fire Barrage — Mastery",
       "category": "attack",
       "level": 80,
       "power": 2.1,
@@ -1697,7 +1697,7 @@
     },
     {
       "id": "nobara-kugisaki-base:6",
-      "name": "Resonance Barrage",
+      "name": "Straw Doll: Resonance",
       "category": "ultimate",
       "level": 20,
       "power": 2.6,
@@ -1740,7 +1740,7 @@
     },
     {
       "id": "nobara-kugisaki-base:9",
-      "name": "Resonance \u2014 Mastery",
+      "name": "Resonance — Mastery",
       "category": "attack",
       "level": 80,
       "power": 2.1,
@@ -1832,7 +1832,7 @@
     },
     {
       "id": "satoru-gojo-base:6",
-      "name": "Hollow Purple",
+      "name": "Unlimited Void",
       "category": "ultimate",
       "level": 20,
       "power": 2.6,
@@ -1875,7 +1875,7 @@
     },
     {
       "id": "satoru-gojo-base:9",
-      "name": "Red Reversal \u2014 Mastery",
+      "name": "Red Reversal — Mastery",
       "category": "attack",
       "level": 80,
       "power": 2.1,
@@ -1967,7 +1967,7 @@
     },
     {
       "id": "kento-nanami-base:6",
-      "name": "Ratio Collapse",
+      "name": "Overtime: Ratio Collapse",
       "category": "ultimate",
       "level": 20,
       "power": 2.6,
@@ -2010,7 +2010,7 @@
     },
     {
       "id": "kento-nanami-base:9",
-      "name": "Overtime Strike \u2014 Mastery",
+      "name": "Overtime Strike — Mastery",
       "category": "attack",
       "level": 80,
       "power": 2.1,
@@ -2102,7 +2102,7 @@
     },
     {
       "id": "mahito-base:6",
-      "name": "Self Embodiment",
+      "name": "Self-Embodiment of Perfection",
       "category": "ultimate",
       "level": 20,
       "power": 2.6,
@@ -2145,7 +2145,7 @@
     },
     {
       "id": "mahito-base:9",
-      "name": "Transfigured Barrage \u2014 Mastery",
+      "name": "Transfigured Barrage — Mastery",
       "category": "attack",
       "level": 80,
       "power": 2.1,
@@ -2237,7 +2237,7 @@
     },
     {
       "id": "maki-zenin-base:6",
-      "name": "Heavenly Assault",
+      "name": "Heavenly Restriction: Split Soul",
       "category": "ultimate",
       "level": 20,
       "power": 2.6,
@@ -2280,7 +2280,7 @@
     },
     {
       "id": "maki-zenin-base:9",
-      "name": "Split Soul Slash \u2014 Mastery",
+      "name": "Split Soul Slash — Mastery",
       "category": "attack",
       "level": 80,
       "power": 2.1,
@@ -2415,7 +2415,7 @@
     },
     {
       "id": "yoriichi-tsugikuni-base:9",
-      "name": "Sun Halo \u2014 Mastery",
+      "name": "Sun Halo — Mastery",
       "category": "attack",
       "level": 80,
       "power": 2.1,
@@ -2550,7 +2550,7 @@
     },
     {
       "id": "kyoko-hori-base:9",
-      "name": "Fierce Combo \u2014 Mastery",
+      "name": "Fierce Combo — Mastery",
       "category": "attack",
       "level": 80,
       "power": 2.1,
@@ -2685,7 +2685,7 @@
     },
     {
       "id": "ryomen-sukuna-base:9",
-      "name": "Slashing Storm \u2014 Mastery",
+      "name": "Slashing Storm — Mastery",
       "category": "attack",
       "level": 80,
       "power": 2.1,
@@ -2820,7 +2820,7 @@
     },
     {
       "id": "megumi-fushiguro-base:9",
-      "name": "Shadow Swarm \u2014 Mastery",
+      "name": "Shadow Swarm — Mastery",
       "category": "attack",
       "level": 80,
       "power": 2.1,
@@ -2912,7 +2912,7 @@
     },
     {
       "id": "shoto-todoroki-base:6",
-      "name": "Phosphor Burst",
+      "name": "Phosphor",
       "category": "ultimate",
       "level": 20,
       "power": 2.6,
@@ -2955,7 +2955,7 @@
     },
     {
       "id": "shoto-todoroki-base:9",
-      "name": "Flashfreeze Heatwave \u2014 Mastery",
+      "name": "Flashfreeze Heatwave — Mastery",
       "category": "attack",
       "level": 80,
       "power": 2.1,
@@ -3090,7 +3090,7 @@
     },
     {
       "id": "izumi-miyamura-base:9",
-      "name": "Determined Rush \u2014 Mastery",
+      "name": "Determined Rush — Mastery",
       "category": "attack",
       "level": 80,
       "power": 2.1,
@@ -3182,7 +3182,7 @@
     },
     {
       "id": "edward-elric-base:6",
-      "name": "Fullmetal Assault",
+      "name": "Truth Transmutation",
       "category": "ultimate",
       "level": 20,
       "power": 2.6,
@@ -3225,7 +3225,7 @@
     },
     {
       "id": "edward-elric-base:9",
-      "name": "Transmutation Wave \u2014 Mastery",
+      "name": "Transmutation Wave — Mastery",
       "category": "attack",
       "level": 80,
       "power": 2.1,
@@ -3360,7 +3360,7 @@
     },
     {
       "id": "katsuki-bakugo-base:9",
-      "name": "Stun Grenade \u2014 Mastery",
+      "name": "Stun Grenade — Mastery",
       "category": "attack",
       "level": 80,
       "power": 2.1,
@@ -3452,7 +3452,7 @@
     },
     {
       "id": "sailor-moon-base:6",
-      "name": "Moon Healing Escalation",
+      "name": "Silver Crystal: Moon Spiral Heart Attack",
       "category": "ultimate",
       "level": 20,
       "power": 2.6,
@@ -3495,7 +3495,7 @@
     },
     {
       "id": "sailor-moon-base:9",
-      "name": "Silver Flash \u2014 Mastery",
+      "name": "Silver Flash — Mastery",
       "category": "attack",
       "level": 80,
       "power": 2.1,
@@ -3587,7 +3587,7 @@
     },
     {
       "id": "izuku-midoriya-base:6",
-      "name": "United States of World Smash",
+      "name": "One For All: 100% Smash",
       "category": "ultimate",
       "level": 20,
       "power": 2.6,
@@ -3630,7 +3630,7 @@
     },
     {
       "id": "izuku-midoriya-base:9",
-      "name": "Manchester Smash \u2014 Mastery",
+      "name": "Manchester Smash — Mastery",
       "category": "attack",
       "level": 80,
       "power": 2.1,
@@ -3765,7 +3765,7 @@
     },
     {
       "id": "all-might-base:9",
-      "name": "Oklahoma Smash \u2014 Mastery",
+      "name": "Oklahoma Smash — Mastery",
       "category": "attack",
       "level": 80,
       "power": 2.1,
@@ -3900,7 +3900,7 @@
     },
     {
       "id": "saitama-base:9",
-      "name": "Rapid Barrage \u2014 Mastery",
+      "name": "Rapid Barrage — Mastery",
       "category": "attack",
       "level": 80,
       "power": 2.1,
@@ -3992,7 +3992,7 @@
     },
     {
       "id": "ken-kaneki-base:6",
-      "name": "Centipede Assault",
+      "name": "Centipede Kakuja",
       "category": "ultimate",
       "level": 20,
       "power": 2.6,
@@ -4035,7 +4035,7 @@
     },
     {
       "id": "ken-kaneki-base:9",
-      "name": "Crimson Barrage \u2014 Mastery",
+      "name": "Crimson Barrage — Mastery",
       "category": "attack",
       "level": 80,
       "power": 2.1,
@@ -4170,7 +4170,7 @@
     },
     {
       "id": "l-lawliet-base:9",
-      "name": "Tactical Rush \u2014 Mastery",
+      "name": "Tactical Rush — Mastery",
       "category": "attack",
       "level": 80,
       "power": 2.1,
@@ -4262,7 +4262,7 @@
     },
     {
       "id": "monkey-d-luffy-base:6",
-      "name": "King Kong Gun",
+      "name": "Gear 5: Bajrang Gun",
       "category": "ultimate",
       "level": 20,
       "power": 2.6,
@@ -4305,7 +4305,7 @@
     },
     {
       "id": "monkey-d-luffy-base:9",
-      "name": "Red Hawk \u2014 Mastery",
+      "name": "Red Hawk — Mastery",
       "category": "attack",
       "level": 80,
       "power": 2.1,
@@ -4397,7 +4397,7 @@
     },
     {
       "id": "son-goku-base:6",
-      "name": "Spirit Bomb",
+      "name": "Ultra Instinct",
       "category": "ultimate",
       "level": 20,
       "power": 2.6,
@@ -4440,7 +4440,7 @@
     },
     {
       "id": "son-goku-base:9",
-      "name": "Dragon Fist \u2014 Mastery",
+      "name": "Dragon Fist — Mastery",
       "category": "attack",
       "level": 80,
       "power": 2.1,
@@ -4575,7 +4575,7 @@
     },
     {
       "id": "ichigo-kurosaki-base:9",
-      "name": "Black Getsuga \u2014 Mastery",
+      "name": "Black Getsuga — Mastery",
       "category": "attack",
       "level": 80,
       "power": 2.1,
@@ -4667,7 +4667,7 @@
     },
     {
       "id": "tanjiro-kamado-base:6",
-      "name": "Sun Dragon Dance",
+      "name": "Hinokami Kagura: Sun Halo Dragon",
       "category": "ultimate",
       "level": 20,
       "power": 2.6,
@@ -4710,7 +4710,7 @@
     },
     {
       "id": "tanjiro-kamado-base:9",
-      "name": "Hinokami Kagura \u2014 Mastery",
+      "name": "Hinokami Kagura — Mastery",
       "category": "attack",
       "level": 80,
       "power": 2.1,
@@ -4802,7 +4802,7 @@
     },
     {
       "id": "naruto-uzumaki-base:6",
-      "name": "Tailed Beast Rasenshuriken",
+      "name": "Baryon Mode",
       "category": "ultimate",
       "level": 20,
       "power": 2.6,
@@ -4845,7 +4845,7 @@
     },
     {
       "id": "naruto-uzumaki-base:9",
-      "name": "Rasenshuriken \u2014 Mastery",
+      "name": "Rasenshuriken — Mastery",
       "category": "attack",
       "level": 80,
       "power": 2.1,
@@ -4937,7 +4937,7 @@
     },
     {
       "id": "eren-yeager-base:6",
-      "name": "Attack Titan Assault",
+      "name": "Founding Titan: The Rumbling",
       "category": "ultimate",
       "level": 20,
       "power": 2.6,
@@ -4980,7 +4980,7 @@
     },
     {
       "id": "eren-yeager-base:9",
-      "name": "Titan Charge \u2014 Mastery",
+      "name": "Titan Charge — Mastery",
       "category": "attack",
       "level": 80,
       "power": 2.1,

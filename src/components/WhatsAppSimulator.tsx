@@ -62,7 +62,7 @@ export const WhatsAppSimulator: React.FC<WhatsAppSimulatorProps> = ({
   const quickCommands = [
     `${p}menu`,
     `${p}p`,
-    `${p}card`,
+    `${p}wild`,
     `${p}daily`,
     `${p}anime Frieren`,
     `${p}aquiz`,

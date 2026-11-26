@@ -68,7 +68,7 @@ const cardBattleTimer = setInterval(async () => {
     for (const notice of tickCardBattle()) {
       if (!notice.group.endsWith('@g.us') || !cachedGroups.some(g => g.id === notice.group)) continue;
       try {
-        const text = notice.text.replace(/\.cb claim/g, `${botState.config.prefix || '.'}cb claim`);
+        const text = notice.text.replace(/\.(?:cb )?claim/g, `${botState.config.prefix || '.'}claim`);
         const image = notice.artwork ? await loadCardArtwork(notice.artwork) : undefined;
         if (image) {
           try {
@@ -556,6 +556,10 @@ export async function sendBotReply(
     } catch {
       // The details card was already sent; a failed audio preview should not break the reply.
     }
+  }
+
+  if (reply.followUp) {
+    await sendBotReply(sock, remoteJid, quoted, reply.followUp, mentions, onTextSent);
   }
 }
 

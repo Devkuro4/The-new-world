@@ -7,7 +7,7 @@ interface CatalogCard {
   card_id: string;
   character_name: string;
   series: string;
-  rarity: 'C' | 'R' | 'SR' | 'SSR' | 'UR';
+  rarity: 'C' | 'UC' | 'R' | 'SR' | 'SSR' | 'UR';
   image_url: string;
   card_url: string;
 }
@@ -117,7 +117,7 @@ export const EconomyCardsPanel: React.FC<EconomyCardsPanelProps> = ({
                 </p>
               </div>
               <div className="flex flex-wrap gap-2">
-                {['cb', 'starter', 'cards', 'ss', 'ci', 'deck', 'wild', 'claim', 'cardshop'].map(command => (
+                {['cb', 'starter', 'cards', 'ss', 'ci', 'deck', 'swap', 't2col', 'wild', 'claim', 'cardshop'].map(command => (
                   <button key={command} type="button" onClick={() => onRunInSimulator(config.prefix + command)}
                     className="rounded-lg border border-slate-200 px-3 py-1.5 text-sm hover:bg-slate-50">
                     {config.prefix}{command}
@@ -155,7 +155,7 @@ export const EconomyCardsPanel: React.FC<EconomyCardsPanelProps> = ({
                   className="mt-1.5 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm focus:border-emerald-600 focus:outline-none"
                 >
                   <option value="all">All tiers</option>
-                  {['C', 'R', 'SR', 'SSR', 'UR'].map(tier => <option key={tier} value={tier}>{tier}</option>)}
+                  {['C', 'UC', 'R', 'SR', 'SSR', 'UR'].map(tier => <option key={tier} value={tier}>{tier}</option>)}
                 </select>
               </label>
             </div>
@@ -192,7 +192,7 @@ export const EconomyCardsPanel: React.FC<EconomyCardsPanelProps> = ({
                         </div>
                         <p className="truncate text-xs text-slate-500" title={card.series}>{card.series}</p>
                         <p className={`text-[11px] font-medium ${battleReady ? 'text-emerald-700' : 'text-slate-400'}`}>
-                          {battleReady ? '⚔ Battle-ready' : 'Collectible · sprite pending'}
+                          {battleReady ? 'Battle-ready' : 'Collectible · sprite pending'}
                         </p>
                       </div>
                     </article>

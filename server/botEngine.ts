@@ -44,7 +44,7 @@ import {
 } from './profileRenderer.ts';
 
 const CARD_BATTLE_COMMANDS = new Set([
-  'cb', 'starter', 'cards', 'catalog', 'ss', 'ci', 'card', 'deck', 'wild', 'claim', 'pvp', 'tower',
+  'cb', 'starter', 'cards', 'catalog', 'ss', 'ci', 'card', 'deck', 'swap', 't2col', 'wild', 'claim', 'pvp', 'tower',
   'exped', 'move', 'switch', 'desperate', 'pass', 'forfeit', 'heal', 'cardshop', 'openpack', 'openspack',
   'bag', 'merge', 'learn', 'cmi', 'effects',
 ]);
@@ -901,7 +901,7 @@ async function searchSoundCloud(bin: string, query: string): Promise<SoundCloudT
     execFile(bin, args, { timeout: 10_000, maxBuffer: 1024 * 1024 }, (error, stdout) => {
       if (error) return resolve(null);
       try {
-        const words = (value: string) => value.normalize('NFKD').replace(/\p{M}/gu, '')
+        const words = (value: string): string[] => value.normalize('NFKD').replace(/\p{M}/gu, '')
           .toLowerCase().match(/[\p{L}\p{N}]+/gu) ?? [];
         const requested = words(query);
         const result = JSON.parse(stdout) as { entries?: Array<{
@@ -1594,9 +1594,9 @@ async function handleIncomingMessageInternal(params: IncomingParams): Promise<Bo
     }
 
     const DEDICATED_XP_COMMANDS = new Set([
-      'work', 'fish', 'daily', 'card', 'rc', 'sc', 'claim', 'vs', 'use', 'rob', 'heist',
+      'work', 'fish', 'daily', 'card', 'rc', 'sc', 'claim', 'use', 'rob', 'heist',
       'slots', 'cf', 'dice', 'db', 'dp', 'roulette', 'horse', 'rr', 'gamble', 'bj',
-      'aquiz', 'startbattle', 'c4', 'wcg', 'chess', 'enter', 'pmenu',
+      'aquiz', 'c4', 'wcg', 'chess', 'enter', 'pmenu',
     ]);
     const PASSIVE_EXEMPT_COMMANDS = new Set([
       'menu', 'help', 'p', 'profile', 'xp', 'level', 'rank', 'setpp', 'setcover',
@@ -1611,24 +1611,27 @@ async function handleIncomingMessageInternal(params: IncomingParams): Promise<Bo
         ids.find(id => draft.economy?.players?.[id]?.cards?.length) ??
         ids.find(id => Object.hasOwn(draft.economy?.players ?? {}, id)) ?? ids[0];
       const target = accountForBattle(params.targetAccountIds ?? []);
-      const aliases: Record<string, string> = { starter: 'start', cards: 'collection', col: 'collection', collection: 'collection', cardshop: 'shop', expedition: 'exped' };
+      const aliases: Record<string, string> = { starter: 'start', cards: 'collection', collection: 'collection', cardshop: 'shop', expedition: 'exped' };
       const token = rawCmd.toLowerCase();
       const subcommand = token === 'cb' ? (restTokens[0] || 'help').toLowerCase() : token;
+      const labelFn = (id: string) => botState.players[id]?.name || (id.startsWith('wild:') ? 'Wild Card' : id.startsWith('tower:') ? 'Tower' : id);
       const result = cardBattleAdapter.run(draft, {
         player: accountForBattle(params.senderAccountIds ?? [player.id]), group: params.groupId || `simulator:${botState.groupSettings.groupName}`, prefix,
-        target, label: (id: string) => botState.players[id]?.name || (id.startsWith('wild:') ? 'Wild Card' : id.startsWith('tower:') ? 'Tower' : id),
+        target, label: labelFn,
       }, aliases[subcommand] || subcommand, token === 'cb' ? restTokens.slice(1) : restTokens);
       botState.cardBattle = draft;
       persistState();
+      const renderBattleVisual = async (battleObj: any) => {
+        const visual = structuredClone(battleObj);
+        for (const side of visual.sides) side.id = labelFn(side.id);
+        if (visual.winner) visual.winner = labelFn(visual.winner);
+        for (const event of visual.events || []) if (event.winner) event.winner = labelFn(event.winner);
+        return cardBattleRenderer.renderBattle(visual, { effectsEnabled: Boolean(draft.settings?.effectsEnabled) });
+      };
       reply = { text: result.text, handler: 'Card Battle' };
       try {
         if (result.battle) {
-          const visual = structuredClone(result.battle);
-          const label = (id: string) => botState.players[id]?.name || (id.startsWith('wild:') ? 'Wild Card' : id.startsWith('tower:') ? 'Tower' : id);
-          for (const side of visual.sides) side.id = label(side.id);
-          if (visual.winner) visual.winner = label(visual.winner);
-          for (const event of visual.events || []) if (event.winner) event.winner = label(event.winner);
-          reply.imageBuffer = await cardBattleRenderer.renderBattle(visual, { effectsEnabled: Boolean(draft.settings?.effectsEnabled) });
+          reply.imageBuffer = await renderBattleVisual(result.battle);
         }
         else if (result.artwork) {
           const artwork: CardArtwork = result.artwork;
@@ -1641,6 +1644,17 @@ async function handleIncomingMessageInternal(params: IncomingParams): Promise<Bo
           }
         }
         if (reply.imageBuffer && reply.text.length <= 1024) { reply.hideText = true; reply.imageCaption = reply.text; }
+        if (result.followUp) {
+          const followUp: BotReplyPayload = { text: result.followUp.text, handler: 'Card Battle' };
+          if (result.followUp.battle) {
+            followUp.imageBuffer = await renderBattleVisual(result.followUp.battle);
+          }
+          if (followUp.imageBuffer && followUp.text.length <= 1024) {
+            followUp.hideText = true;
+            followUp.imageCaption = followUp.text;
+          }
+          reply.followUp = followUp;
+        }
       } catch (err) { console.warn('[Card Battle] Image rendering failed; using text', err); }
       recordLog(params, input, reply, Date.now() - started);
       return reply;
@@ -1921,165 +1935,51 @@ async function executeBuiltInCommand(
       handler: 'AI Memory',
     };
   }
-  // ── CARDS ──
-  if (cmd === 'card' || cmd === 'sc' || cmd === 'rc') {
-    const useOrbsForRc = cmd === 'rc' && ['orb', 'orbs'].includes(argStr.trim().toLowerCase());
-    if (cmd === 'rc') {
-      if (useOrbsForRc) {
-        if (player.orbs < 2) {
-          return {
-            text: `You need *2 Spirit Orbs* to roll *${p}rc orb* (or *🪙 500* for *${p}rc*). Current Orbs: *${player.orbs}*.`,
-            handler: 'Card Gacha',
-          };
-        }
-        player.orbs -= 2;
-      } else {
-        if (player.wallet < 500) {
-          return {
-            text: `You need *🪙 500* (or *2 Orbs* via *${p}rc orb*) to roll *${p}rc*. Current wallet: *${formatGold(player.wallet)}*.`,
-            handler: 'Card Gacha',
-          };
-        }
-        player.wallet -= 500;
-        addTransaction(player, 'Random Card Roll (.rc)', -500);
+  // ── CARDS (Legacy gacha roll) ──
+  if (cmd === 'rc') {
+    const useOrbsForRc = ['orb', 'orbs'].includes(argStr.trim().toLowerCase());
+    if (useOrbsForRc) {
+      if (player.orbs < 2) {
+        return {
+          text: `You need *2 Spirit Orbs* to roll *${p}rc orb* (or *🪙 500* for *${p}rc*). Current Orbs: *${player.orbs}*.`,
+          handler: 'Card Gacha',
+        };
       }
+      player.orbs -= 2;
+    } else {
+      if (player.wallet < 500) {
+        return {
+          text: `You need *🪙 500* (or *2 Orbs* via *${p}rc orb*) to roll *${p}rc*. Current wallet: *${formatGold(player.wallet)}*.`,
+          handler: 'Card Gacha',
+        };
+      }
+      player.wallet -= 500;
+      addTransaction(player, 'Random Card Roll (.rc)', -500);
     }
 
-    let picked: AnimeCard | undefined;
-    if (cmd === 'sc' && argStr) {
-      picked = botState.cards.find((c) => c.id.toLowerCase() === argStr.toLowerCase() || c.name.toLowerCase().includes(argStr.toLowerCase()));
-    }
-    if (!picked) {
-      picked = botState.cards[Math.floor(Math.random() * botState.cards.length)];
-    }
+    const picked = botState.cards[Math.floor(Math.random() * botState.cards.length)];
     if (!picked.imageUrl) {
       picked.imageUrl = await fetchCharacterImage(picked.name);
     }
 
-    if (cmd === 'rc') {
-      player.cards.push(picked.id);
-      awardXp(player, 15);
-      return {
-        text: [
-          `*🎴 Gacha Pack Opened!* (${useOrbsForRc ? '-2 Orbs' : '-🪙 500'})`,
-          `┣ Card: *[${picked.tier}] ${picked.name}* (\`${picked.id}\`)`,
-          `┣ Series: _${picked.series}_`,
-          `┣ Stats: ATK *${picked.atk}* / DEF *${picked.def}*`,
-          `┣ Stardust: *${picked.stardustValue}* ✨ (+15 XP)`,
-          `┗━━━━━━━━━━━`,
-        ].join('\n'),
-        imageUrl: picked.imageUrl,
-        imageCaption: `${picked.name} (${picked.tier})`,
-        handler: 'Card Gacha',
-        buttons: [
-          { id: 'col', label: 'View .col', command: `${p}col` },
-          { id: 'rc', label: 'Roll Again', command: `${p}rc` },
-        ],
-      };
-    }
-
+    player.cards.push(picked.id);
     awardXp(player, 15);
-
-    const claimCode = String(Math.floor(1000 + Math.random() * 9000));
-    botState.activeDrop = { card: picked, claimCode };
-    botState.stats.totalCardDrops += 1;
-    player.lastCardDrop = Date.now();
-    return {
-      text: formatDesignERail({
-        title: '🎴 WILD CARD APPEARED',
-        rows: [
-          { label: 'Name', value: picked.name },
-          { label: 'Series', value: picked.series },
-          { label: 'Tier', value: picked.tier },
-          { text: `⚔️ ${picked.atk} · 🛡 ${picked.def} · ❤️ ${picked.stardustValue}`, dividerAfter: true },
-          { label: 'Value', value: `${picked.price.toLocaleString()} gold` },
-        ],
-        footer: `${p}claim ${claimCode} to catch it`,
-      }),
-      imageUrl: picked.imageUrl,
-      imageCaption: `[${picked.tier}] ${picked.name} — Code: ${claimCode}`,
-      handler: 'Card Spawn',
-      buttons: [{ id: 'claim_drop', label: `Claim ${claimCode}`, command: `${p}claim ${claimCode}` }],
-    };
-  }
-
-  if (cmd === 'claim') {
-    if (!botState.activeDrop) {
-      return { text: `No wild card is currently spawned. Trigger one with *${p}card*!`, handler: 'Card Claim' };
-    }
-    if (botState.activeDrop.claimedBy) {
-      return { text: `Too slow! *${botState.activeDrop.card.name}* was already claimed by *${botState.activeDrop.claimedBy}*.`, handler: 'Card Claim' };
-    }
-    if (argStr && argStr !== botState.activeDrop.claimCode) {
-      return { text: `Incorrect claim code. Use *${p}claim ${botState.activeDrop.claimCode}*.`, handler: 'Card Claim' };
-    }
-    const dropCard = botState.activeDrop.card;
-    botState.activeDrop.claimedBy = player.name;
-    player.cards.push(dropCard.id);
-    player.stardust += 50;
-    const claimXp = dropCard.tier === 'S+' || dropCard.tier === 'S' ? 60 : 40;
-    awardXp(player, claimXp);
-    return {
-      text: `✅ *Card Claimed!*\n*${player.name}* claimed *[${dropCard.tier}] ${dropCard.name}* (\`${dropCard.id}\`)!\n+50 Stardust & +${claimXp} XP added.`,
-      handler: 'Card Claim',
-      buttons: [
-        { id: 'deck', label: 'My .deck', command: `${p}deck` },
-        { id: 'next_card', label: 'Spawn Another', command: `${p}card` },
-      ],
-    };
-  }
-
-  if (cmd === 'col' || cmd === 'deck') {
-    const ids = cmd === 'deck' ? player.deck : player.cards;
-    if (ids.length === 0) {
-      return { text: `Your ${cmd === 'deck' ? 'battle deck' : 'collection'} is empty! Use *${p}card* or *${p}rc* to collect cards.`, handler: 'Cards' };
-    }
-    const list = ids
-      .map((id, i) => {
-        const card = botState.cards.find((c) => c.id === id);
-        return card ? `${i + 1}. \`${card.id}\` *[${card.tier}] ${card.name}* — ${card.series}` : `${i + 1}. \`${id}\``;
-      })
-      .join('\n');
-    return {
-      text: `*🎴 ${player.name}'s ${cmd === 'deck' ? 'Active Battle Deck' : 'Card Collection'} (${ids.length})*\n${list}`,
-      handler: 'Cards',
-    };
-  }
-
-  if (cmd === 'vs') {
-    if (player.deck.length === 0) {
-      return { text: `Your deck is empty. Add cards before using *${p}vs*.`, handler: 'Card Battle', status: 'error' };
-    }
-    const query = argStr.replace(/^@/, '').toLowerCase();
-    const opponent = Object.values(botState.players).find(
-      (candidate) => candidate.id !== player.id && (!query || candidate.name.toLowerCase().includes(query))
-    );
-    if (!opponent || opponent.deck.length === 0) {
-      return { text: `No battle-ready opponent found. Try *${p}vs <name>*.`, handler: 'Card Battle', status: 'error' };
-    }
-    const scoreDeck = (deck: string[]) => deck.reduce((total, cardId) => {
-      const card = botState.cards.find((item) => item.id === cardId);
-      return total + (card ? card.atk + card.def : 0);
-    }, 0);
-    const playerScore = scoreDeck(player.deck) + Math.floor(Math.random() * 40);
-    const opponentScore = scoreDeck(opponent.deck) + Math.floor(Math.random() * 40);
-    const won = playerScore >= opponentScore;
-    const reward = won ? 500 : 100;
-    const battleXp = won ? 80 : 25;
-    player.wallet += reward;
-    awardXp(player, battleXp);
-    addTransaction(player, `Card battle vs ${opponent.name}`, reward);
-    const leadCard = botState.cards.find((card) => card.id === player.deck[0]);
     return {
       text: [
-        '*Card battle*',
-        `${player.name}  ${playerScore} — ${opponentScore}  ${opponent.name}`,
-        won ? '*Victory*' : '*Defeat*',
-        `Reward  •  ${formatGold(reward)} (+${battleXp} XP)`,
+        `*🎴 Gacha Pack Opened!* (${useOrbsForRc ? '-2 Orbs' : '-🪙 500'})`,
+        `┣ Card: *[${picked.tier}] ${picked.name}* (\`${picked.id}\`)`,
+        `┣ Series: _${picked.series}_`,
+        `┣ Stats: ATK *${picked.atk}* / DEF *${picked.def}*`,
+        `┣ Stardust: *${picked.stardustValue}* ✨ (+15 XP)`,
+        `┗━━━━━━━━━━━`,
       ].join('\n'),
-      imageUrl: leadCard?.imageUrl,
-      imageCaption: `${player.name} vs ${opponent.name}`,
-      handler: 'Card Battle',
+      imageUrl: picked.imageUrl,
+      imageCaption: `${picked.name} (${picked.tier})`,
+      handler: 'Card Gacha',
+      buttons: [
+        { id: 'cards', label: 'View .cards', command: `${p}cards` },
+        { id: 'rc', label: 'Roll Again', command: `${p}rc` },
+      ],
     };
   }
 
@@ -2920,7 +2820,7 @@ async function executeBuiltInCommand(
           { label: 'Total XP', value: `${player.xp.toLocaleString()} XP` },
           { label: 'Next Level', value: `${remainingToNext.toLocaleString()} XP needed` },
         ],
-        footer: `Earn XP by playing: ${p}work · ${p}daily · ${p}fish · ${p}claim · ${p}startbattle · ${p}aquiz`,
+        footer: `Earn XP by playing: ${p}work · ${p}daily · ${p}fish · ${p}claim · ${p}tower · ${p}aquiz`,
       }),
       handler: 'Profile',
     };
@@ -3796,26 +3696,6 @@ async function executeBuiltInCommand(
           id: `quiz_${letter}`, label: letter.toUpperCase(), command: `${p}aquiz ${letter} ${picked.id}`,
         })),
       ],
-    };
-  }
-
-  if (cmd === 'startbattle') {
-    const deckPower = player.deck.reduce((acc, id) => {
-      const c = botState.cards.find((card) => card.id === id);
-      return acc + (c ? c.atk + c.def : 100);
-    }, 0);
-    const bossPower = 240 + Math.floor(Math.random() * 140);
-    const won = deckPower >= bossPower;
-    const bossXp = won ? 120 : 30;
-    if (won) {
-      player.wallet += 900;
-      player.orbs += 2;
-      addTransaction(player, 'Floor Boss Victory', 900);
-    }
-    awardXp(player, bossXp);
-    return {
-      text: `*⚔️ ${botState.config.bannerTitle} Floor Boss Battle*\nYour Deck Power: *${deckPower}*\nBoss (Veldora Shadow): *${bossPower}*\n\n${won ? `🏆 *Victory!* Earned *+${formatGold(900)}*, +2 Orbs, +120 XP!` : `🛡️ *Defeated!* Gained +${bossXp} combat XP — upgrade your *.deck* with stronger cards!`}`,
-      handler: 'Battle Arena',
     };
   }
 

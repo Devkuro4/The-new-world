@@ -70,11 +70,11 @@ function makeWelcomeSimMessages(cfg: BotConfig): SimMessage[] {
         `▎👑 Creator ❯ ${cfg.creatorName}`,
         `▎⌨️ Prefix ❯ ${cfg.prefix}`,
         `▎`,
-        `▎↳ try ${cfg.prefix}menu · ${cfg.prefix}card · ${cfg.prefix}bal · ${cfg.prefix}mem`,
+        `▎↳ try ${cfg.prefix}menu · ${cfg.prefix}cards · ${cfg.prefix}bal · ${cfg.prefix}mem`,
       ].join('\n'),
       buttons: [
         { id: 'init_menu', label: `Open ${cfg.prefix}menu`, command: `${cfg.prefix}menu` },
-        { id: 'init_card', label: `Spawn ${cfg.prefix}card`, command: `${cfg.prefix}card` },
+        { id: 'init_wild', label: `Spawn ${cfg.prefix}wild`, command: `${cfg.prefix}wild` },
         { id: 'init_quiz', label: `Play ${cfg.prefix}aquiz`, command: `${cfg.prefix}aquiz` },
       ],
       timestamp: nowStamp(),
@@ -172,20 +172,24 @@ export default function App() {
       };
 
       const replyPayload = data.reply;
-      const botMsg: SimMessage = {
-        id: `b-${Date.now()}`,
+      const toSimMsg = (payload: BotReplyPayload | undefined, suffix: string): SimMessage => ({
+        id: `b-${Date.now()}${suffix}`,
         sender: 'bot',
         senderLabel: config.botName,
-        text: replyPayload?.text || data.error || 'Unable to process command.',
-        imageUrl: replyPayload?.imageUrl,
-        audioUrl: replyPayload?.audioUrl,
-        imageCaption: replyPayload?.imageCaption,
-        thumbnail: replyPayload?.thumbnail,
-        buttons: replyPayload?.buttons,
-        handler: replyPayload?.handler,
+        text: payload?.text || data.error || 'Unable to process command.',
+        imageUrl: payload?.imageUrl,
+        audioUrl: payload?.audioUrl,
+        imageCaption: payload?.imageCaption,
+        thumbnail: payload?.thumbnail,
+        buttons: payload?.buttons,
+        handler: payload?.handler,
         timestamp: nowStamp(),
-      };
-      setMessages((prev) => [...prev, botMsg]);
+      });
+      const outgoingMsgs: SimMessage[] = [toSimMsg(replyPayload, '')];
+      if (replyPayload?.followUp) {
+        outgoingMsgs.push(toSimMsg(replyPayload.followUp, '-fu'));
+      }
+      setMessages((prev) => [...prev, ...outgoingMsgs]);
 
       if (data.players) setPlayers(data.players);
       if (data.groupSettings) setGroupSettings(data.groupSettings);

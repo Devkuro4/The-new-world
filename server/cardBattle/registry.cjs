@@ -6,13 +6,15 @@ const collectibleCards = require('./mazoku-cards.json');
 const artworkById = new Map(collectibleCards.map(card => [card.card_id, card]));
 const battleByArtworkId = new Map(Object.entries(artworkIds).map(([battleId, artworkId]) => [artworkId, battleId]));
 const types = ['Strength','Agility','Arcane','Vitality'];
-const rarities = ['Common','Uncommon','Rare','Epic','Legendary','Mythical','Celestial'];
+const rarities = ['Common','Uncommon','Rare','Super Rare','SS Rare','Ultra Rare'];
+const LEGACY_RARITIES = { Epic: 'Super Rare', Legendary: 'SS Rare', Mythical: 'SS Rare', Celestial: 'Ultra Rare' };
+const normalizeRarity = r => LEGACY_RARITIES[r] || r;
 const byId = new Map(cards.map(c => [c.id,c]));
 const matchups = [[1,.5,1.5,.5],[1.5,1,.5,1.5],[.5,1.5,1,1.5],[1.5,.5,.5,1]];
 function multiplier(a,b){if(!types.includes(a)||!types.includes(b))throw Error('Unknown type');return matchups[types.indexOf(a)][types.indexOf(b)];}
-function getCard(id){const c=byId.get(id);if(!c)throw Error('Unknown card');return structuredClone(c);}
+function getCard(id){const c=byId.get(id);if(!c)throw Error('Unknown card');const copy=structuredClone(c);copy.rarity=normalizeRarity(copy.rarity);return copy;}
 const collectibleId=cardId=>`catalog:${cardId}`;
-const catalogRarity=rarity=>({C:'Common',R:'Uncommon',SR:'Rare',SSR:'Epic',UR:'Legendary'})[rarity];
+const catalogRarity=rarity=>({C:'Common',UC:'Uncommon',R:'Rare',SR:'Super Rare',SSR:'SS Rare',UR:'Ultra Rare'})[rarity];
 function getCollectible(id){
   const raw=id.startsWith('catalog:')?id.slice(8):id;
   const card=artworkById.get(raw);
@@ -31,6 +33,6 @@ function cardArtwork(id){
   const card = artworkById.get(raw);
   return card ? { imageUrl: card.image_url, pageUrl: card.card_url } : undefined;
 }
-function validate(){if(byId.size!==cards.length||artworkById.size!==collectibleCards.length)throw Error('Duplicate IDs');for(const c of cards){if(!types.includes(c.type)||!rarities.includes(c.rarity)||!fs.existsSync(spritePath(c.id)))throw Error('Invalid card '+c.id);if(c.mergeTarget){const target=getCard(c.mergeTarget);if(rarities.indexOf(target.rarity)!==rarities.indexOf(c.rarity)+1)throw Error('Invalid merge');}}for(const c of collectibleCards){if(!catalogRarity(c.rarity)||!/^https:\/\/cdn7\.mazoku\.cc\/cards\//.test(c.image_url))throw Error('Invalid collectible '+c.card_id);}return cards.length;}
-module.exports={getCard,getCollectible,statsAt,spritePath,cardArtwork,resolveBattleId,isBattleReady,multiplier,validate,
-  list:()=>structuredClone(cards),collectibleList:()=>collectibleCards.map(c=>getCollectible(c.card_id))};
+function validate(){if(byId.size!==cards.length||artworkById.size!==collectibleCards.length)throw Error('Duplicate IDs');for(const c of cards){if(!types.includes(c.type)||!rarities.includes(normalizeRarity(c.rarity))||!fs.existsSync(spritePath(c.id)))throw Error('Invalid card '+c.id);if(c.mergeTarget){const target=getCard(c.mergeTarget);if(rarities.indexOf(target.rarity)!==rarities.indexOf(normalizeRarity(c.rarity))+1)throw Error('Invalid merge');}}for(const c of collectibleCards){if(!catalogRarity(c.rarity)||!/^https:\/\/cdn7\.mazoku\.cc\/cards\//.test(c.image_url))throw Error('Invalid collectible '+c.card_id);}return cards.length;}
+module.exports={getCard,getCollectible,statsAt,spritePath,cardArtwork,resolveBattleId,isBattleReady,multiplier,validate,rarities,normalizeRarity,
+  list:()=>structuredClone(cards).map(c=>({...c,rarity:normalizeRarity(c.rarity)})),collectibleList:()=>collectibleCards.map(c=>getCollectible(c.card_id))};
