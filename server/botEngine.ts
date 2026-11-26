@@ -1615,9 +1615,16 @@ async function handleIncomingMessageInternal(params: IncomingParams): Promise<Bo
       const token = rawCmd.toLowerCase();
       const subcommand = token === 'cb' ? (restTokens[0] || 'help').toLowerCase() : token;
       const labelFn = (id: string) => botState.players[id]?.name || (id.startsWith('wild:') ? 'Wild Card' : id.startsWith('tower:') ? 'Tower' : id);
+      const mentionFn = (id: string) => {
+        if (id === 'owner-kuro' && botState.config.ownerNumber) return `${botState.config.ownerNumber.replace(/\D/g, '')}@s.whatsapp.net`;
+        const lid = /^wa-lid-(\d+)$/.exec(id);
+        if (lid) return `${lid[1]}@lid`;
+        const phone = /^wa-(\d+)$/.exec(id);
+        return phone ? `${phone[1]}@s.whatsapp.net` : undefined;
+      };
       const result = cardBattleAdapter.run(draft, {
         player: accountForBattle(params.senderAccountIds ?? [player.id]), group: params.groupId || `simulator:${botState.groupSettings.groupName}`, prefix,
-        target, label: labelFn,
+        target, label: labelFn, mention: mentionFn,
       }, aliases[subcommand] || subcommand, token === 'cb' ? restTokens.slice(1) : restTokens);
       botState.cardBattle = draft;
       persistState();
@@ -1628,7 +1635,7 @@ async function handleIncomingMessageInternal(params: IncomingParams): Promise<Bo
         for (const event of visual.events || []) if (event.winner) event.winner = labelFn(event.winner);
         return cardBattleRenderer.renderBattle(visual, { effectsEnabled: Boolean(draft.settings?.effectsEnabled) });
       };
-      reply = { text: result.text, handler: 'Card Battle' };
+      reply = { text: result.text, mentions: result.mentions, handler: 'Card Battle' };
       try {
         if (result.battle) {
           reply.imageBuffer = await renderBattleVisual(result.battle);

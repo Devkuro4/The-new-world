@@ -1,4 +1,5 @@
 import crypto from 'node:crypto';
+import { createRequire } from 'node:module';
 import fs from 'node:fs';
 import path from 'node:path';
 import 'dotenv/config';
@@ -25,6 +26,10 @@ import { ASSET_DIR, getThumbImageUrl, resolveThumbKey } from './server/assets.ts
 import { loadCardArtwork } from './server/cardBattleArtwork.ts';
 import { renderProfileCardBuffer } from './server/profileRenderer.ts';
 import type { AnimeCard, BotCommandDef, CommandRole } from './src/shared/botSchema.ts';
+
+const nodeRequire = createRequire(import.meta.url);
+const battleRegistry = nodeRequire('./server/cardBattle/registry.cjs');
+const battleMoves = nodeRequire('./server/cardBattle/moves.cjs');
 
 
 
@@ -109,19 +114,51 @@ async function startServer() {
 
   app.use(
     express.json({
-      limit: '2mb',
+      limit: '8mb',
       verify: (req, _res, buf) => {
         (req as RawBodyRequest).rawBody = buf;
       },
     })
   );
 
-  // Protect the dashboard and its APIs, including pairing and simulator.
+  // Render the dashboard's own login screen, while protecting every sensitive
+  // API with a signed, HttpOnly session cookie.
+  const authSecret = crypto.createHash('sha256').update(`pieck:${adminPassword || 'local-no-password'}`).digest();
+  const cookieName = 'pieck_admin_session';
+  const parseCookies = (header = '') => Object.fromEntries(
+    header.split(';').map(value => value.trim().split('=').map(decodeURIComponent)).filter(parts => parts.length === 2),
+  );
+  const validSession = (token?: string) => {
+    if (!adminPassword) return true;
+    const [expiresRaw, signature] = String(token || '').split('.');
+    const expires = Number(expiresRaw);
+    if (!Number.isFinite(expires) || expires < Date.now() || !signature) return false;
+    const expected = crypto.createHmac('sha256', authSecret).update(expiresRaw).digest('hex');
+    return safeEqual(signature, expected);
+  };
+  app.get('/api/auth/status', (req, res) => {
+    const authenticated = validSession(parseCookies(req.headers.cookie)[cookieName]);
+    res.status(authenticated ? 200 : 401).json({ authenticated, passwordRequired: Boolean(adminPassword) });
+  });
+  app.post('/api/auth/login', (req, res) => {
+    if (!adminPassword || safeEqual(String(req.body?.password || ''), adminPassword)) {
+      const expires = Date.now() + 12 * 60 * 60 * 1000;
+      const signature = crypto.createHmac('sha256', authSecret).update(String(expires)).digest('hex');
+      const secure = process.env.NODE_ENV === 'production' ? '; Secure' : '';
+      res.setHeader('Set-Cookie', `${cookieName}=${expires}.${signature}; Path=/; HttpOnly; SameSite=Strict; Max-Age=43200${secure}`);
+      res.json({ authenticated: true });
+      return;
+    }
+    res.status(401).json({ error: 'Incorrect password.' });
+  });
+  app.post('/api/auth/logout', (_req, res) => {
+    res.setHeader('Set-Cookie', `${cookieName}=; Path=/; HttpOnly; SameSite=Strict; Max-Age=0`);
+    res.json({ authenticated: false });
+  });
   if (adminPassword) app.use((req, res, next) => {
-    if (req.path === '/api/health' || req.path === '/api/webhook') return next();
-    const expected = 'Basic ' + Buffer.from('admin:' + adminPassword).toString('base64');
-    if (safeEqual(req.headers.authorization || '', expected)) return next();
-    res.set('WWW-Authenticate', 'Basic realm="Pieck Studio"').status(401).send('Authentication required');
+    if (!req.path.startsWith('/api/') || req.path === '/api/health' || req.path === '/api/webhook') return next();
+    if (validSession(parseCookies(req.headers.cookie)[cookieName])) return next();
+    res.status(401).json({ error: 'Authentication required.' });
   });
   process.once('SIGTERM', () => { void flushBotSnapshot().finally(() => process.exit(0)); });
   // ── HEALTH & STATE API ──
@@ -198,6 +235,18 @@ async function startServer() {
     }
     if (typeof body.cardSpawnCooldownSec === 'number' && Number.isFinite(body.cardSpawnCooldownSec)) {
       botState.config.cardSpawnCooldownSec = Math.max(5, Math.min(600, Math.round(body.cardSpawnCooldownSec)));
+    }
+    if (typeof body.wildSpawnCooldownMinutes === 'number' && Number.isFinite(body.wildSpawnCooldownMinutes)) {
+      botState.config.wildSpawnCooldownMinutes = Math.max(5, Math.min(1440, Math.round(body.wildSpawnCooldownMinutes)));
+      const cardBattle = (botState.cardBattle ??= {});
+      cardBattle.settings ??= {};
+      cardBattle.settings.spawnCooldownMs = botState.config.wildSpawnCooldownMinutes * 60_000;
+    }
+    if (typeof body.wildSpawnChancePercent === 'number' && Number.isFinite(body.wildSpawnChancePercent)) {
+      botState.config.wildSpawnChancePercent = Math.max(1, Math.min(100, Math.round(body.wildSpawnChancePercent)));
+      const cardBattle = (botState.cardBattle ??= {});
+      cardBattle.settings ??= {};
+      cardBattle.settings.spawnChance = botState.config.wildSpawnChancePercent / 100;
     }
     persistState();
     res.json({ config: botState.config });
@@ -299,6 +348,36 @@ async function startServer() {
     botState.cards.unshift(card);
     persistState();
     res.status(201).json({ card });
+  });
+
+  app.post('/api/card-battle/variants', (req: Request, res: Response) => {
+    try {
+      const catalogId = String(req.body?.catalogId || '').trim();
+      const spriteDataUrl = String(req.body?.spriteDataUrl || '');
+      const type = ['Strength','Agility','Arcane','Vitality'].includes(req.body?.type) ? req.body.type : 'Strength';
+      const collectible = battleRegistry.getCollectible(`catalog:${catalogId}`);
+      const match = /^data:image\/png;base64,([A-Za-z0-9+/=]+)$/.exec(spriteDataUrl);
+      if (!match) throw new Error('Upload a transparent PNG sprite.');
+      const sprite = Buffer.from(match[1], 'base64');
+      if (sprite.length < 100 || sprite.length > 5_000_000 || sprite.readUInt32BE(0) !== 0x89504e47) throw new Error('Sprite must be a PNG smaller than 5 MB.');
+      const id = `variant-${catalogId}`;
+      const spriteName = `${id}.png`;
+      const spritePath = path.join(process.cwd(), 'server/cardBattle/sprites', spriteName);
+      fs.writeFileSync(spritePath, sprite);
+      const rarityRank = ['C','UC','R','SR','SSR','UR'].indexOf(collectible.catalogRarity);
+      const card = { id, name:collectible.name, series:collectible.series, version:catalogId, type, rarity:collectible.rarity,
+        sprite:`sprites/${spriteName}`, sourceCardId:catalogId, reviewRequired:false,
+        baseStats:{HP:95+rarityRank*10,ATK:20+rarityRank*3,DEF:16+rarityRank*2,SPD:18+rarityRank*2,ARC:18+rarityRank*3,CRT:12+rarityRank}, mergeTarget:null };
+      const kind=type==='Arcane'?'arcane':'physical',color='#69b8ff';
+      const mv=(n:number,name:string,category:string,level:number,extra:Record<string,unknown>,style:string,intensity=1)=>({id:`${id}:${n}`,name,category,level,...extra,visual:{style,color:category==='healing'?'#70f4b1':color,intensity,variant:n}});
+      const moves=[mv(1,'Quick Strike','attack',1,{power:.9,cooldown:0,kind},'slash'),mv(2,'Focused Blow','attack',1,{power:1.2,cooldown:1,kind},'dash'),mv(3,'Signature Assault','attack',1,{power:1.5,cooldown:2,kind},'burst'),mv(4,'Rising Force','attack',12,{power:1.65,cooldown:2,kind},'wave',2),mv(5,'Finishing Strike','attack',30,{power:1.85,cooldown:3,kind},'slash',2),mv(6,'Limit Break','ultimate',20,{power:2.6,cooldown:5,kind},'beam',3),mv(7,'Recover','healing',1,{heal:.18,cooldown:3},'heal'),mv(8,'Second Wind','healing',40,{heal:.3,cooldown:4},'heal',2),mv(9,'Mastery Strike','attack',80,{power:2.1,cooldown:4,kind},'barrage',3)];
+      const charactersPath=path.join(process.cwd(),'server/cardBattle/characters.json'),mapPath=path.join(process.cwd(),'server/cardBattle/card-artwork-map.json'),movesPath=path.join(process.cwd(),'server/cardBattle/moves.json');
+      const characters=JSON.parse(fs.readFileSync(charactersPath,'utf8')),artwork=JSON.parse(fs.readFileSync(mapPath,'utf8')),moveCatalog=JSON.parse(fs.readFileSync(movesPath,'utf8'));
+      const index=characters.findIndex((entry:any)=>entry.id===id);if(index>=0)characters[index]=card;else characters.push(card);artwork[id]=catalogId;moveCatalog[id]=moves;
+      fs.writeFileSync(charactersPath,JSON.stringify(characters,null,2)+'\n');fs.writeFileSync(mapPath,JSON.stringify(artwork,null,2)+'\n');fs.writeFileSync(movesPath,JSON.stringify(moveCatalog,null,2)+'\n');
+      battleRegistry.register(card,catalogId);battleMoves.register(id,moves);
+      res.status(index>=0?200:201).json({card,battleReady:true});
+    } catch (error) { res.status(400).json({error:error instanceof Error?error.message:'Unable to add battle card.'}); }
   });
 
   // ── SIMULATOR ENDPOINT ──

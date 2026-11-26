@@ -130,6 +130,8 @@ export interface BotConfig {
   dailyReward: number;
   starterBalance: number;
   cardSpawnCooldownSec: number;
+  wildSpawnCooldownMinutes: number;
+  wildSpawnChancePercent: number;
 }
 
 export interface ActivityLogEntry {
@@ -167,6 +169,8 @@ export interface BotReplyPayload {
   imageUrl?: string;
   reactionTag?: string;
   reactionMentions?: string[];
+  /** WhatsApp JIDs to tag in this reply. */
+  mentions?: string[];
   /** Server-side rendered image bytes (e.g. dynamic .profile card), sent directly by Baileys and stripped from JSON. */
   imageBuffer?: Uint8Array;
   imageCaption?: string;
@@ -230,6 +234,8 @@ export const DEFAULT_BOT_CONFIG: BotConfig = {
   dailyReward: 1500,
   starterBalance: 2500,
   cardSpawnCooldownSec: 20,
+  wildSpawnCooldownMinutes: 30,
+  wildSpawnChancePercent: 35,
 };
 
 export const DEFAULT_GROUP_SETTINGS: GroupSettings = {

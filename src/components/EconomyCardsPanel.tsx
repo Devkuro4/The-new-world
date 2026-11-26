@@ -33,6 +33,8 @@ export const EconomyCardsPanel: React.FC<EconomyCardsPanelProps> = ({
   const [subTab, setSubTab] = useState<'cards' | 'players' | 'rates'>('cards');
   const [dailyReward, setDailyReward] = useState(config.dailyReward);
   const [starterBalance, setStarterBalance] = useState(config.starterBalance);
+  const [wildSpawnCooldownMinutes, setWildSpawnCooldownMinutes] = useState(config.wildSpawnCooldownMinutes);
+  const [wildSpawnChancePercent, setWildSpawnChancePercent] = useState(config.wildSpawnChancePercent);
   const [savingRates, setSavingRates] = useState(false);
   const [cardName, setCardName] = useState('');
   const [cardSeries, setCardSeries] = useState('all');
@@ -40,6 +42,11 @@ export const EconomyCardsPanel: React.FC<EconomyCardsPanelProps> = ({
   const [cardPage, setCardPage] = useState(1);
   const [downloadingKey, setDownloadingKey] = useState<string | null>(null);
   const [downloadError, setDownloadError] = useState<string | null>(null);
+  const [battleReadyIds, setBattleReadyIds] = useState(() => new Set(BATTLE_READY_ART));
+  const [newVariantId, setNewVariantId] = useState('');
+  const [newVariantType, setNewVariantType] = useState('Strength');
+  const [newVariantSprite, setNewVariantSprite] = useState<File | null>(null);
+  const [variantStatus, setVariantStatus] = useState('');
 
   const seriesOptions = useMemo(
     () => [...new Set(CARD_CATALOG.map(card => card.series))].sort((a, b) => a.localeCompare(b)),
@@ -60,7 +67,9 @@ export const EconomyCardsPanel: React.FC<EconomyCardsPanelProps> = ({
   useEffect(() => {
     setDailyReward(config.dailyReward);
     setStarterBalance(config.starterBalance);
-  }, [config.dailyReward, config.starterBalance]);
+    setWildSpawnCooldownMinutes(config.wildSpawnCooldownMinutes);
+    setWildSpawnChancePercent(config.wildSpawnChancePercent);
+  }, [config.dailyReward, config.starterBalance, config.wildSpawnCooldownMinutes, config.wildSpawnChancePercent]);
 
   const handleSaveRates = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -69,6 +78,8 @@ export const EconomyCardsPanel: React.FC<EconomyCardsPanelProps> = ({
       await onUpdateRates({
         dailyReward,
         starterBalance,
+        wildSpawnCooldownMinutes,
+        wildSpawnChancePercent,
       });
     } finally {
       setSavingRates(false);
@@ -102,6 +113,18 @@ export const EconomyCardsPanel: React.FC<EconomyCardsPanelProps> = ({
     } finally {
       setDownloadingKey(null);
     }
+  };
+
+  const addBattleVariant = async (event: React.FormEvent) => {
+    event.preventDefault();
+    if (!newVariantId || !newVariantSprite) return;
+    setVariantStatus('Uploading sprite…');
+    try {
+      const spriteDataUrl = await new Promise<string>((resolve, reject) => { const reader=new FileReader();reader.onload=()=>resolve(String(reader.result));reader.onerror=()=>reject(reader.error);reader.readAsDataURL(newVariantSprite); });
+      const response=await fetch('/api/card-battle/variants',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({catalogId:newVariantId,type:newVariantType,spriteDataUrl})});
+      const body=await response.json() as {error?:string};if(!response.ok)throw Error(body.error||'Unable to add battle card.');
+      setBattleReadyIds(current=>new Set(current).add(newVariantId));setNewVariantId('');setNewVariantSprite(null);setVariantStatus('Battle card added successfully.');
+    } catch(error){setVariantStatus(error instanceof Error?error.message:'Upload failed.');}
   };
 
   return (
@@ -191,6 +214,15 @@ export const EconomyCardsPanel: React.FC<EconomyCardsPanelProps> = ({
                 </select>
               </label>
             </div>
+            <form onSubmit={addBattleVariant} className="mt-5 rounded-xl border border-dashed border-slate-300 bg-slate-50 p-4">
+              <div className="mb-3"><h3 className="text-sm font-semibold text-slate-900">Add Battle Card Sprite</h3><p className="mt-1 text-xs text-slate-500">Choose an existing catalog card and upload the sprite that exactly matches its artwork.</p></div>
+              <div className="grid gap-3 sm:grid-cols-3">
+                <select required value={newVariantId} onChange={e=>setNewVariantId(e.target.value)} className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm"><option value="">Select catalog card</option>{CARD_CATALOG.filter(card=>!battleReadyIds.has(card.card_id)).map(card=><option key={card.card_id} value={card.card_id}>{card.character_name} · {card.rarity} · {card.series}</option>)}</select>
+                <select value={newVariantType} onChange={e=>setNewVariantType(e.target.value)} className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm">{['Strength','Agility','Arcane','Vitality'].map(type=><option key={type}>{type}</option>)}</select>
+                <input required type="file" accept="image/png" onChange={e=>setNewVariantSprite(e.target.files?.[0]||null)} className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs" />
+              </div>
+              <div className="mt-3 flex items-center justify-between gap-3"><span className="text-xs text-slate-500">{variantStatus}</span><button type="submit" disabled={!newVariantId||!newVariantSprite} className="rounded-lg bg-slate-900 px-4 py-2 text-xs font-medium text-white disabled:opacity-40">Add battle card</button></div>
+            </form>
           </div>
 
           <div className="rounded-xl border border-slate-200 bg-white p-4 sm:p-5">
@@ -231,7 +263,7 @@ export const EconomyCardsPanel: React.FC<EconomyCardsPanelProps> = ({
             {visibleCards.length ? (
               <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
                 {visibleCards.map(card => {
-                  const battleReady = BATTLE_READY_ART.has(card.card_id);
+                  const battleReady = battleReadyIds.has(card.card_id);
                   const cardBusy = downloadingKey === `card:${card.card_id}`;
                   const seriesBusy = downloadingKey === `card-series:${card.card_id}`;
                   return (
@@ -368,7 +400,7 @@ export const EconomyCardsPanel: React.FC<EconomyCardsPanelProps> = ({
           <h2 className="font-display text-sm font-semibold text-slate-900">
             Economy Rates
           </h2>
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <label className="text-xs font-medium text-slate-700">
               Daily Reward (.daily 🪙 Gold)
               <input
@@ -386,6 +418,20 @@ export const EconomyCardsPanel: React.FC<EconomyCardsPanelProps> = ({
                 onChange={(e) => setStarterBalance(Number(e.target.value))}
                 className="mt-1.5 w-full rounded-lg border border-slate-200 px-3 py-2 font-mono text-sm tabular-nums focus:border-emerald-600 focus:outline-none"
               />
+            </label>
+            <label className="text-xs font-medium text-slate-700">
+              Wild Spawn Cooldown (minutes)
+              <input type="number" min="5" max="1440" value={wildSpawnCooldownMinutes}
+                onChange={(e) => setWildSpawnCooldownMinutes(Number(e.target.value))}
+                className="mt-1.5 w-full rounded-lg border border-slate-200 px-3 py-2 font-mono text-sm tabular-nums focus:border-emerald-600 focus:outline-none" />
+              <span className="mt-1 block font-normal text-slate-400">Minimum wait between wild-card opportunities.</span>
+            </label>
+            <label className="text-xs font-medium text-slate-700">
+              Automatic Spawn Chance (%)
+              <input type="number" min="1" max="100" value={wildSpawnChancePercent}
+                onChange={(e) => setWildSpawnChancePercent(Number(e.target.value))}
+                className="mt-1.5 w-full rounded-lg border border-slate-200 px-3 py-2 font-mono text-sm tabular-nums focus:border-emerald-600 focus:outline-none" />
+              <span className="mt-1 block font-normal text-slate-400">Chance checked after each cooldown. Default: 35%.</span>
             </label>
           </div>
           <div className="flex justify-end">

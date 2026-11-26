@@ -1,4 +1,4 @@
-const {Economy}=require('./economy.cjs'),{WildEncounters}=require('./wild.cjs'),{PvP}=require('./pvp.cjs'),{CardTower}=require('./tower.cjs'),{Expeditions,DIFFICULTIES}=require('./expeditions.cjs'),B=require('./battle.cjs'),R=require('./registry.cjs'),M=require('./moves.cjs');
+const {Economy}=require('./economy.cjs'),{WildEncounters,randomCharacterId}=require('./wild.cjs'),{PvP}=require('./pvp.cjs'),{CardTower}=require('./tower.cjs'),{Expeditions,DIFFICULTIES}=require('./expeditions.cjs'),B=require('./battle.cjs'),R=require('./registry.cjs'),M=require('./moves.cjs');
 const {randomUUID}=require('node:crypto');
 const meta=c=>c.id.startsWith('catalog:')?R.getCollectible(c.id):R.getCard(c.id);
 const itemKeys=['healthPotion','purificationVial','xpBooster','energyElixir','antidote'];
@@ -16,13 +16,36 @@ const tierAliases={
   ur:'UR','ultra rare':'UR',ultrarare:'UR',
 };
 const catalogRow=(c,index)=>`${String(index).padStart(3,'0')}. ${c.name} · ${c.series} · ${c.rarity}`;
-function services(s){for(const k of ['economy','wild','pvp','tower','exped','decks','shop','heals','nextSpawn','notices'])s[k]??={};s.settings??={};if(typeof s.settings.effectsEnabled!=='boolean')s.settings.effectsEnabled=false;const economy=new Economy({state:s.economy});let wild,pvp,tower,exped;const busy=p=>!!(pvp.active(p)||tower.active(p)||Object.values(wild.state.groups).some(e=>e.battle?.sides[0].id===p));const selected=p=>{
+function services(s){for(const k of ['economy','wild','pvp','tower','exped','decks','shop','heals','nextSpawn','notices'])s[k]??={};s.settings??={};if(typeof s.settings.effectsEnabled!=='boolean')s.settings.effectsEnabled=false;if(!Number.isFinite(s.settings.spawnCooldownMs))s.settings.spawnCooldownMs=1800000;if(!Number.isFinite(s.settings.spawnChance))s.settings.spawnChance=.35;const economy=new Economy({state:s.economy});let wild,pvp,tower,exped;const busy=p=>!!(pvp.active(p)||tower.active(p)||Object.values(wild.state.groups).some(e=>e.battle?.sides[0].id===p));const selected=p=>{
   const all=economy.collection(p);
   const byId=new Map(all.map(card=>[card.uid,card]));
   const saved=[...new Set(s.decks[p]??[])].map(id=>byId.get(id)).filter(c=>c&&R.isBattleReady(c.id));
   return saved.length?saved.slice(0,6):all.filter(c=>R.isBattleReady(c.id)).slice(0,6);
 };const deck=p=>selected(p).filter(c=>!exped.locked(p,c.uid));wild=new WildEncounters({state:s.wild,canBattle:p=>!busy(p)});pvp=new PvP({state:s.pvp,canBattle:p=>!busy(p),getDeck:deck});tower=new CardTower({state:s.tower,canBattle:p=>!busy(p),getDeck:deck});exped=new Expeditions({state:s.exped,getCollection:p=>economy.collection(p),canAssign:p=>!busy(p)});return {economy,wild,pvp,tower,exped,busy,deck,selected,state:s};}
-function settle(v){const {economy:e,wild,pvp,tower,exped}=v;for(const service of [wild,pvp,tower,exped]){service.sweep();for(const r of service.pending()){const grant=(p,credits,items={},cards=[],xp=[],hp=[])=>{const result=e.grant(p,r.id,{credits,items,cards,xp:xp.map(x=>({...x,xp:x.xp*e.xpMultiplier(p)}))});if(!result.duplicate&&hp.length)e.transaction(p,pl=>{for(const x of hp){const c=pl.cards.find(c=>c.uid===x.uid);if(c)c.hp=Math.min(x.hp,R.statsAt(c.id,c.level).HP);}});};if(service===wild){grant(r.player,r.credits,{},r.captured?[r.captured]:[],r.xp,r.cards);if(r.replace&&!wild.get(r.group))v.state.nextSpawn[r.group]=0;}else if(service===pvp){for(const p of r.players)grant(p.player,p.credits,{},[],p.xp,[]);}else if(r.kind==='floorXP')grant(r.player,0,{},[],r.xp);else if(r.kind==='towerResult')grant(r.player,r.rewards.credits,{super:r.rewards.superPacks,ascensionCores:r.rewards.ascensionCores},[],[],r.cards);else if(r.kind==='expeditionCompleted'){grant(r.player,r.rewards.credits,{trainingMaterials:r.rewards.trainingMaterials,ascensionCores:r.rewards.ascensionCores});}service.acknowledge(r.id);}}}
+const ownerCount=(economy,id)=>Object.values(economy.state.players).filter(player=>player.cards?.some(card=>card.id===id)).length;
+const spawnable=(economy,wild)=>R.list().filter(card=>ownerCount(economy,card.id)+Object.values(wild.state.groups).filter(encounter=>encounter.card?.id===card.id).length<3);
+const spawnAvailable=(economy,wild,group)=>{const roster=spawnable(economy,wild);if(!roster.length)throw Error('Every Card Battle variant already has three owners');return wild.spawn(group,{id:randomCharacterId(Math.random,roster,wild.state.previous[group])});};
+function settle(v){
+  const {economy:e,wild,pvp,tower,exped}=v;
+  for(const service of [wild,pvp,tower,exped]){
+    service.sweep();
+    for(const r of service.pending()){
+      const grant=(p,credits,items={},cards=[],xp=[],hp=[])=>{
+        const result=e.grant(p,r.id,{credits,items,cards,xp:xp.map(x=>({...x,xp:x.xp*e.xpMultiplier(p)}))});
+        if(!result.duplicate&&hp.length)e.transaction(p,pl=>{for(const x of hp){const c=pl.cards.find(c=>c.uid===x.uid);if(c)c.hp=Math.min(x.hp,R.statsAt(c.id,c.level).HP);}});
+      };
+      if(service===wild){
+        const captured=r.captured&&!e.collection(r.player).some(card=>card.id===r.captured.id)&&ownerCount(e,r.captured.id)<3?[r.captured]:[];
+        grant(r.player,r.credits,{},captured,r.xp,r.cards);
+        if(r.replace&&!wild.get(r.group))v.state.nextSpawn[r.group]=0;
+      }else if(service===pvp){for(const p of r.players)grant(p.player,p.credits,{},[],p.xp,[]);}
+      else if(r.kind==='floorXP')grant(r.player,0,{},[],r.xp);
+      else if(r.kind==='towerResult')grant(r.player,r.rewards.credits,{super:r.rewards.superPacks,ascensionCores:r.rewards.ascensionCores},[],[],r.cards);
+      else if(r.kind==='expeditionCompleted')grant(r.player,r.rewards.credits,{trainingMaterials:r.rewards.trainingMaterials,ascensionCores:r.rewards.ascensionCores});
+      service.acknowledge(r.id);
+    }
+  }
+}
 const UI=require('./presentation.cjs');
 function battleReply(b,ctx,extra=''){return {text:UI.battleText(b,ctx,extra),battle:b};}
 function run(state,ctx,command,args){
@@ -103,9 +126,15 @@ function run(state,ctx,command,args){
     if(!query&&!tier)throw Error(`Use ${ctx.prefix}ci <name> [C|UC|R|SR|SSR|UR]`);
     const matches=R.collectibleList().filter(c=>(!query||c.name.toLowerCase().includes(query))&&(!tier||c.catalogRarity===tier));
     const pages=Math.max(1,Math.ceil(matches.length/20));if(page<1||page>pages)throw Error(`Choose a page from 1 to ${pages}`);
-    const rows=matches.slice((page-1)*20,page*20).map((c,i)=>catalogRow(c,(page-1)*20+i+1));
+    const mentionedOwners=new Set(),ownership=c=>{
+      const variantIds=new Set([c.id,c.battleId].filter(Boolean));
+      const ownerIds=Object.entries(e.state.players).filter(([,player])=>player.cards?.some(card=>variantIds.has(card.id))).map(([id])=>id);
+      const ownerLines=ownerIds.map(id=>{const jid=ctx.mention?.(id);if(jid)mentionedOwners.add(jid);return `   ${jid?`@${jid.split('@')[0]}`:`@${ctx.label(id)}`}`;});
+      return [`   Owners (${ownerIds.length}/3)`,...(ownerLines.length?ownerLines:['   None yet'])];
+    };
+    const rows=matches.slice((page-1)*20,page*20).flatMap((c,i)=>[catalogRow(c,(page-1)*20+i+1),...ownership(c)]);
     const text=UI.title('CARD NAME SEARCH')+`\n${matches.length} cards${tier?` · Tier ${tier}`:''} · Page ${page}/${pages}\n\n${rows.join('\n')||'No cards matched that name and tier.'}\n\n${ctx.prefix}ci <name> [tier] [page]`;
-    return matches.length?displayCard(text,matches[(page-1)*20].id):reply(text);
+    return matches.length?{...displayCard(text,matches[(page-1)*20].id),mentions:[...mentionedOwners]}:reply(text);
   }
   case 'deck':{
     const currentDeck=selected(p);
@@ -176,7 +205,10 @@ function run(state,ctx,command,args){
   case 'wild':{
     const previous=wild.get(g);
     const active=Boolean(previous?.battle);
-    if(!active){wild.replaceIdle(g);state.nextSpawn[g]=Date.now()+1800000;}
+    if(!active){
+      if(previous){wild.state.previous[g]=previous.card.id;delete wild.state.groups[g];}
+      spawnAvailable(e,wild,g);state.nextSpawn[g]=Date.now()+state.settings.spawnCooldownMs;
+    }
     const w=wild.get(g),c=R.getCard(w.card.id);
     const heading=active?'*WILD CARD BATTLE IN PROGRESS*':'*WILD CARD SPOTTED*';
     return displayCard(`${heading}\n\n${c.name}\nLv. ${w.card.level} · ${c.rarity} · ${c.type}\n\n${ctx.prefix}claim — Challenge`,c.id);
@@ -236,5 +268,5 @@ function run(state,ctx,command,args){
   const outcome=result.outcome;
   return battleReply(result.battle,ctx,[result.dialogue,result.floor?`Floor ${result.floor}`:'',outcome?JSON.stringify(outcome.rewards||{credits:outcome.credits,captured:outcome.captured?.id}):''].filter(Boolean).join('\n'));
 }
-function tick(state){const v=services(state),notices=[];for(const r of v.exped.sweep())notices.push({group:r.group,text:`🏕️ Expedition completed for ${r.player}. Rewards: ${r.rewards.credits} Credits, ${r.rewards.trainingMaterials} training materials.`});settle(v);for(const [group,due] of Object.entries(state.nextSpawn)){if(!group.endsWith('@g.us')||Date.now()<due||v.wild.get(group))continue;const r=v.wild.spawn(group);state.nextSpawn[group]=Date.now()+1800000;const c=v.wild.get(group).card;notices.push({group,...displayCard(`*WILD CARD SPOTTED*\n\n${r.name}\nLv. ${r.level} · ${r.rarity} · ${r.type}\n\n.claim — Challenge`,c.id)});}return notices;}
+function tick(state){const v=services(state),notices=[];for(const r of v.exped.sweep())notices.push({group:r.group,text:`🏕️ Expedition completed for ${r.player}. Rewards: ${r.rewards.credits} Credits, ${r.rewards.trainingMaterials} training materials.`});settle(v);for(const [group,due] of Object.entries(state.nextSpawn)){if(!group.endsWith('@g.us')||Date.now()<due||v.wild.get(group))continue;if(due===0){state.nextSpawn[group]=Date.now()+state.settings.spawnCooldownMs;continue;}state.nextSpawn[group]=Date.now()+state.settings.spawnCooldownMs;if(Math.random()>state.settings.spawnChance)continue;const r=spawnAvailable(v.economy,v.wild,group);const c=v.wild.get(group).card;notices.push({group,...displayCard(`*WILD CARD SPOTTED*\n\n${r.name}\nLv. ${r.level} · ${r.rarity} · ${r.type}\n\n.claim — Challenge`,c.id)});}return notices;}
 module.exports={run,services,settle,tick};

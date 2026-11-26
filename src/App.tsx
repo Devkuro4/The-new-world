@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState, type FormEvent } from 'react';
 import { CommandsPanel } from './components/CommandsPanel';
 import { DeployWebhookPanel, type BaileysStatusSnapshot } from './components/DeployWebhookPanel';
 import { EconomyCardsPanel } from './components/EconomyCardsPanel';
@@ -83,6 +83,10 @@ function makeWelcomeSimMessages(cfg: BotConfig): SimMessage[] {
 }
 
 export default function App() {
+  const [authState, setAuthState] = useState<'checking' | 'locked' | 'authenticated'>('checking');
+  const [password, setPassword] = useState('');
+  const [authError, setAuthError] = useState('');
+  const [authBusy, setAuthBusy] = useState(false);
   const [activeTab, setActiveTab] = useState<WorkspaceTab>('commands');
   const [loading, setLoading] = useState(true);
 
@@ -133,8 +137,36 @@ export default function App() {
   }, []);
 
   useEffect(() => {
-    fetchState();
-  }, [fetchState]);
+    fetch('/api/auth/status').then(res => {
+      setAuthState(res.ok ? 'authenticated' : 'locked');
+    }).catch(() => {
+      setAuthError('Unable to reach the dashboard server.');
+      setAuthState('locked');
+    });
+  }, []);
+
+  useEffect(() => {
+    if (authState === 'authenticated') void fetchState();
+  }, [authState, fetchState]);
+
+  const handleLogin = async (event: FormEvent) => {
+    event.preventDefault();
+    setAuthBusy(true);
+    setAuthError('');
+    try {
+      const res = await fetch('/api/auth/login', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ password }),
+      });
+      const data = await res.json().catch(() => ({})) as { error?: string };
+      if (!res.ok) throw new Error(data.error || 'Unable to sign in.');
+      setPassword('');
+      setAuthState('authenticated');
+    } catch (error) {
+      setAuthError(error instanceof Error ? error.message : 'Unable to sign in.');
+    } finally {
+      setAuthBusy(false);
+    }
+  };
 
   const handleSendMessage = async (
     text: string,
@@ -284,6 +316,35 @@ export default function App() {
     { id: 'logs', label: 'Activity Logs' },
   ];
 
+  if (authState === 'checking') {
+    return <div className="flex min-h-screen items-center justify-center bg-slate-950 text-sm text-slate-400">Opening secure dashboard…</div>;
+  }
+
+  if (authState === 'locked') {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-slate-950 px-4 text-slate-100">
+        <form onSubmit={handleLogin} className="w-full max-w-sm rounded-2xl border border-white/10 bg-white/[0.04] p-7 shadow-2xl">
+          <div className="mb-7">
+            <p className="text-xs font-semibold uppercase tracking-[0.22em] text-emerald-400">The new world</p>
+            <h1 className="mt-2 text-2xl font-semibold">Admin access</h1>
+            <p className="mt-2 text-sm text-slate-400">Enter the dashboard password to continue.</p>
+          </div>
+          <label className="text-xs font-medium text-slate-300">
+            Password
+            <input autoFocus type="password" value={password} onChange={event => setPassword(event.target.value)}
+              className="mt-2 w-full rounded-xl border border-white/10 bg-black/30 px-4 py-3 text-sm text-white outline-none focus:border-emerald-500"
+              placeholder="Enter password" autoComplete="current-password" />
+          </label>
+          {authError && <p className="mt-3 text-xs text-rose-400">{authError}</p>}
+          <button type="submit" disabled={authBusy || !password}
+            className="mt-5 w-full rounded-xl bg-emerald-500 px-4 py-3 text-sm font-semibold text-slate-950 hover:bg-emerald-400 disabled:cursor-not-allowed disabled:opacity-50">
+            {authBusy ? 'Checking…' : 'Enter dashboard'}
+          </button>
+        </form>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900">
       {/* Top Bar Contract: 3 zones separated by gap-8 */}
@@ -321,6 +382,10 @@ export default function App() {
           </nav>
 
           <div className="flex items-center shrink-0">
+            <button type="button" onClick={async () => { await fetch('/api/auth/logout', { method: 'POST' }); setAuthState('locked'); }}
+              className="mr-2 rounded-lg border border-slate-200 px-3 py-2 text-xs font-medium text-slate-600 hover:bg-slate-50">
+              Lock
+            </button>
             <button
               type="button"
               onClick={() => setActiveTab('deploy')}

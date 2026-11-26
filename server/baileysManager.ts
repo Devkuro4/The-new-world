@@ -362,6 +362,7 @@ export async function sendBotReply(
   mentions?: string[],
   onTextSent?: (id: string) => void
 ): Promise<void> {
+  mentions = [...new Set([...(mentions || []), ...(reply.mentions || [])])];
   if (reply.reactionTag) {
     const reactionMentions = [...new Set(reply.reactionMentions || [])];
     try {
