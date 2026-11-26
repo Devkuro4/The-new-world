@@ -1530,7 +1530,7 @@ async function handleIncomingMessageInternal(params: IncomingParams): Promise<Bo
           for (const side of visual.sides) side.id = label(side.id);
           if (visual.winner) visual.winner = label(visual.winner);
           for (const event of visual.events || []) if (event.winner) event.winner = label(event.winner);
-          reply.imageBuffer = await cardBattleRenderer.renderBattle(visual);
+          reply.imageBuffer = await cardBattleRenderer.renderBattle(visual, { effectsEnabled: Boolean(draft.settings?.effectsEnabled) });
         }
         else if (result.imagePath) reply.imageBuffer = fs.readFileSync(result.imagePath);
         if (reply.imageBuffer && reply.text.length <= 1024) { reply.hideText = true; reply.imageCaption = reply.text; }

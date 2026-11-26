@@ -1,0 +1,12 @@
+const A=require('node:assert/strict');
+const adapter=require('./adapter.cjs');
+const state={};
+const ctx={player:'p1',group:'g1@g.us',prefix:'.',label:id=>id};
+let r=adapter.run(state,ctx,'effects',[]);
+A.match(r.text,/currently OFF/i);
+r=adapter.run(state,ctx,'effects',['on']);
+A.match(r.text,/enabled/i);
+A.equal(state.settings.effectsEnabled,true);
+r=adapter.run(state,ctx,'effects',['off']);
+A.equal(state.settings.effectsEnabled,false);
+console.log('Settings toggle test passed');

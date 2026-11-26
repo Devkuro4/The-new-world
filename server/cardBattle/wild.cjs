@@ -2,10 +2,34 @@ const {randomUUID}=require('node:crypto');
 const R=require('./registry.cjs'),B=require('./battle.cjs');
 const TTL=1800000;
 const dialogues=['So, you’ve decided to challenge me?','You have my attention. Let’s see what you’ve got.','Another challenger? How interesting.','You should know what you’re getting yourself into.','Heh. I was beginning to get bored.','You want to test your strength against mine?','Very well. Let the battle begin!','I won’t make this easy for you.','You’ve made your choice. Now prove yourself.','Let’s see if you’re worthy of this encounter.'];
+const LEVEL_BANDS=[
+  {min:1,max:5,weight:45},
+  {min:6,max:10,weight:30},
+  {min:11,max:20,weight:15},
+  {min:21,max:30,weight:7},
+  {min:31,max:40,weight:2.5},
+  {min:41,max:50,weight:0.5},
+];
+function chooseWeighted(random,bands=LEVEL_BANDS){
+  const total=bands.reduce((sum,b)=>sum+b.weight,0);
+  let roll=random()*total;
+  for(const band of bands){
+    roll-=band.weight;
+    if(roll<0) return band;
+  }
+  return bands[bands.length-1];
+}
+function rollWildLevel(random){
+  const band=chooseWeighted(random);
+  return band.min+Math.floor(random()*(band.max-band.min+1));
+}
+function randomCharacterId(random,roster){
+  return roster[Math.floor(random()*roster.length)].id;
+}
 class WildEncounters {
  constructor({state={},random=Math.random,now=Date.now,credits=level=>50+level*5,canBattle=()=>true}={}){this.state=state;this.state.groups??={};this.state.outbox??={};this.random=random;this.now=now;this.credits=credits;this.canBattle=canBattle;}
  get(group){return Object.hasOwn(this.state.groups,group)?this.state.groups[group]:null;}
- spawn(group,{id,level}={}){this.sweep();if(this.get(group))throw Error('Wild Card already active');const roster=R.list();id??=roster[Math.floor(this.random()*roster.length)].id;level??=1+Math.floor(this.random()*40);const c=R.getCard(id);R.statsAt(id,level);const e={id:randomUUID(),card:{id,level},expires:this.now()+TTL,failed:[],battle:null};Object.defineProperty(this.state.groups,group,{value:e,writable:true,enumerable:true,configurable:true});return {heading:'WILD CARD SPOTTED!',encounter:e.id,name:c.name,level,type:c.type,rarity:c.rarity,command:'.claim'};}
+ spawn(group,{id,level}={}){this.sweep();if(this.get(group))throw Error('Wild Card already active');const roster=R.list();id??=randomCharacterId(this.random,roster);level??=rollWildLevel(this.random);const c=R.getCard(id);R.statsAt(id,level);const e={id:randomUUID(),card:{id,level},expires:this.now()+TTL,failed:[],battle:null};Object.defineProperty(this.state.groups,group,{value:e,writable:true,enumerable:true,configurable:true});return {heading:'WILD CARD SPOTTED!',encounter:e.id,name:c.name,level,type:c.type,rarity:c.rarity,command:'.claim'};}
  claim(group,player,cards){this.sweep();const e=this.get(group);if(!e||this.now()>=e.expires)throw Error('No Wild Card available');if(e.failed.includes(player))throw Error('Stay down, weakling.');if(e.battle)throw Error('Wild Card already challenged');if(!this.canBattle(player)||Object.values(this.state.groups).some(x=>x.battle?.sides[0].id===player))throw Error('Already in battle');const enemy='wild:'+e.id;const b=B.createBattle([{id:player,cards},{id:enemy,ai:true,cards:[{...e.card,uid:enemy}]}],{mode:'wild',now:this.now()});e.battle=b;this.advance(e);return {dialogue:dialogues[Math.floor(this.random()*dialogues.length)],battle:structuredClone(e.battle),encounter:e.id,outcome:this.finish(group,e)};}
  advance(e){let n=0;while(e.battle.phase!=='ended'&&e.battle.phase!=='cancelled'&&e.battle.sides[e.battle.turn].ai){if(++n>12)throw Error('AI loop limit');e.battle=B.action(e.battle,e.battle.sides[e.battle.turn].id,B.aiAction(e.battle),{random:this.random,now:this.now()});}}
  act(group,player,cmd){this.sweep();const e=this.get(group);if(!e?.battle||e.battle.sides[0].id!==player)throw Error('No active challenge');e.battle=B.action(e.battle,player,cmd,{random:this.random,now:this.now()});const events=[...e.battle.events];this.advance(e);const battle=structuredClone(e.battle);const outcome=this.finish(group,e);return {battle,playerEvents:events,outcome};}
@@ -15,4 +39,4 @@ class WildEncounters {
  acknowledge(id){delete this.state.outbox[id];}
  snapshot(){return structuredClone(this.state);}
 }
-module.exports={WildEncounters,TTL,dialogues};
+module.exports={WildEncounters,TTL,dialogues,LEVEL_BANDS,rollWildLevel};
