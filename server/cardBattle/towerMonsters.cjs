@@ -25,6 +25,8 @@ const MONSTERS = [
 // template. Their identity, stats and artwork remain completely separate from
 // collectible cards.
 const MOVE_TEMPLATE = 'variant-681a1aec-dc78-4c97-944c-9da814271781';
+const LEFT_FACING = new Set(['goblin','lizardman','orc','skeleton','troll','zombie']);
+const FRONT_FACING = new Set(['giant-bat','giant-spider','ogre','slime']);
 const byId = new Map(MONSTERS.map(([slug, name, type], index) => {
   const tier = Math.floor(index / 4);
   const card = {
@@ -35,6 +37,7 @@ const byId = new Map(MONSTERS.map(([slug, name, type], index) => {
     rarity: 'Common',
     sprite: `monsters/normal/normal-${slug}.png`,
     towerMonster: true,
+    spriteFacing: LEFT_FACING.has(slug) ? 'left' : FRONT_FACING.has(slug) ? 'front' : 'right',
     moveTemplate: MOVE_TEMPLATE,
     baseStats: {
       HP: 82 + tier * 9 + (type === 'Vitality' ? 10 : 0),

@@ -1,6 +1,8 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { createCanvas, loadImage, type Image } from '@napi-rs/canvas';
+import { createRequire } from 'node:module';
+import { fileURLToPath } from 'node:url';
 import type { PlayerProfile } from '../src/shared/botSchema.ts';
 import { graphemeLength, normalizeDisplayName } from './unicodeText.ts';
 
@@ -9,6 +11,10 @@ const DATA_DIR = process.env.DATA_DIR
   : path.resolve(process.cwd(), 'data');
 const AVATAR_DIR = path.join(DATA_DIR, 'avatars');
 const COVER_DIR = path.join(DATA_DIR, 'covers');
+const profileRequire = createRequire(import.meta.url);
+const { GlobalFonts } = profileRequire('@napi-rs/canvas');
+const PROFILE_FONT_PATH = path.join(path.dirname(fileURLToPath(import.meta.url)), 'assets', 'fonts', 'DejaVuSans.ttf');
+if (fs.existsSync(PROFILE_FONT_PATH)) GlobalFonts.registerFromPath(PROFILE_FONT_PATH, 'ProfileUnicode');
 
 const TEMPLATE_CANDIDATES = [
   path.resolve(process.cwd(), 'public/assets/aistudio/image_a37127f6.png'),
@@ -445,7 +451,7 @@ export async function renderProfileCardBuffer(player: PlayerProfile): Promise<Bu
     const nameLength = graphemeLength(displayName);
     const nameFontSize = nameLength > 18 ? 44 : nameLength > 13 ? 52 : 64;
     ctx.save();
-    ctx.font = `bold ${nameFontSize}px "Noto Sans", "Noto Sans CJK SC", "DejaVu Sans", "Liberation Sans", sans-serif`;
+    ctx.font = `bold ${nameFontSize}px "ProfileUnicode", "DejaVu Sans", sans-serif`;
     ctx.fillStyle = '#ffffff';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'alphabetic';

@@ -1,6 +1,12 @@
 const catalog=require('./moves.json');
 const registry=require('./registry.cjs');
 const towerMonsters=require('./towerMonsters.cjs');
+const characters=require('./characters.json'),characterMoves=require('./characterMoves.cjs');
+for(const character of characters){
+  const names=characterMoves.get(character.name),moves=catalog[character.id];
+  if(!names||names.length!==9||!moves||moves.length!==9)throw Error(`Missing character moves: ${character.name}`);
+  moves.forEach((move,index)=>{move.name=names[index];if(move.category!=='healing')move.kind=characterMoves.kind(character.name);});
+}
 const moveId=id=>towerMonsters.has(id)?towerMonsters.moveTemplate(id):registry.resolveBattleId(id);
 function all(id){const battleId=moveId(id);return structuredClone(catalog[battleId]);}
 function register(id,moves){if(!id||!Array.isArray(moves)||moves.length!==9)throw Error('Invalid move registration');catalog[id]=structuredClone(moves);return all(id);}

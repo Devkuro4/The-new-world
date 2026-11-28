@@ -1,3 +1,8 @@
 const assert=require('node:assert/strict'),r=require('./registry.cjs'),m=require('./moves.cjs'),catalog=require('./moves.json');for(const c of r.list()){const id=c.id;assert.equal(m.available(id,100).length,9);assert.equal(m.available(id,19).filter(x=>x.category==='ultimate').length,0);const ults=m.all(id).filter(x=>x.category==='ultimate');assert.equal(ults.length,1);const ult=ults[0];assert.equal(ult.level,20);const load=m.initial(id);assert.equal(m.validateLoadout(id,1,load).length,4);assert.equal(m.equip(id,20,load,ult.id,null).length,5);assert.throws(()=>m.equip(id,19,load,ult.id,null));const heal=m.available(id,40).find(x=>x.level===40);assert.equal(m.equip(id,40,load,heal.id,load[3]).length,4);}
 for(const list of Object.values(catalog))for(const mv of list){assert.notEqual(mv.effect,'regeneration');assert.notEqual(mv.effect,'regen');assert.ok(!/regeneration/i.test(mv.name));}
+const generic=new Set(['Quick Strike','Focused Blow','Signature Assault','Rising Force','Finishing Strike','Limit Break','Recover','Second Wind','Mastery Strike']);
+for(const c of r.list())for(const move of m.all(c.id))assert.ok(!generic.has(move.name),`${c.name} still has generic move ${move.name}`);
+const characterMoves=require('./characterMoves.cjs'),characters=require('./characters.json');
+for(const c of characters)assert.equal(characterMoves.get(c.name)?.length,9,`Missing profile for ${c.name}`);
+assert.ok(new Set(Object.values(characterMoves.profiles).map(names=>names.join('|'))).size>=70);
 assert.equal(m.applyStatus({burn:2},'burn').badlyBurned,4);assert.equal(m.applyStatus({stun:2},'stun').stun,6);assert.equal(m.applyStatus({},'silence').silence,2);console.log(`Move tests passed for ${r.list().length} card variants`);
