@@ -3,7 +3,7 @@ import { registerHooks, createRequire } from 'node:module';
 import { mkdtempSync, rmSync, readFileSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { loadCardArtwork } from './cardBattleArtwork.ts';
+import { CARD_ART_HEIGHT, CARD_ART_WIDTH, loadCardArtwork, normalizeCardArtwork } from './cardBattleArtwork.ts';
 import { accountIds, identityJids, selectTarget } from './whatsappIdentity.ts';
 
 const require = createRequire(import.meta.url);
@@ -27,6 +27,18 @@ assert.ok(cardArtwork('variant-36199758-361f-4af6-b114-97e427735b59'));
 assert.ok(cardArtwork('variant-f73bc20e-63f4-42ba-bd0b-c74bd48de10a'));
 assert.ok(cardArtwork('variant-788d08f8-913f-48b2-809b-ae8ce3480fe9'));
 assert.equal(await loadCardArtwork({imageUrl:'https://example.test/image.avif',pageUrl:''}),undefined);
+{
+  const { createCanvas, loadImage } = require('@napi-rs/canvas');
+  const source = createCanvas(120, 360);
+  const context = source.getContext('2d');
+  context.fillStyle = '#ff0000';
+  context.fillRect(0, 0, 120, 360);
+  const normalized = await normalizeCardArtwork(source.toBuffer('image/png'));
+  assert.ok(normalized);
+  const image = await loadImage(normalized);
+  assert.equal(image.width, CARD_ART_WIDTH);
+  assert.equal(image.height, CARD_ART_HEIGHT);
+}
 const catalogBattle=collectibleList().find(card=>card.battleReady);
 assert.ok(catalogBattle?.battleReady);
 assert.equal(isBattleReady(catalogBattle.id),true);

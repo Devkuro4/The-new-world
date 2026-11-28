@@ -1,8 +1,10 @@
 const catalog=require('./moves.json');
 const registry=require('./registry.cjs');
-function all(id){const battleId=registry.resolveBattleId(id);return structuredClone(catalog[battleId]);}
+const towerMonsters=require('./towerMonsters.cjs');
+const moveId=id=>towerMonsters.has(id)?towerMonsters.moveTemplate(id):registry.resolveBattleId(id);
+function all(id){const battleId=moveId(id);return structuredClone(catalog[battleId]);}
 function register(id,moves){if(!id||!Array.isArray(moves)||moves.length!==9)throw Error('Invalid move registration');catalog[id]=structuredClone(moves);return all(id);}
-function available(id,level){registry.statsAt(id,level);const battleId=registry.resolveBattleId(id);return structuredClone(catalog[battleId].filter(m=>m.level<=level));}
+function available(id,level){registry.statsAt(id,level);const battleId=moveId(id);return structuredClone(catalog[battleId].filter(m=>m.level<=level));}
 function initial(id,level=1){return available(id,level).filter(m=>m.level===1).map(m=>m.id);}
 function validateLoadout(id,level,ids){const pool=available(id,level);if(!Array.isArray(ids)||new Set(ids).size!==ids.length||ids.length>5||ids.some(x=>!pool.some(m=>m.id===x)))throw Error('Invalid loadout');const moves=ids.map(x=>pool.find(m=>m.id===x));if(moves.filter(m=>m.category==='attack').length!==3||moves.filter(m=>m.category==='healing').length!==1||moves.filter(m=>m.category==='ultimate').length>1)throw Error('Invalid slot categories');return moves;}
 function equip(id,level,ids,learn,forget){const next=[...ids];if(forget==null){next.push(learn);}else{const i=next.indexOf(forget);if(i<0)throw Error('Move not equipped');next[i]=learn;}validateLoadout(id,level,next);return next;}
