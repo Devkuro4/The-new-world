@@ -14,9 +14,9 @@ const artworkMap = require('./cardBattle/card-artwork-map.json');
 assert.equal(catalog.length,491);
 assert.equal(collectibleList().length,491);
 assert.equal(new Set(collectibleList().map(card => card.id)).size,491);
-assert.equal(collectibleList().filter(card => card.battleReady).length,70);
-assert.equal(collectibleList().filter(card => !card.battleReady).length,421);
-assert.equal(Object.keys(artworkMap).length,70);
+assert.equal(collectibleList().filter(card => card.battleReady).length,90);
+assert.equal(collectibleList().filter(card => !card.battleReady).length,401);
+assert.equal(Object.keys(artworkMap).length,90);
 for (const id of Object.keys(artworkMap)) {
   assert.equal(getCard(id).id,id);
   assert.match(cardArtwork(id).imageUrl,/^https:\/\/cdn7\.mazoku\.cc\/cards\//);

@@ -27,7 +27,7 @@ function services(s){for(const k of ['economy','wild','pvp','tower','exped','dec
 const ownerCount=(economy,id)=>Object.values(economy.state.players).filter(player=>player.cards?.some(card=>card.id===id)).length;
 const spawnable=(economy,wild)=>R.list().filter(card=>ownerCount(economy,card.id)+Object.values(wild.state.groups).filter(encounter=>encounter.card?.id===card.id).length<3);
 const spawnAvailable=(economy,wild,group)=>{const roster=spawnable(economy,wild);if(!roster.length)throw Error('Every Card Battle variant already has three owners');return wild.spawn(group,{id:randomCharacterId(Math.random,roster,wild.state.previous[group])});};
-function settle(v){
+function settle(v,{claimExpeditionFor}={}){
   const {economy:e,wild,pvp,tower,exped}=v;
   for(const service of [wild,pvp,tower,exped]){
     service.sweep();
@@ -43,7 +43,10 @@ function settle(v){
       }else if(service===pvp){for(const p of r.players)grant(p.player,p.credits,{},[],p.xp,[]);}
       else if(r.kind==='floorXP')grant(r.player,0,{},[],r.xp);
       else if(r.kind==='towerResult')grant(r.player,r.rewards.credits,{super:r.rewards.superPacks,ascensionCores:r.rewards.ascensionCores},[],[],r.cards);
-      else if(r.kind==='expeditionCompleted')grant(r.player,r.rewards.credits,{trainingMaterials:r.rewards.trainingMaterials,ascensionCores:r.rewards.ascensionCores});
+      else if(r.kind==='expeditionCompleted'){
+        if(r.player!==claimExpeditionFor)continue;
+        grant(r.player,r.rewards.credits,{trainingMaterials:r.rewards.trainingMaterials,ascensionCores:r.rewards.ascensionCores});
+      }
       service.acknowledge(r.id);
     }
   }
@@ -59,6 +62,21 @@ function outcomeText(outcome){
   if(outcome.captured){const card=meta(outcome.captured);lines.push(`Card claimed: ${card.name} · ${card.rarity}`);}
   return lines.length?`*BATTLE REWARDS*\n${lines.join('\n')}`:'';
 }
+const TOWER_TRANSITIONS={
+  1:'The tower is dark and covered in thick mist. A faint rustling comes from somewhere in the shadows...\n\nSuddenly, something emerges!',
+  2:'You leave the entrance behind and venture deeper into the tower.\n\nThe narrow stone corridor stretches ahead. Strange markings cover its walls, and something moves beyond the faint light...',
+  3:'The staircase leads you into a vast chamber overtaken by creeping vines and twisted roots.\n\nDust falls from the ceiling as the ground trembles beneath your feet...\n\nSomething is stirring in the darkness.',
+  4:'You emerge from the overgrown chamber into an abandoned hall.\n\nBroken pillars line the walls, and faded banners hang from the ceiling. The silence is unsettling...\n\nA cold breeze sweeps through the hall.',
+  5:'You enter a massive chamber. The doors slam shut behind you.\n\nA powerful presence fills the room...\n\n*The Guardian awaits!*',
+  6:"You leave the Guardian's chamber and climb a narrow staircase.\n\nThe walls grow darker, and an eerie glow flickers ahead...",
+  7:'You enter a dimly lit chamber filled with broken statues. Their hollow eyes seem to follow your every movement...\n\nSomething lurks in the shadows...',
+  8:'You step into a narrow passage lined with cracked stone walls.\n\nA distant growl echoes through the darkness. Something is approaching...',
+  9:'You climb into a vast, crumbling chamber. The walls are covered in strange markings, and the air feels unusually heavy...\n\nA menacing presence draws near...',
+  10:'You reach the highest floor of the tower.\n\nA massive chamber stretches before you. The enormous doors close behind you as a terrifying presence fills the room...\n\n*The Final Guardian awaits!*',
+};
+const towerTransition=floor=>`🏰 *CARD TOWER*\n\n━━━━━━━━━━━━━━━━━━\n\n*FLOOR ${floor} / 10*\n\n${TOWER_TRANSITIONS[floor]}\n\n━━━━━━━━━━━━━━━━━━`;
+const expeditionList=prefix=>`*🧭 CARD EXPEDITIONS*\n\nSend your cards on expeditions to explore unknown regions and collect valuable resources.\n\n*AVAILABLE EXPEDITIONS*\n\n${DIFFICULTIES.map(d=>`${d.id}. ${d.name}\n   Min. Level: ${d.minLevel}+\n   Duration: ${d.hours} Hour${d.hours===1?'':'s'}`).join('\n\n')}\n\n━━━━━━━━━━━━━━\n\nType \`${prefix}exped start <number>\` to select an expedition difficulty.`;
+const expeditionRewards=r=>`*🧭 EXPEDITION COMPLETED!*\n\n_Your selected cards have returned from their expedition!_\n\n*REWARDS OBTAINED*\n\n- Credits × ${r.rewards.credits}\n- Training Materials × ${r.rewards.trainingMaterials}\n- Ascension Cores × ${r.rewards.ascensionCores}\n\nYour cards have been returned to your collection.`;
 function run(state,ctx,command,args){
   const v=services(state),{economy:e,wild,pvp,tower,exped,busy,deck,selected}=v;
   settle(v);
@@ -251,12 +269,39 @@ function run(state,ctx,command,args){
     requireDeck(p);
     requireDeck(ctx.target);
     pvp.challenge(g,p,ctx.target);
-    return reply(`${ctx.label(p)} challenged ${ctx.label(ctx.target)}!\n${ctx.prefix}pvp accept / decline · expires in 60s`);
-  case 'tower':if(a==='start'){requireDeck(p);result=tower.start(g,p);break;}return reply(UI.title('CARD TOWER')+'\n\n'+tower.info(p).floors.map(f=>`Floor ${f.floor}: ${f.count} enemies · ${f.difficulty}`).join('\n')+`\n${ctx.prefix}tower start`);
+    return {...reply(`*⚔️ PVP CHALLENGE!*\n\n${ctx.label(p)} has challenged ${ctx.label(ctx.target)} to a card battle!\n\n> ${ctx.prefix}pvp accept\n> ${ctx.prefix}pvp decline\n\n_Challenge expires in 60 seconds._`),asset:'thumbnails/pvp-challenge.jpg'};
+  case 'tower':{
+    if(a==='start'){
+      requireDeck(p);result=tower.start(g,p);
+      return {...battleReply(result.battle,ctx,towerTransition(1)),towerFloor:1};
+    }
+    const ti=tower.info(p);
+    if(!ti.available&&!ti.active)return reply(`⏳ *DAILY ATTEMPT USED!*\n\nYou've already challenged the Tower today. Come back tomorrow for another run!`);
+    return reply(`*🏰 CARD TOWER*\n\nChallenge all 10 floors and face increasingly powerful opponents.\n\n_One attempt per day._\n\n━━━━━━━━━━━━━━\n\n*REWARDS*\n\n- Card XP\n- Credits\n- Ascension Materials\n- Super Pack\n\n━━━━━━━━━━━━━━\n\nComplete all 10 floors to claim the full rewards!\n\nType \`${ctx.prefix}tower start\` to begin!`);
+  }
+  case 'next':result=tower.next(g,p);return {...battleReply(result.battle,ctx,towerTransition(result.floor)),towerFloor:result.floor};
   case 'move':case 'switch':case 'desperate':case 'pass':{const cur=current();if(command==='switch'&&!a){if(cur.battle.sides[cur.battle.turn].id!==p)throw Error('Not your turn');return reply(B.options(cur.battle).switches.map(x=>`${x.index}. ${R.getCard(x.id).name} · HP ${x.hp}`).join('\n')||'No available switches');}const cmd={type:command,index:n};result=cur.kind==='pvp'?pvp.act(g,p,cmd):cur.kind==='wild'?wild.act(g,p,cmd):tower.act(g,p,cmd);break;}
-  case 'forfeit':{const cur=current();const match=cur.kind==='pvp'?pvp.active(p):cur.kind==='wild'?wild.get(g):tower.active(p);const b=match.battle;b.phase='ended';b.winner=b.sides.find(side=>side.id!==p).id;b.lastActivity=Date.now();b.events=[{type:'forfeit',player:p}];if(cur.kind==='pvp')pvp.finish(match);else if(cur.kind==='wild')wild.finish(g,match);else tower.finish(match,false);settle(v);return battleReply(b,ctx,`${ctx.label(p)} forfeited the battle!`);}
+  case 'forfeit':{const cur=current();const match=cur.kind==='pvp'?pvp.active(p):cur.kind==='wild'?wild.get(g):tower.active(p);const b=match.battle;b.phase='ended';b.winner=b.sides.find(side=>side.id!==p).id;b.lastActivity=Date.now();b.events=[{type:'forfeit',player:p}];if(cur.kind==='pvp')pvp.finish(match);else if(cur.kind==='wild')wild.finish(g,match);else{const summary={floor:match.floor,enemiesDefeated:match.enemiesDefeated};tower.finish(match,false);settle(v);return battleReply(b,ctx,`🏰 *CARD TOWER*\n\n━━━━━━━━━━━━━━━━━━\n\n*RUN FORFEITED!*\n\nGiving up already?\n\nThe Tower expected a challenge, not a coward.\n\nFloor reached: ${summary.floor}\nEnemies defeated: ${summary.enemiesDefeated}\n\n━━━━━━━━━━━━━━━━━━\n\n> Your Tower progress has been reset.\n\n> You can challenge the Tower again tomorrow!`);}settle(v);return battleReply(b,ctx,`${ctx.label(p)} forfeited the battle!`);}
   case 'heal':requireIdle();if(Date.now()<(state.heals[p]||0))throw Error('Healing is on cooldown');e.transaction(p,pl=>{for(const c of pl.cards)if(R.isBattleReady(c.id)&&!exped.locked(p,c.uid))c.hp=R.statsAt(c.id,c.level).HP;});state.heals[p]=Date.now()+1800000;return reply('Battle-ready cards healed.');
-  case 'exped':if(!a){const i=exped.info(p);return reply(i.active?`${i.difficulty.name} Expedition · ${Math.ceil(i.remainingMs/60000)} minutes remaining`:DIFFICULTIES.map(x=>`${x.id}. ${x.name} · Lv.${x.minLevel}+ · ${x.hours}h`).join('\n')+`\n${ctx.prefix}exped <number>`);}if(a==='select'){const r=exped.select(p,args.slice(1).map(num));return reply(r.cards.map(cardLine).join('\n')+`\n${ctx.prefix}exped confirm`);}if(a==='confirm'){const r=exped.confirm(g,p);return reply(`Expedition started: ${r.difficulty.name}.`);}return reply(`Selected ${exped.choose(p,n).name}. ${ctx.prefix}exped select <a> <b> <c>`);
+  case 'exped':{
+    const i=exped.info(p);
+    if(!a&&i.completed){const done=exped.claim(p);settle(v,{claimExpeditionFor:p});return {...reply(expeditionRewards(done)),asset:'thumbnails/expedition-team.jpg'};}
+    if(!a&&i.active)return reply(`*🧭 ACTIVE EXPEDITION*\n\n_Your selected cards are currently on an expedition_\n\n*Difficulty:* ${i.difficulty.name}\n*Time Remaining:* ${Math.max(1,Math.ceil(i.remainingMs/60000))} minutes`);
+    if(!a)return {...reply(expeditionList(ctx.prefix)),asset:'thumbnails/expedition-entrance.jpg'};
+    if(a==='start'){
+      const d=exped.choose(p,num(args[1]));
+      return reply(`*🧭 ${d.name.toUpperCase()} EXPEDITION*\n\nSelect 3 cards to send on an expedition.\n\n*EXPEDITION DETAILS*\n> Difficulty: ${d.name}\n> Min. Level: ${d.minLevel}+\n> Duration: ${d.hours} hour${d.hours===1?'':'s'}\n\nType \`${ctx.prefix}exped select <card 1> <card 2> <card 3>\` to choose your cards.`);
+    }
+    if(a==='select'){
+      const r=exped.select(p,args.slice(1).map(num));
+      return reply(`*🧭 EXPEDITION CONFIRMATION*\n\n*SELECTED CARDS*\n\n${r.cards.map((c,index)=>`${index+1}. ${meta(c).name} - Lv. ${c.level}`).join('\n')}\n\n━━━━━━━━━━━━━━\n\nType \`${ctx.prefix}exped confirm\` to begin your expedition.`);
+    }
+    if(a==='confirm'){
+      const r=exped.confirm(g,p);
+      return reply(`*🧭 EXPEDITION STARTED!*\n\nDifficulty: ${r.difficulty.name}\n\n*EXPEDITION TEAM*\n\n${r.cards.map((c,index)=>`${index+1}. ${meta(c).name} - Lv. ${c.level}`).join('\n')}\n\nDuration: ${r.difficulty.hours} hour${r.difficulty.hours===1?'':'s'}\n\nUse \`${ctx.prefix}exped\` to check expedition progress.`);
+    }
+    throw Error(`Use ${ctx.prefix}exped start <number>`);
+  }
   case 'shop':{
     const header=`*CARD SHOP*\nCredits: ${info().credits}`;
     if(!a)return reply(`${header}\n\n${ctx.prefix}cardshop 1 — Packs\n${ctx.prefix}cardshop 2 — Consumables`);
@@ -277,7 +322,16 @@ function run(state,ctx,command,args){
   if(result.playerEvents)result.battle.events=[...result.playerEvents,...result.battle.events.filter(x=>!result.playerEvents.some(y=>JSON.stringify(x)===JSON.stringify(y)))];
   if(result.events)result.battle.events=result.events;
   const outcome=result.outcome;
+  if(result.awaitingNext){
+    const team=result.battle.sides[0].cards;
+    const xp=(result.events.find(e=>e.type==='floorCleared')?.xp||[]).map(x=>{const card=team.find(c=>c.uid===x.uid);return `${card?meta(card).name:'Card'} earned ${x.xp} XP`;}).join('\n');
+    return battleReply(result.battle,ctx,`🏰 *CARD TOWER*\n\n━━━━━━━━━━━━━━━━━━\n\n*FLOOR ${result.floor} CLEARED!*\n\nThe enemy has been defeated!\n\n*REWARDS OBTAINED*\n\n${xp||'Card XP retained'}\n\n━━━━━━━━━━━━━━━━━━\n\n*The show goes on!*\n\nType \`${ctx.prefix}next\` to proceed to Floor ${result.floor+1}.`);
+  }
+  if(outcome&&result.battle?.mode==='tower'){
+    if(outcome.cleared)return battleReply(result.battle,ctx,`🏰 *CARD TOWER*\n\n━━━━━━━━━━━━━━━━━━\n\n*🏆 TOWER CONQUERED!*\n\nIncredible! You have conquered all 10 floors of the Card Tower!\n\n━━━━━━━━━━━━━━━━━━\n*FINAL REWARDS*\n\n- Credits: ${outcome.rewards.credits}\n- Ascension Core: ${outcome.rewards.ascensionCores}\n- Super Pack × ${outcome.rewards.superPacks}\n\n*RUN SUMMARY*\n\nFloors Cleared: 10/10\nEnemies Defeated: ${outcome.enemiesDefeated}/30`);
+    return battleReply(result.battle,ctx,`🏰 *CARD TOWER*\n\n━━━━━━━━━━━━━━━━━━\n\n❌ *FLOOR FAILED!*\n\nYour entire team has been defeated!\n\nYou couldn't clear Floor ${result.floor}.\n\n*RUN SUMMARY*\n\nHighest Floor Cleared: ${outcome.floorsCleared}\nEnemies Defeated: ${outcome.enemiesDefeated}\n\n> Your Tower progress has been reset.\n> Your earned Card XP has been retained.\n> You can challenge the Tower again tomorrow!`);
+  }
   return battleReply(result.battle,ctx,[result.dialogue,result.floor?`Floor ${result.floor}`:'',outcomeText(outcome)].filter(Boolean).join('\n'));
 }
-function tick(state){const v=services(state),notices=[];for(const r of v.exped.sweep())notices.push({group:r.group,text:`🏕️ Expedition completed for ${r.player}. Rewards: ${r.rewards.credits} Credits, ${r.rewards.trainingMaterials} training materials.`});settle(v);for(const [group,due] of Object.entries(state.nextSpawn)){if(!group.endsWith('@g.us')||Date.now()<due||v.wild.get(group))continue;if(due===0){state.nextSpawn[group]=Date.now()+state.settings.spawnCooldownMs;continue;}state.nextSpawn[group]=Date.now()+state.settings.spawnCooldownMs;if(Math.random()>state.settings.spawnChance)continue;const r=spawnAvailable(v.economy,v.wild,group);const c=v.wild.get(group).card;notices.push({group,...displayCard(`*WILD CARD SPOTTED*\n\n${r.name}\nLv. ${r.level} · ${r.rarity} · ${r.type}\n\n.claim — Challenge`,c.id)});}return notices;}
+function tick(state){const v=services(state),notices=[];v.exped.sweep();settle(v);for(const [group,due] of Object.entries(state.nextSpawn)){if(!group.endsWith('@g.us')||Date.now()<due||v.wild.get(group))continue;if(due===0){state.nextSpawn[group]=Date.now()+state.settings.spawnCooldownMs;continue;}state.nextSpawn[group]=Date.now()+state.settings.spawnCooldownMs;if(Math.random()>state.settings.spawnChance)continue;const r=spawnAvailable(v.economy,v.wild,group);const c=v.wild.get(group).card;notices.push({group,...displayCard(`*WILD CARD SPOTTED*\n\n${r.name}\nLv. ${r.level} · ${r.rarity} · ${r.type}\n\n.claim — Challenge`,c.id)});}return notices;}
 module.exports={run,services,settle,tick};

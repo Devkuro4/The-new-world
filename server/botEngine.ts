@@ -46,7 +46,7 @@ import {
 } from './profileRenderer.ts';
 
 const CARD_BATTLE_COMMANDS = new Set([
-  'cb', 'starter', 'cards', 'catalog', 'ss', 'ci', 'card', 'deck', 'swap', 't2col', 'wild', 'claim', 'pvp', 'tower',
+  'cb', 'starter', 'cards', 'catalog', 'ss', 'ci', 'card', 'deck', 'swap', 't2col', 'wild', 'claim', 'pvp', 'tower', 'next',
   'exped', 'move', 'switch', 'desperate', 'pass', 'forfeit', 'heal', 'cardshop', 'openpack', 'openspack',
   'bag', 'merge', 'learn', 'cmi', 'effects',
 ]);
@@ -1677,6 +1677,11 @@ async function handleIncomingMessageInternal(params: IncomingParams): Promise<Bo
       try {
         if (result.battle) {
           reply.imageBuffer = await renderBattleVisual(result.battle);
+        }
+        else if (result.asset) {
+          const assetPath = path.resolve(process.cwd(), 'server/cardBattle/assets', String(result.asset));
+          const assetRoot = path.resolve(process.cwd(), 'server/cardBattle/assets') + path.sep;
+          if (assetPath.startsWith(assetRoot) && fs.existsSync(assetPath)) reply.imageBuffer = fs.readFileSync(assetPath);
         }
         else if (result.artwork) {
           const artwork: CardArtwork = result.artwork;

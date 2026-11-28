@@ -1398,5 +1398,405 @@
       "CRT": 15
     },
     "mergeTarget": null
+  },
+  {
+    "id": "variant-38ffa294-36ba-49b3-a60e-cbd6d28f2c2d",
+    "name": "Ram",
+    "series": "Re:Zero",
+    "version": "38ffa294-36ba-49b3-a60e-cbd6d28f2c2d",
+    "type": "Vitality",
+    "rarity": "Common",
+    "sprite": "sprites/variant-38ffa294-36ba-49b3-a60e-cbd6d28f2c2d.png",
+    "sourceCardId": "38ffa294-36ba-49b3-a60e-cbd6d28f2c2d",
+    "reviewRequired": false,
+    "baseStats": {
+      "HP": 93,
+      "ATK": 20,
+      "DEF": 15,
+      "SPD": 16,
+      "ARC": 17,
+      "CRT": 12
+    },
+    "mergeTarget": null
+  },
+  {
+    "id": "variant-7cebe0e2-5115-4009-8594-fd7c9d07dcfa",
+    "name": "Rem",
+    "series": "Re:Zero",
+    "version": "7cebe0e2-5115-4009-8594-fd7c9d07dcfa",
+    "type": "Vitality",
+    "rarity": "Common",
+    "sprite": "sprites/variant-7cebe0e2-5115-4009-8594-fd7c9d07dcfa.png",
+    "sourceCardId": "7cebe0e2-5115-4009-8594-fd7c9d07dcfa",
+    "reviewRequired": false,
+    "baseStats": {
+      "HP": 100,
+      "ATK": 21,
+      "DEF": 16,
+      "SPD": 18,
+      "ARC": 18,
+      "CRT": 13
+    },
+    "mergeTarget": null
+  },
+  {
+    "id": "variant-62041cc8-f142-4975-9c5d-dcdaa065b4fa",
+    "name": "Beatrice",
+    "series": "Re:Zero",
+    "version": "62041cc8-f142-4975-9c5d-dcdaa065b4fa",
+    "type": "Agility",
+    "rarity": "Common",
+    "sprite": "sprites/variant-62041cc8-f142-4975-9c5d-dcdaa065b4fa.png",
+    "sourceCardId": "62041cc8-f142-4975-9c5d-dcdaa065b4fa",
+    "reviewRequired": false,
+    "baseStats": {
+      "HP": 105,
+      "ATK": 20,
+      "DEF": 17,
+      "SPD": 21,
+      "ARC": 19,
+      "CRT": 12
+    },
+    "mergeTarget": null
+  },
+  {
+    "id": "variant-5e1b1f62-f420-43cb-8d4a-303ec6518a52",
+    "name": "Garfiel Tinzel",
+    "series": "Re:Zero",
+    "version": "5e1b1f62-f420-43cb-8d4a-303ec6518a52",
+    "type": "Arcane",
+    "rarity": "Common",
+    "sprite": "sprites/variant-5e1b1f62-f420-43cb-8d4a-303ec6518a52.png",
+    "sourceCardId": "5e1b1f62-f420-43cb-8d4a-303ec6518a52",
+    "reviewRequired": false,
+    "baseStats": {
+      "HP": 93,
+      "ATK": 17,
+      "DEF": 17,
+      "SPD": 18,
+      "ARC": 19,
+      "CRT": 9
+    },
+    "mergeTarget": null
+  },
+  {
+    "id": "variant-01dd49de-b9d3-454b-8d57-58239b9fbb5c",
+    "name": "Regulus Corneas",
+    "series": "Re:Zero",
+    "version": "01dd49de-b9d3-454b-8d57-58239b9fbb5c",
+    "type": "Strength",
+    "rarity": "Common",
+    "sprite": "sprites/variant-01dd49de-b9d3-454b-8d57-58239b9fbb5c.png",
+    "sourceCardId": "01dd49de-b9d3-454b-8d57-58239b9fbb5c",
+    "reviewRequired": false,
+    "baseStats": {
+      "HP": 94,
+      "ATK": 21,
+      "DEF": 14,
+      "SPD": 21,
+      "ARC": 16,
+      "CRT": 13
+    },
+    "mergeTarget": null
+  },
+  {
+    "id": "variant-ed6da7fe-b147-4df9-8326-7d63388a12a6",
+    "name": "Subaru Natsuki",
+    "series": "Re:Zero",
+    "version": "ed6da7fe-b147-4df9-8326-7d63388a12a6",
+    "type": "Agility",
+    "rarity": "Common",
+    "sprite": "sprites/variant-ed6da7fe-b147-4df9-8326-7d63388a12a6.png",
+    "sourceCardId": "ed6da7fe-b147-4df9-8326-7d63388a12a6",
+    "reviewRequired": false,
+    "baseStats": {
+      "HP": 94,
+      "ATK": 18,
+      "DEF": 14,
+      "SPD": 15,
+      "ARC": 16,
+      "CRT": 10
+    },
+    "mergeTarget": null
+  },
+  {
+    "id": "variant-760f6b68-f086-4297-bdbc-84d6f5e90c09",
+    "name": "Echidna",
+    "series": "Re:Zero",
+    "version": "760f6b68-f086-4297-bdbc-84d6f5e90c09",
+    "type": "Vitality",
+    "rarity": "Common",
+    "sprite": "sprites/variant-760f6b68-f086-4297-bdbc-84d6f5e90c09.png",
+    "sourceCardId": "760f6b68-f086-4297-bdbc-84d6f5e90c09",
+    "reviewRequired": false,
+    "baseStats": {
+      "HP": 103,
+      "ATK": 19,
+      "DEF": 17,
+      "SPD": 18,
+      "ARC": 19,
+      "CRT": 11
+    },
+    "mergeTarget": null
+  },
+  {
+    "id": "variant-dd93ba2a-1e2b-466a-bdd7-d1aad9855bd4",
+    "name": "Emilia",
+    "series": "Re:Zero",
+    "version": "dd93ba2a-1e2b-466a-bdd7-d1aad9855bd4",
+    "type": "Agility",
+    "rarity": "Common",
+    "sprite": "sprites/variant-dd93ba2a-1e2b-466a-bdd7-d1aad9855bd4.png",
+    "sourceCardId": "dd93ba2a-1e2b-466a-bdd7-d1aad9855bd4",
+    "reviewRequired": false,
+    "baseStats": {
+      "HP": 100,
+      "ATK": 17,
+      "DEF": 18,
+      "SPD": 19,
+      "ARC": 20,
+      "CRT": 9
+    },
+    "mergeTarget": null
+  },
+  {
+    "id": "variant-1b856ff7-8e87-41e3-b588-e81352decee7",
+    "name": "Rem — Holiday Special",
+    "series": "Re:Zero",
+    "version": "1b856ff7-8e87-41e3-b588-e81352decee7",
+    "type": "Arcane",
+    "rarity": "Common",
+    "sprite": "sprites/variant-1b856ff7-8e87-41e3-b588-e81352decee7.png",
+    "sourceCardId": "1b856ff7-8e87-41e3-b588-e81352decee7",
+    "reviewRequired": false,
+    "baseStats": {
+      "HP": 92,
+      "ATK": 17,
+      "DEF": 16,
+      "SPD": 15,
+      "ARC": 18,
+      "CRT": 9
+    },
+    "mergeTarget": null
+  },
+  {
+    "id": "variant-6467444b-6f05-4dce-9502-cf47a4901d95",
+    "name": "Emilia — Holiday Special",
+    "series": "Re:Zero",
+    "version": "6467444b-6f05-4dce-9502-cf47a4901d95",
+    "type": "Strength",
+    "rarity": "Common",
+    "sprite": "sprites/variant-6467444b-6f05-4dce-9502-cf47a4901d95.png",
+    "sourceCardId": "6467444b-6f05-4dce-9502-cf47a4901d95",
+    "reviewRequired": false,
+    "baseStats": {
+      "HP": 105,
+      "ATK": 19,
+      "DEF": 15,
+      "SPD": 20,
+      "ARC": 17,
+      "CRT": 11
+    },
+    "mergeTarget": null
+  },
+  {
+    "id": "variant-454b7cc5-399c-4914-9c85-de676b152c08",
+    "name": "Ram — Holiday Special",
+    "series": "Re:Zero",
+    "version": "454b7cc5-399c-4914-9c85-de676b152c08",
+    "type": "Vitality",
+    "rarity": "Common",
+    "sprite": "sprites/variant-454b7cc5-399c-4914-9c85-de676b152c08.png",
+    "sourceCardId": "454b7cc5-399c-4914-9c85-de676b152c08",
+    "reviewRequired": false,
+    "baseStats": {
+      "HP": 99,
+      "ATK": 19,
+      "DEF": 19,
+      "SPD": 16,
+      "ARC": 21,
+      "CRT": 11
+    },
+    "mergeTarget": null
+  },
+  {
+    "id": "variant-36c7e559-9041-468b-bd13-065d8536c358",
+    "name": "Aldebaran",
+    "series": "Re:Zero",
+    "version": "36c7e559-9041-468b-bd13-065d8536c358",
+    "type": "Arcane",
+    "rarity": "Common",
+    "sprite": "sprites/variant-36c7e559-9041-468b-bd13-065d8536c358.png",
+    "sourceCardId": "36c7e559-9041-468b-bd13-065d8536c358",
+    "reviewRequired": false,
+    "baseStats": {
+      "HP": 93,
+      "ATK": 17,
+      "DEF": 19,
+      "SPD": 19,
+      "ARC": 21,
+      "CRT": 9
+    },
+    "mergeTarget": null
+  },
+  {
+    "id": "variant-8c855622-779d-47b0-a63e-ef6c15fdceb5",
+    "name": "Anastasia Hoshin — Winter Special",
+    "series": "Re:Zero",
+    "version": "8c855622-779d-47b0-a63e-ef6c15fdceb5",
+    "type": "Agility",
+    "rarity": "Common",
+    "sprite": "sprites/variant-8c855622-779d-47b0-a63e-ef6c15fdceb5.png",
+    "sourceCardId": "8c855622-779d-47b0-a63e-ef6c15fdceb5",
+    "reviewRequired": false,
+    "baseStats": {
+      "HP": 95,
+      "ATK": 17,
+      "DEF": 15,
+      "SPD": 15,
+      "ARC": 17,
+      "CRT": 9
+    },
+    "mergeTarget": null
+  },
+  {
+    "id": "variant-5830217d-dbfc-4bca-a8cd-e70d30deecdf",
+    "name": "Crusch Karsten",
+    "series": "Re:Zero",
+    "version": "5830217d-dbfc-4bca-a8cd-e70d30deecdf",
+    "type": "Arcane",
+    "rarity": "Common",
+    "sprite": "sprites/variant-5830217d-dbfc-4bca-a8cd-e70d30deecdf.png",
+    "sourceCardId": "5830217d-dbfc-4bca-a8cd-e70d30deecdf",
+    "reviewRequired": false,
+    "baseStats": {
+      "HP": 99,
+      "ATK": 17,
+      "DEF": 17,
+      "SPD": 16,
+      "ARC": 19,
+      "CRT": 9
+    },
+    "mergeTarget": null
+  },
+  {
+    "id": "variant-c7d7d8cf-20f3-4fc8-89c0-e3aaade02701",
+    "name": "Elsa Granhiert",
+    "series": "Re:Zero",
+    "version": "c7d7d8cf-20f3-4fc8-89c0-e3aaade02701",
+    "type": "Arcane",
+    "rarity": "Common",
+    "sprite": "sprites/variant-c7d7d8cf-20f3-4fc8-89c0-e3aaade02701.png",
+    "sourceCardId": "c7d7d8cf-20f3-4fc8-89c0-e3aaade02701",
+    "reviewRequired": false,
+    "baseStats": {
+      "HP": 90,
+      "ATK": 17,
+      "DEF": 18,
+      "SPD": 20,
+      "ARC": 20,
+      "CRT": 9
+    },
+    "mergeTarget": null
+  },
+  {
+    "id": "variant-96c2b853-1ac4-4dab-ad29-57cdd2898a95",
+    "name": "Felt",
+    "series": "Re:Zero",
+    "version": "96c2b853-1ac4-4dab-ad29-57cdd2898a95",
+    "type": "Arcane",
+    "rarity": "Common",
+    "sprite": "sprites/variant-96c2b853-1ac4-4dab-ad29-57cdd2898a95.png",
+    "sourceCardId": "96c2b853-1ac4-4dab-ad29-57cdd2898a95",
+    "reviewRequired": false,
+    "baseStats": {
+      "HP": 105,
+      "ATK": 21,
+      "DEF": 15,
+      "SPD": 16,
+      "ARC": 17,
+      "CRT": 13
+    },
+    "mergeTarget": null
+  },
+  {
+    "id": "variant-23802c72-93af-4082-9ee5-727ef69a8b2e",
+    "name": "Julius Juukulius",
+    "series": "Re:Zero",
+    "version": "23802c72-93af-4082-9ee5-727ef69a8b2e",
+    "type": "Strength",
+    "rarity": "Common",
+    "sprite": "sprites/variant-23802c72-93af-4082-9ee5-727ef69a8b2e.png",
+    "sourceCardId": "23802c72-93af-4082-9ee5-727ef69a8b2e",
+    "reviewRequired": false,
+    "baseStats": {
+      "HP": 94,
+      "ATK": 17,
+      "DEF": 14,
+      "SPD": 17,
+      "ARC": 16,
+      "CRT": 9
+    },
+    "mergeTarget": null
+  },
+  {
+    "id": "variant-555eb521-84fd-417a-b440-4324698dabf0",
+    "name": "Liliana Masquerade",
+    "series": "Re:Zero",
+    "version": "555eb521-84fd-417a-b440-4324698dabf0",
+    "type": "Agility",
+    "rarity": "Common",
+    "sprite": "sprites/variant-555eb521-84fd-417a-b440-4324698dabf0.png",
+    "sourceCardId": "555eb521-84fd-417a-b440-4324698dabf0",
+    "reviewRequired": false,
+    "baseStats": {
+      "HP": 90,
+      "ATK": 17,
+      "DEF": 18,
+      "SPD": 18,
+      "ARC": 20,
+      "CRT": 9
+    },
+    "mergeTarget": null
+  },
+  {
+    "id": "variant-4b86c276-d9e7-4f0c-a299-037f34742551",
+    "name": "Minerva",
+    "series": "Re:Zero",
+    "version": "4b86c276-d9e7-4f0c-a299-037f34742551",
+    "type": "Arcane",
+    "rarity": "Common",
+    "sprite": "sprites/variant-4b86c276-d9e7-4f0c-a299-037f34742551.png",
+    "sourceCardId": "4b86c276-d9e7-4f0c-a299-037f34742551",
+    "reviewRequired": false,
+    "baseStats": {
+      "HP": 94,
+      "ATK": 21,
+      "DEF": 14,
+      "SPD": 19,
+      "ARC": 16,
+      "CRT": 13
+    },
+    "mergeTarget": null
+  },
+  {
+    "id": "variant-a7d1caa8-8a2b-49f9-81c0-5bef3e150e44",
+    "name": "Rem — Feline Special",
+    "series": "Re:Zero",
+    "version": "a7d1caa8-8a2b-49f9-81c0-5bef3e150e44",
+    "type": "Vitality",
+    "rarity": "Ultra Rare",
+    "sprite": "sprites/variant-a7d1caa8-8a2b-49f9-81c0-5bef3e150e44.png",
+    "sourceCardId": "a7d1caa8-8a2b-49f9-81c0-5bef3e150e44",
+    "reviewRequired": false,
+    "baseStats": {
+      "HP": 160,
+      "ATK": 44,
+      "DEF": 38,
+      "SPD": 41,
+      "ARC": 45,
+      "CRT": 26
+    },
+    "mergeTarget": null
   }
 ]

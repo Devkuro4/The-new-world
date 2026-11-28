@@ -3,7 +3,8 @@ const W=1080,H=607;
 const rarity={Common:'#e1e5ed',Uncommon:'#71dc8a',Rare:'#56a8ff','Super Rare':'#b28aff','SS Rare':'#ffd35b','Ultra Rare':'#ff6b6b'};
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&apos;'}[c]));
 const img=p=>`data:image/png;base64,${fs.readFileSync(p).toString('base64')}`;
-function scene(b,{dialogue,arena=path.join(__dirname,'arenas/ruins.png'),effectsEnabled=false}={}){
+function towerArena(floor){const n=Math.max(1,Math.min(10,Number(floor)||1));return path.join(__dirname,'arenas','tower',`floor-${n}.jpg`);}
+function scene(b,{dialogue,arena=b?.mode==='tower'?towerArena(b.towerFloor):path.join(__dirname,'arenas/ruins.png'),effectsEnabled=false}={}){
   if(!b||b.sides?.length!==2)throw Error('Invalid battle state');
   const cards=b.sides.map(s=>s.cards[s.active]);
   const meta=cards.map(c=>R.getCard(R.resolveBattleId(c.id)));
@@ -42,4 +43,4 @@ function scene(b,{dialogue,arena=path.join(__dirname,'arenas/ruins.png'),effects
   return out;
 }
 async function renderBattle(b,opts={}){const svg=Buffer.from(scene(b,opts));let canvas;try{canvas=require('@napi-rs/canvas')}catch(e){if(e.code!=='MODULE_NOT_FOUND')throw e;}if(canvas){const c=canvas.createCanvas(W,H),ctx=c.getContext('2d');ctx.drawImage(await canvas.loadImage(svg),0,0);return c.toBuffer('image/png');}return require('sharp')(svg).png().toBuffer();}
-module.exports={scene,renderBattle,W,H};
+module.exports={scene,renderBattle,towerArena,W,H};

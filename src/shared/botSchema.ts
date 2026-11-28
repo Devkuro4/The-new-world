@@ -307,6 +307,7 @@ export const DEFAULT_COMMANDS: BotCommandDef[] = [
   { name: 'claim', category: 'Cards', description: 'Challenge the current Wild Card', usage: '.claim', role: 'everyone', enabled: true },
   { name: 'pvp', category: 'Cards', description: 'Challenge another player or answer a PvP challenge', usage: '.pvp @user | .pvp accept|decline', role: 'everyone', enabled: true },
   { name: 'tower', category: 'Cards', description: 'View or start a Card Tower run', usage: '.tower [start]', role: 'everyone', enabled: true },
+  { name: 'next', category: 'Cards', description: 'Proceed to the next cleared Card Tower floor', usage: '.next', role: 'everyone', enabled: true },
   { name: 'exped', aliases: ['expedition'], category: 'Cards', description: 'Manage Card Battle expeditions', usage: '.exped [difficulty|select|confirm]', role: 'everyone', enabled: true },
   { name: 'move', category: 'Cards', description: 'Use a numbered move during battle', usage: '.move <number>', role: 'everyone', enabled: true },
   { name: 'switch', category: 'Cards', description: 'View or switch to another battle card', usage: '.switch [number]', role: 'everyone', enabled: true },
