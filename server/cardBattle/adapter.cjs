@@ -273,9 +273,10 @@ function run(state,ctx,command,args){
   case 'tower':{
     if(a==='start'){
       requireDeck(p);result=tower.start(g,p);
-      return {...battleReply(result.battle,ctx,towerTransition(1)),towerFloor:1};
+      return {...battleReply(result.battle,ctx,towerTransition(result.floor)),towerFloor:result.floor};
     }
     const ti=tower.info(p);
+    if(ti.active)return reply(`🏰 *TOWER RUN ACTIVE*\n\nYou're currently on Floor ${ti.activeFloor}.\n\nType \`${ctx.prefix}tower start\` to resume the battle.`);
     if(!ti.available&&!ti.active)return reply(`⏳ *DAILY ATTEMPT USED!*\n\nYou've already challenged the Tower today. Come back tomorrow for another run!`);
     return reply(`*🏰 CARD TOWER*\n\nChallenge all 10 floors and face increasingly powerful opponents.\n\n_One attempt per day._\n\n━━━━━━━━━━━━━━\n\n*REWARDS*\n\n- Card XP\n- Credits\n- Ascension Materials\n- Super Pack\n\n━━━━━━━━━━━━━━\n\nComplete all 10 floors to claim the full rewards!\n\nType \`${ctx.prefix}tower start\` to begin!`);
   }

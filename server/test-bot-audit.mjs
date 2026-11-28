@@ -175,6 +175,13 @@ try {
   await command('.rename Alice New',{ targetAccountIds:target });
   assert.equal(botState.players[playerA].name,'Alice New');
   assert.equal(botState.players[playerB].name,'Audit Bob');
+  const styledName='𝕯𝖊𝖛 𝕶𝖚𝖗𝖔 ✦ 影 🖤';
+  const styledProfile=await command(`.setname ${styledName}`);
+  assert.equal(botState.players[playerA].name,styledName);
+  assert.match(styledProfile.text,/𝕯𝖊𝖛 𝕶𝖚𝖗𝖔 ✦ 影 🖤/u);
+  await command(`.setname ${'🖤'.repeat(30)}`);
+  assert.equal([...new Intl.Segmenter(undefined,{granularity:'grapheme'}).segment(botState.players[playerA].name)].length,24);
+  assert.equal(botState.players[playerA].name,'🖤'.repeat(24));
   assert.equal((await command('.wild',{chatMode:'dm'})).status,'blocked');
   assert.equal((await command('.kick @900')).status,'blocked');
   assert.equal(findCommand('auction'),undefined);

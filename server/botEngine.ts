@@ -1,4 +1,5 @@
 import { type CardArtwork, loadCardArtwork } from './cardBattleArtwork.ts';
+import { normalizeDisplayName } from './unicodeText.ts';
 import { createRequire } from 'node:module';
 const cardBattleRequire = createRequire(import.meta.url);
 const cardBattleAdapter = cardBattleRequire('./cardBattle/adapter.cjs');
@@ -2914,7 +2915,11 @@ async function executeBuiltInCommand(
       if (!argStr.trim()) {
         return { text: `Usage: *${p}${cmd} <new display name>*`, handler: 'Profile', status: 'error' };
       }
-      player.name = argStr.trim().replace(/\s+/g, ' ').slice(0, 24);
+      const displayName = normalizeDisplayName(argStr, 24);
+      if (!displayName) {
+        return { text: `Your display name must contain at least one visible character.`, handler: 'Profile', status: 'error' };
+      }
+      player.name = displayName;
       player.customName = true;
       const cardBuf = await renderProfileCardBuffer(player).catch(() => null);
       const caption = buildProfileTextUi(player);

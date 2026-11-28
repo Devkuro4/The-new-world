@@ -2,6 +2,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { createCanvas, loadImage, type Image } from '@napi-rs/canvas';
 import type { PlayerProfile } from '../src/shared/botSchema.ts';
+import { graphemeLength, normalizeDisplayName } from './unicodeText.ts';
 
 const DATA_DIR = process.env.DATA_DIR
   ? path.resolve(process.env.DATA_DIR)
@@ -439,11 +440,12 @@ export async function renderProfileCardBuffer(player: PlayerProfile): Promise<Bu
   ctx.restore();
 
   // 3) Center Username (blank until user sets one with `.setname` / `.rename`).
-  const displayName = ((player.name || '').trim() || 'Unnamed player').slice(0, 24);
+  const displayName = normalizeDisplayName(player.name || '', 24) || 'Unnamed player';
   if (displayName) {
-    const nameFontSize = displayName.length > 18 ? 44 : displayName.length > 13 ? 52 : 64;
+    const nameLength = graphemeLength(displayName);
+    const nameFontSize = nameLength > 18 ? 44 : nameLength > 13 ? 52 : 64;
     ctx.save();
-    ctx.font = `bold ${nameFontSize}px "Liberation Serif", "DejaVu Serif", Georgia, serif`;
+    ctx.font = `bold ${nameFontSize}px "Noto Sans", "Noto Sans CJK SC", "DejaVu Sans", "Liberation Sans", sans-serif`;
     ctx.fillStyle = '#ffffff';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'alphabetic';
